@@ -14,6 +14,7 @@
   if (grid && window.SHU_YI_CONTENT) {
     const renderContent = (filter = 'all') => { const items = window.SHU_YI_CONTENT.filter((item) => filter === 'all' || item.type === filter); grid.innerHTML = items.map((item) => `<article class="content-card content-card--${item.accent}"><div class="card-art">${item.type === 'video' ? `<button class="card-play" data-video="${item.video}" aria-label="播放 ${item.title}">▶</button>` : `<span>${item.type.toUpperCase()}</span>`}</div><div class="card-meta"><span>${item.tag}</span><span>${item.date}</span></div><h3>${item.title}</h3><p>${item.excerpt}</p><a href="${item.href}">閱讀內容 <span>→</span></a></article>`).join(''); };
     renderContent();
+    document.addEventListener('shuyi-content-ready', () => renderContent());
     document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => { document.querySelectorAll('[data-filter]').forEach((item) => { item.classList.remove('is-active'); item.setAttribute('aria-selected', 'false'); }); button.classList.add('is-active'); button.setAttribute('aria-selected', 'true'); renderContent(button.dataset.filter); }));
   }
   const videoDialog = document.querySelector('#video-dialog'); const dialogVideo = document.querySelector('#dialog-video');

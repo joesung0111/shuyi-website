@@ -1,0 +1,14 @@
+{
+  "name": "shuyi-site",
+  "private": true,
+  "version": "0.1.0",
+  "description": "舒逸品牌官網與內容管理後台",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
