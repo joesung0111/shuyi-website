@@ -29,7 +29,7 @@ if (db.prepare('SELECT COUNT(*) AS count FROM content').get().count === 0) {
 
 const json = (res, status, value) => { const body = JSON.stringify(value); res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(body); };
 const readBody = async (req) => { let raw = ''; for await (const chunk of req) raw += chunk; if (!raw) return {}; try { return JSON.parse(raw); } catch { return null; } };
-const sessionToken = (req) => /(?:^|; )shuyi_session=([^;]+)/.exec(req.headers.cookie || '')?.[1];
+const sessionToken = (req) => /^Bearer\s+(.+)$/i.exec(req.headers.authorization || '')?.[1] || /(?:^|; )shuyi_session=([^;]+)/.exec(req.headers.cookie || '')?.[1];
 const getSession = (req) => { const token = sessionToken(req); if (!token) return null; const session = db.prepare('SELECT token FROM admin_sessions WHERE token = ? AND expires_at > ?').get(token, now()); if (!session) db.prepare('DELETE FROM admin_sessions WHERE token = ?').run(token); return session; };
 const requireAuth = (req, res) => { if (!getSession(req)) { json(res, 401, { error: '需要登入後台' }); return false; } return true; };
 const safeContent = (row) => ({ ...row, href: `/journal/${row.slug}/`, tag: row.type === 'article' ? 'BODY NOTE' : row.type === 'video' ? 'SHU YI FILM' : 'STUDIO NEWS', date: row.status === 'published' ? (row.published_at || '').slice(0, 10) : 'DRAFT', video: row.video_url || undefined, accent: row.type === 'article' ? 'peach' : row.type === 'video' ? 'violet' : 'lime' });
@@ -37,7 +37,7 @@ const safeContent = (row) => ({ ...row, href: `/journal/${row.slug}/`, tag: row.
 async function api(req, res, url) {
   if (req.method === 'POST' && url.pathname === '/api/admin/login') {
     const body = await readBody(req); if (!body || body.password !== ADMIN_PASSWORD) return json(res, 401, { error: '密碼不正確' });
-    const token = randomBytes(32).toString('hex'); const createdAt = now(); const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(); db.prepare('DELETE FROM admin_sessions WHERE expires_at <= ?').run(createdAt); db.prepare('INSERT INTO admin_sessions (token,expires_at,created_at) VALUES (?,?,?)').run(token, expiresAt, createdAt); res.setHeader('Set-Cookie', `shuyi_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=28800`); return json(res, 200, { ok: true });
+    const token = randomBytes(32).toString('hex'); const createdAt = now(); const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(); db.prepare('DELETE FROM admin_sessions WHERE expires_at <= ?').run(createdAt); db.prepare('INSERT INTO admin_sessions (token,expires_at,created_at) VALUES (?,?,?)').run(token, expiresAt, createdAt); res.setHeader('Set-Cookie', `shuyi_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=28800`); return json(res, 200, { ok: true, token });
   }
   if (req.method === 'POST' && url.pathname === '/api/admin/logout') { const token = sessionToken(req); if (token) db.prepare('DELETE FROM admin_sessions WHERE token = ?').run(token); res.setHeader('Set-Cookie', 'shuyi_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0'); return json(res, 200, { ok: true }); }
   if (!url.pathname.startsWith('/api/')) return false;
