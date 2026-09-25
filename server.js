@@ -34,13 +34,27 @@ const readBody = async (req) => { let raw = ''; for await (const chunk of req) r
 const sessionToken = (req) => /^Bearer\s+(.+)$/i.exec(req.headers.authorization || '')?.[1] || /(?:^|; )shuyi_session=([^;]+)/.exec(req.headers.cookie || '')?.[1];
 const getSession = (req) => { const token = sessionToken(req); if (!token) return null; const session = db.prepare('SELECT token FROM admin_sessions WHERE token = ? AND expires_at > ?').get(token, now()); if (!session) db.prepare('DELETE FROM admin_sessions WHERE token = ?').run(token); return session; };
 const requireAuth = (req, res) => { if (!getSession(req)) { json(res, 401, { error: '需要登入後台' }); return false; } return true; };
-const safeContent = (row) => ({ ...row, href: `/journal/${row.slug}/`, tag: row.type === 'article' ? 'BODY NOTE' : row.type === 'video' ? 'SHU YI FILM' : 'STUDIO NEWS', date: row.status === 'published' ? (row.published_at || '').slice(0, 10) : 'DRAFT', video: row.video_url || undefined, cover: row.cover_url || undefined, accent: row.type === 'article' ? 'peach' : row.type === 'video' ? 'violet' : 'lime' });
+function youtubeEmbedUrl(value) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase().replace(/^www\./, '');
+    let id = null;
+    if (host === 'youtu.be') id = url.pathname.split('/').filter(Boolean)[0];
+    if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtube-nocookie.com') {
+      id = url.searchParams.get('v') || url.pathname.match(/^\/(?:embed|shorts)\/([^/?]+)/)?.[1];
+    }
+    return /^[A-Za-z0-9_-]{11}$/.test(id || '') ? `https://www.youtube-nocookie.com/embed/${id}?rel=0` : null;
+  } catch { return null; }
+}
+const safeContent = (row) => ({ ...row, href: `/journal/${row.slug}/`, tag: row.type === 'article' ? 'BODY NOTE' : row.type === 'video' ? 'SHU YI FILM' : 'STUDIO NEWS', date: row.status === 'published' ? (row.published_at || '').slice(0, 10) : 'DRAFT', video: row.video_url || undefined, embed_url: youtubeEmbedUrl(row.video_url) || undefined, cover: row.cover_url || undefined, accent: row.type === 'article' ? 'peach' : row.type === 'video' ? 'violet' : 'lime' });
 const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const bodyHtml = (body) => escapeHtml(body).split(/\n{2,}/).filter(Boolean).map((paragraph) => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('') || '<p>內容準備中。</p>';
 
 function articlePage(row) {
   const type = row.type === 'article' ? '文章' : row.type === 'video' ? '影片' : '情報';
-  const video = row.video_url ? `<figure class="article-video"><video controls playsinline src="${escapeHtml(row.video_url)}"></video></figure>` : '';
+  const embedUrl = youtubeEmbedUrl(row.video_url);
+  const video = embedUrl ? `<figure class="article-video"><iframe src="${escapeHtml(embedUrl)}" title="${escapeHtml(row.title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></figure>` : row.video_url ? `<figure class="article-video"><video controls playsinline src="${escapeHtml(row.video_url)}"></video></figure>` : '';
   const cover = row.cover_url ? `<img class="article-cover" src="${escapeHtml(row.cover_url)}" alt="${escapeHtml(row.title)}">` : '';
   return `<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(row.excerpt || row.title)}"><title>${escapeHtml(row.title)}｜舒逸 Shu Yi</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/styles.css"></head><body><header class="site-header"><a class="brand" href="/" aria-label="舒逸首頁"><img class="brand-logo brand-logo--light" src="/素材/淺色系-1K.jpeg" alt="舒逸 Shu Yi"><img class="brand-logo brand-logo--dark" src="/素材/深色系-1K.jpeg" alt="" aria-hidden="true"><span>SHU YI</span></a><nav class="site-nav" aria-label="主要導覽"><a href="/services/">活化調理</a><a href="/journal/" aria-current="page">舒逸日常</a><a href="/studio/">工作室</a><a href="/booking/">預約</a></nav><div class="header-actions"><button class="theme-switch" type="button" aria-label="切換深淺色主題" aria-pressed="false"><span class="theme-switch__dot"></span><span class="theme-switch__label">LIGHT</span></button><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false"><span></span><span></span></button></div></header><main class="article"><a class="back-link" href="/journal/">← 回到舒逸日常</a><div class="article-meta"><span>${type}</span><span>${escapeHtml((row.published_at || row.updated_at || '').slice(0, 10))}</span></div><h1>${escapeHtml(row.title)}</h1>${cover}${video}<div class="article-body">${bodyHtml(row.body)}</div></main><footer class="site-footer"><a class="brand" href="/"><span>舒逸</span><small>SHU YI</small></a><p>© 2026 SHU YI. MOVE WELL, LIVE LIGHT.</p><div><a href="/journal/">JOURNAL</a><a href="/booking/">BOOKING</a></div></footer><script src="/app.js"></script></body></html>`;
 }
@@ -61,7 +75,7 @@ async function api(req, res, url) {
 }
 
 async function staticFile(req, res, pathname) {
-  let clean = decodeURIComponent(pathname); if (clean === '/') clean = '/index.html'; if (clean.endsWith('/')) clean += 'index.html'; const filePath = resolve(ROOT, `.${normalize(clean)}`); if (!filePath.startsWith(ROOT) || relative(ROOT, filePath).startsWith('..')) return json(res, 403, { error: 'Forbidden' }); try { const info = await stat(filePath); if (!info.isFile()) return json(res, 404, { error: 'Not found' }); res.writeHead(200, { 'content-type': mime[extname(filePath)] || 'application/octet-stream' }); res.end(await readFile(filePath)); } catch { json(res, 404, { error: 'Not found' }); }
+  let clean = decodeURIComponent(pathname); if (clean === '/') clean = '/index.html'; if (clean.endsWith('/')) clean += 'index.html'; const filePath = resolve(ROOT, `.${normalize(clean)}`); if (!filePath.startsWith(ROOT) || relative(ROOT, filePath).startsWith('..')) return json(res, 403, { error: 'Forbidden' }); try { const info = await stat(filePath); if (!info.isFile()) return json(res, 404, { error: 'Not found' }); const extension = extname(filePath); res.writeHead(200, { 'content-type': mime[extension] || 'application/octet-stream' }); if (extension === '.html') { const favicon = clean.startsWith('/admin/') ? '<link rel="icon" href="/admin/favicon.svg" type="image/svg+xml">' : '<link rel="icon" href="/素材/淺色系-1K.jpeg" type="image/jpeg">'; return res.end((await readFile(filePath, 'utf8')).replace('</head>', `${favicon}</head>`)); } res.end(await readFile(filePath)); } catch { json(res, 404, { error: 'Not found' }); }
 }
 
 function dynamicArticle(req, res, pathname) {
