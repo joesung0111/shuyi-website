@@ -13,6 +13,8 @@ const ADMIN_PASSWORD = process.env.SHUYI_ADMIN_PASSWORD || 'shuyi-local-dev';
 // Local development keeps the database in the project data folder.
 const DB_PATH = resolve(process.env.DATABASE_PATH || join(ROOT, 'data', 'shuyi.sqlite'));
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.ico': 'image/x-icon' };
+const themeBoot = '<script>(function(){try{var t=localStorage.getItem("shuyi-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}}())<\/script>';
+const headEnhancements = (admin = false) => `${admin ? '<link rel="icon" href="/admin/favicon.svg" type="image/svg+xml">' : '<link rel="icon" href="/素材/淺色系-1K.jpeg" type="image/jpeg">'}${themeBoot}`;
 
 mkdirSync(dirname(DB_PATH), { recursive: true });
 const db = new DatabaseSync(DB_PATH);
@@ -75,7 +77,7 @@ async function api(req, res, url) {
 }
 
 async function staticFile(req, res, pathname) {
-  let clean = decodeURIComponent(pathname); if (clean === '/') clean = '/index.html'; if (clean.endsWith('/')) clean += 'index.html'; const filePath = resolve(ROOT, `.${normalize(clean)}`); if (!filePath.startsWith(ROOT) || relative(ROOT, filePath).startsWith('..')) return json(res, 403, { error: 'Forbidden' }); try { const info = await stat(filePath); if (!info.isFile()) return json(res, 404, { error: 'Not found' }); const extension = extname(filePath); res.writeHead(200, { 'content-type': mime[extension] || 'application/octet-stream' }); if (extension === '.html') { const favicon = clean.startsWith('/admin/') ? '<link rel="icon" href="/admin/favicon.svg" type="image/svg+xml">' : '<link rel="icon" href="/素材/淺色系-1K.jpeg" type="image/jpeg">'; return res.end((await readFile(filePath, 'utf8')).replace('</head>', `${favicon}</head>`)); } res.end(await readFile(filePath)); } catch { json(res, 404, { error: 'Not found' }); }
+  let clean = decodeURIComponent(pathname); if (clean === '/') clean = '/index.html'; if (clean.endsWith('/')) clean += 'index.html'; const filePath = resolve(ROOT, `.${normalize(clean)}`); if (!filePath.startsWith(ROOT) || relative(ROOT, filePath).startsWith('..')) return json(res, 403, { error: 'Forbidden' }); try { const info = await stat(filePath); if (!info.isFile()) return json(res, 404, { error: 'Not found' }); const extension = extname(filePath); res.writeHead(200, { 'content-type': mime[extension] || 'application/octet-stream' }); if (extension === '.html') return res.end((await readFile(filePath, 'utf8')).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replace('</head>', `${headEnhancements(clean.startsWith('/admin/'))}</head>`)); res.end(await readFile(filePath)); } catch { json(res, 404, { error: 'Not found' }); }
 }
 
 function dynamicArticle(req, res, pathname) {
@@ -85,7 +87,7 @@ function dynamicArticle(req, res, pathname) {
   const row = db.prepare("SELECT * FROM content WHERE slug = ? AND status = 'published'").get(match[1]);
   if (!row) return false;
   res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
-  res.end(articlePage(row));
+  res.end(articlePage(row).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replace('</head>', `${headEnhancements()}</head>`));
   return true;
 }
 

@@ -1,7 +1,7 @@
 {
   "name": "shuyi-site",
   "private": true,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "舒逸品牌官網與內容管理後台",
   "type": "module",
   "scripts": {
