@@ -13,8 +13,9 @@ const ADMIN_PASSWORD = process.env.SHUYI_ADMIN_PASSWORD || 'shuyi-local-dev';
 // Local development keeps the database in the project data folder.
 const DB_PATH = resolve(process.env.DATABASE_PATH || join(ROOT, 'data', 'shuyi.sqlite'));
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.ico': 'image/x-icon' };
-const themeBoot = '<script>(function(){try{var t=localStorage.getItem("shuyi-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}}())<\/script>';
+const themeBoot = '<script>(function(){try{var t=localStorage.getItem("shuyi-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t;if(sessionStorage.getItem("shuyi-page-transition")){document.documentElement.classList.add("page-arriving");sessionStorage.removeItem("shuyi-page-transition")}}catch(e){}}())<\/script>';
 const headEnhancements = (admin = false) => `${admin ? '<link rel="icon" href="/admin/favicon.svg" type="image/svg+xml">' : '<link rel="icon" href="/素材/淺色系-1K.jpeg" type="image/jpeg">'}${themeBoot}`;
+const withoutSloganStops = (html) => ['不只放鬆。', '動起來。', '自在的樣子。', '新的情報。', '工作室。', '自己。'].reduce((result, phrase) => result.replaceAll(phrase, phrase.slice(0, -1)), html);
 
 mkdirSync(dirname(DB_PATH), { recursive: true });
 const db = new DatabaseSync(DB_PATH);
@@ -77,7 +78,7 @@ async function api(req, res, url) {
 }
 
 async function staticFile(req, res, pathname) {
-  let clean = decodeURIComponent(pathname); if (clean === '/') clean = '/index.html'; if (clean.endsWith('/')) clean += 'index.html'; const filePath = resolve(ROOT, `.${normalize(clean)}`); if (!filePath.startsWith(ROOT) || relative(ROOT, filePath).startsWith('..')) return json(res, 403, { error: 'Forbidden' }); try { const info = await stat(filePath); if (!info.isFile()) return json(res, 404, { error: 'Not found' }); const extension = extname(filePath); res.writeHead(200, { 'content-type': mime[extension] || 'application/octet-stream' }); if (extension === '.html') return res.end((await readFile(filePath, 'utf8')).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replace('</head>', `${headEnhancements(clean.startsWith('/admin/'))}</head>`)); res.end(await readFile(filePath)); } catch { json(res, 404, { error: 'Not found' }); }
+  let clean = decodeURIComponent(pathname); if (clean === '/') clean = '/index.html'; if (clean.endsWith('/')) clean += 'index.html'; const filePath = resolve(ROOT, `.${normalize(clean)}`); if (!filePath.startsWith(ROOT) || relative(ROOT, filePath).startsWith('..')) return json(res, 403, { error: 'Forbidden' }); try { const info = await stat(filePath); if (!info.isFile()) return json(res, 404, { error: 'Not found' }); const extension = extname(filePath); res.writeHead(200, { 'content-type': mime[extension] || 'application/octet-stream' }); if (extension === '.html') return res.end(withoutSloganStops((await readFile(filePath, 'utf8')).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replace('</head>', `${headEnhancements(clean.startsWith('/admin/'))}</head>`))); res.end(await readFile(filePath)); } catch { json(res, 404, { error: 'Not found' }); }
 }
 
 function dynamicArticle(req, res, pathname) {
