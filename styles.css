@@ -59,3 +59,47 @@ body { padding-top:88px; }
 @keyframes hero-mobile-copy-arrive { to { opacity:1; transform:none; pointer-events:auto; } }
 @media (max-width:720px) { .hero.home-intro .hero-lead,.hero.home-intro .hero-actions { opacity:0; transform:translateY(12px); pointer-events:none; animation:hero-mobile-copy-arrive .8s cubic-bezier(.2,.85,.2,1) 3s forwards; } }
 @media (prefers-reduced-motion:reduce) and (max-width:720px) { .hero.home-intro .hero-lead,.hero.home-intro .hero-actions { opacity:1; transform:none; pointer-events:auto; animation:none; } }
+
+/* Service journey: a restrained scroll-guided explanation of the treatment flow. */
+.service-list article { transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .35s ease; }
+.service-list article:hover { transform:translateY(-6px); border-color:color-mix(in srgb,var(--accent) 55%,var(--line)); box-shadow:0 16px 32px color-mix(in srgb,var(--ink) 9%,transparent); }
+.service-flow { display:grid; grid-template-columns:minmax(260px,.78fr) minmax(0,1.22fr); gap:clamp(45px,8vw,120px); background:var(--surface); }
+.service-flow__intro { position:sticky; top:120px; align-self:start; }
+.service-flow__intro h2 { margin:24px 0; font-size:clamp(40px,5.2vw,76px); line-height:1.12; letter-spacing:-.06em; }
+.service-flow__intro > p:last-child { max-width:360px; color:var(--muted); line-height:1.9; }
+.service-flow__track { position:relative; padding-left:58px; }
+.service-flow__line { position:absolute; top:12px; bottom:12px; left:12px; width:2px; background:color-mix(in srgb,var(--ink) 16%,transparent); transform-origin:top; }
+.service-flow__line i { display:block; width:100%; height:100%; background:var(--accent); transform:scaleY(0); transform-origin:top; }
+.service-flow__steps { display:grid; gap:0; margin:0; padding:0; list-style:none; }
+.service-flow__step { position:relative; display:grid; grid-template-columns:52px 1fr; gap:22px; min-height:190px; padding:0 0 58px; transition:opacity .35s ease,transform .35s ease; }
+.service-flow__step > span { position:relative; z-index:1; display:grid; place-items:center; width:52px; height:52px; border:1px solid var(--line); border-radius:50%; background:var(--surface); color:var(--muted); font:11px var(--mono); transition:background .35s ease,border-color .35s ease,color .35s ease,transform .35s ease; }
+.service-flow__step.is-active > span { background:var(--accent); border-color:var(--accent); color:var(--white); transform:scale(1.08); }
+.service-flow__step h3 { margin:5px 0 12px; font-size:clamp(22px,2.2vw,30px); letter-spacing:-.04em; }
+.service-flow__step p { max-width:390px; margin:0; color:var(--muted); font-size:14px; line-height:1.85; }
+@media (max-width:720px) { .service-flow { display:block; }.service-flow__intro { position:static; }.service-flow__track { margin-top:55px; padding-left:45px; }.service-flow__step { grid-template-columns:42px 1fr; gap:16px; min-height:165px; padding-bottom:42px; }.service-flow__step > span { width:42px; height:42px; }.service-flow__line { left:11px; }.service-flow__intro h2 { font-size:clamp(38px,11vw,58px); } }
+@media (prefers-reduced-motion:reduce) { .service-list article,.service-flow__step > span { transition:none; }.service-list article:hover { transform:none; }.service-flow__line i { transform:scaleY(1)!important; } }
+
+/* Booking entry: browser-like QR presentation inspired by the reference interaction. */
+.booking-card--ready { max-width:1120px; text-align:left; }
+.booking-card--ready > .eyebrow,.booking-card--ready > h1,.booking-card--ready > p,.booking-card--ready > .booking-notice { max-width:760px; }
+.booking-card--ready > h1 { margin-bottom:24px; }
+.booking-card--ready > p:not(.eyebrow) { margin:0 0 22px; }
+.booking-card--ready .booking-notice { margin:0; }
+.booking-entry { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(260px,.92fr); align-items:center; gap:clamp(36px,7vw,110px); margin-top:76px; }
+.booking-browser { overflow:hidden; border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:0 24px 60px color-mix(in srgb,var(--ink) 14%,transparent); }
+.booking-browser__bar { display:flex; align-items:center; gap:7px; height:48px; padding:0 16px; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--bg) 76%,transparent); }
+.booking-browser__bar i { display:block; width:8px; height:8px; border-radius:50%; background:var(--line); }
+.booking-browser__bar i:first-child { background:var(--accent); }
+.booking-browser__bar span { overflow:hidden; flex:1; margin-left:9px; padding:6px 10px; border-radius:7px; background:var(--bg); color:var(--muted); font:11px var(--mono); white-space:nowrap; text-overflow:ellipsis; }
+.booking-browser__body { position:relative; display:grid; place-items:center; min-height:430px; padding:42px; background:radial-gradient(circle at 50% 44%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 48%),var(--surface); }
+.booking-qr-card { position:relative; z-index:1; width:min(68%,300px); padding:18px; border:1px solid color-mix(in srgb,var(--ink) 12%,transparent); border-radius:12px; background:var(--white); box-shadow:0 18px 35px color-mix(in srgb,var(--ink) 16%,transparent); }
+.booking-qr-card img { display:block; width:100%; height:auto; }
+.booking-browser__pulse { position:absolute; width:62%; aspect-ratio:1; border:1px solid color-mix(in srgb,var(--accent) 58%,transparent); border-radius:50%; animation:booking-pulse 3.8s ease-in-out infinite; }
+.booking-browser__shot { position:absolute; right:22px; bottom:20px; padding:7px 10px; border:1px dashed color-mix(in srgb,var(--accent) 65%,transparent); border-radius:6px; color:var(--accent); background:color-mix(in srgb,var(--surface) 88%,transparent); font:10px var(--mono); animation:booking-shot 3.8s ease-in-out infinite; }
+.booking-entry__copy h2 { margin:22px 0; font-size:clamp(36px,4.5vw,64px); line-height:1.15; letter-spacing:-.06em; }
+.booking-entry__copy > p:not(.eyebrow) { max-width:360px; margin:0 0 28px; color:var(--muted); line-height:1.9; }
+.booking-entry__copy .button { margin-top:4px; }
+@keyframes booking-pulse { 0%,100% { transform:scale(.92); opacity:.42; } 50% { transform:scale(1.04); opacity:1; } }
+@keyframes booking-shot { 0%,50% { opacity:0; transform:translateY(8px); } 66%,100% { opacity:1; transform:none; } }
+@media (max-width:720px) { .booking-card--ready { padding-top:clamp(60px,13vw,100px); }.booking-entry { grid-template-columns:1fr; gap:42px; margin-top:58px; }.booking-browser__body { min-height:330px; padding:28px; }.booking-qr-card { width:min(68%,240px); }.booking-entry__copy h2 { font-size:clamp(36px,11vw,56px); }.booking-entry__copy .button { width:100%; justify-content:space-between; } }
+@media (prefers-reduced-motion:reduce) { .booking-browser__pulse,.booking-browser__shot { animation:none; }.booking-browser__pulse { opacity:.7; transform:none; }.booking-browser__shot { opacity:1; transform:none; } }
