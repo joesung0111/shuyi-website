@@ -45,15 +45,19 @@
     const bookingVideo = bookingCard.querySelector('.booking-demo__video');
     if (bookingVideo) bookingVideo.loop = false;
     const bookingStepItems = [...bookingCard.querySelectorAll('.booking-browser__step')];
-    const bookingCycleMs = 31000;
+    const bookingCycleMs = 29000;
     const bookingScanMs = 4500;
     const bookingLoginMs = 10500;
     const bookingTimeMs = 14500;
     const bookingServiceMs = 18000;
     const bookingVideoMaxTime = 19;
+    const bookingVideoFadeStart = 18.5;
     let bookingVideoStopped = false;
     let bookingPreviousPhase = 0;
     const stopBookingVideoAtLimit = () => {
+      if (bookingVideo && bookingVideo.currentTime >= bookingVideoFadeStart) {
+        bookingVideo.classList.remove('is-active');
+      }
       if (bookingVideo && bookingVideo.currentTime >= bookingVideoMaxTime) {
         bookingVideoStopped = true;
         bookingVideo.pause();
@@ -76,7 +80,7 @@
       const activeStep = phase < bookingScanMs ? 0 : phase < bookingLoginMs ? 1 : phase < bookingTimeMs ? 2 : phase < bookingServiceMs ? 3 : 4;
       bookingStepItems.forEach((step, index) => step.classList.toggle('is-active', index === activeStep));
       if (!bookingVideo) return;
-      bookingVideo.classList.toggle('is-active', phase >= bookingScanMs && !bookingVideoStopped);
+      bookingVideo.classList.toggle('is-active', phase >= bookingScanMs && !bookingVideoStopped && bookingVideo.currentTime < bookingVideoFadeStart);
       if (phase < bookingScanMs) {
         if (!bookingVideo.paused) bookingVideo.pause();
         if (bookingVideo.currentTime !== 0) bookingVideo.currentTime = 0;
