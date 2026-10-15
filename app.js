@@ -44,10 +44,9 @@
     if (bookingSteps) bookingSteps.innerHTML = '<b class="booking-browser__step booking-browser__step--scan">01 / 掃 QR Code 或點連結</b><b class="booking-browser__step booking-browser__step--login">02 / 登入 LINE</b><b class="booking-browser__step booking-browser__step--time">03 / 選日期與時間</b>';
     const bookingCopy = bookingCard.querySelector('.booking-entry__copy > p');
     if (bookingCopy) bookingCopy.remove();
-    let bookingIntroDismissed = false;
-    const bookingIntroTimer = window.setTimeout(() => { if (!bookingIntroDismissed && !matchMedia('(prefers-reduced-motion: reduce)').matches && window.scrollY <= 12) { bookingIntroDismissed = true; bookingCard.classList.add('booking-card--intro-dismissed'); } }, 2000);
-    const handleBookingScroll = () => { if (!bookingIntroDismissed && window.scrollY > 12) { bookingIntroDismissed = true; window.clearTimeout(bookingIntroTimer); bookingCard.classList.add('booking-card--scrolling'); window.removeEventListener('scroll', handleBookingScroll); } };
-    window.addEventListener('scroll', handleBookingScroll, { passive: true });
+    const bookingButton = bookingCard.querySelector('.booking-entry__copy .button');
+    const bookingQrCard = bookingCard.querySelector('.booking-entry__copy .booking-qr-card');
+    if (bookingButton && bookingQrCard) bookingQrCard.before(bookingButton);
     const bookingVideo = bookingCard.querySelector('.booking-demo__video');
     if (bookingVideo && !matchMedia('(prefers-reduced-motion: reduce)').matches) { bookingVideo.pause(); window.setTimeout(() => { bookingVideo.currentTime = 0; bookingVideo.play().catch(() => {}); }, 5600); }
   }
