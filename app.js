@@ -36,9 +36,13 @@
     bookingCard.classList.add('booking-card--ready');
     const intro = bookingCard.querySelector('p:not(.eyebrow)');
     const notice = bookingCard.querySelector('.booking-notice');
-    if (intro) intro.textContent = '想了解服務或安排時間，可以先加入舒逸 LINE 官方帳號；正式預約則由預約平台完成。';
-    if (notice) notice.textContent = '掃描 QR Code 加入 LINE@，或直接開啟預約平台。';
+    if (intro) intro.remove();
+    if (notice) notice.remove();
     bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-browser" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__bar"><i></i><i></i><i></i><span>line.me → sy.up.railway.app</span></div><div class="booking-browser__body"><div class="booking-demo"><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt=""></div><div class="booking-demo__hand" aria-hidden="true"></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><img class="booking-demo__login" src="../素材/預約流程登入介面.jpg" alt=""><video class="booking-demo__video" autoplay muted loop playsinline poster="../素材/預約流程登入介面.jpg"><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div><span class="booking-demo__shot" aria-hidden="true">BOOKING / FLOW</span></div></div><div class="booking-entry__copy"><div class="booking-qr-card"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描加入舒逸 LINE 官方帳號"><span>掃描加入 LINE@</span></div><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" href="https://sy.up.railway.app" target="_blank" rel="noopener">開啟預約平台 <span>↗</span></a></div></div>');
+    let bookingIntroDismissed = false;
+    const bookingIntroTimer = window.setTimeout(() => { if (!bookingIntroDismissed && !matchMedia('(prefers-reduced-motion: reduce)').matches && window.scrollY <= 12) { bookingIntroDismissed = true; bookingCard.classList.add('booking-card--intro-dismissed'); } }, 2000);
+    const handleBookingScroll = () => { if (!bookingIntroDismissed && window.scrollY > 12) { bookingIntroDismissed = true; window.clearTimeout(bookingIntroTimer); bookingCard.classList.add('booking-card--scrolling'); window.removeEventListener('scroll', handleBookingScroll); } };
+    window.addEventListener('scroll', handleBookingScroll, { passive: true });
     const bookingVideo = bookingCard.querySelector('.booking-demo__video');
     if (bookingVideo && !matchMedia('(prefers-reduced-motion: reduce)').matches) { bookingVideo.pause(); window.setTimeout(() => { bookingVideo.currentTime = 0; bookingVideo.play().catch(() => {}); }, 6800); }
   }
