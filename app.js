@@ -44,7 +44,7 @@
     const handleBookingScroll = () => { if (!bookingIntroDismissed && window.scrollY > 12) { bookingIntroDismissed = true; window.clearTimeout(bookingIntroTimer); bookingCard.classList.add('booking-card--scrolling'); window.removeEventListener('scroll', handleBookingScroll); } };
     window.addEventListener('scroll', handleBookingScroll, { passive: true });
     const bookingVideo = bookingCard.querySelector('.booking-demo__video');
-    if (bookingVideo && !matchMedia('(prefers-reduced-motion: reduce)').matches) { bookingVideo.pause(); window.setTimeout(() => { bookingVideo.currentTime = 0; bookingVideo.play().catch(() => {}); }, 6800); }
+    if (bookingVideo && !matchMedia('(prefers-reduced-motion: reduce)').matches) { bookingVideo.pause(); window.setTimeout(() => { bookingVideo.currentTime = 0; bookingVideo.play().catch(() => {}); }, 5600); }
   }
   const grid = document.querySelector('#content-grid');
   if (grid && window.SHU_YI_CONTENT) {
