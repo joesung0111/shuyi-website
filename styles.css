@@ -144,7 +144,7 @@ body { padding-top:88px; }
 @keyframes booking-status { 0%,27% { transform:scale(1); } 33%,100% { transform:scale(.7); opacity:.45; } }
 @keyframes booking-pointer { 0%,27% { transform:translate(0,0); } 33%,60% { transform:translate(72px,26px); } 66%,93% { transform:translate(145px,50px); } 100% { transform:translate(0,0); } }
 @keyframes booking-click { 0%,22% { opacity:0; transform:scale(.4); } 25%,29% { opacity:1; transform:scale(1); } 32%,100% { opacity:0; transform:scale(1.5); } }
-@media (prefers-reduced-motion:reduce) { .booking-demo__steps span,.booking-demo__screen-step,.booking-demo__status > span,.booking-demo__pointer,.booking-demo__pointer::after,.booking-demo__shot { animation:none; }.booking-demo__steps span:first-of-type { color:var(--accent); }.booking-demo__screen-step { opacity:0; transform:none; }.booking-demo__screen-step:first-child { opacity:1; }.booking-demo__pointer { transform:none; }.booking-demo__shot { opacity:1; }.booking-browser__step { transition:none; }.booking-browser__step.is-active { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) { .booking-demo__steps span,.booking-demo__screen-step,.booking-demo__status > span,.booking-demo__pointer,.booking-demo__pointer::after { animation:none; }.booking-demo__steps span:first-of-type { color:var(--accent); }.booking-demo__screen-step { opacity:0; transform:none; }.booking-demo__screen-step:first-child { opacity:1; }.booking-demo__pointer { transform:none; }.booking-browser__step { transition:none; }.booking-browser__step.is-active { opacity:1; transform:none; } }
 
 /* QR scan to LINE login to booking flow, using the supplied phone-screen assets. */
 .booking-demo { max-width:520px; padding:16px; }
