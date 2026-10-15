@@ -96,7 +96,7 @@ body { padding-top:88px; }
 .booking-browser__step { position:absolute; inset:0; display:flex; align-items:center; margin:0; padding:0 10px; color:var(--muted); font:11px var(--mono); font-weight:400; white-space:nowrap; opacity:0; transform:translateY(5px); animation:booking-browser-step 18s ease-in-out infinite; }
 .booking-browser__step--login { animation-delay:6s; }
 .booking-browser__step--time { animation-delay:12s; }
-.booking-browser__body { position:relative; display:grid; place-items:center; min-height:350px; padding:24px; background:radial-gradient(circle at 50% 44%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 48%),var(--surface); }
+.booking-browser__body { position:relative; display:grid; place-items:center; min-height:320px; padding:20px; background:radial-gradient(circle at 50% 44%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 48%),var(--surface); }
 .booking-qr-card { position:relative; z-index:1; width:min(68%,300px); padding:18px; border:1px solid color-mix(in srgb,var(--ink) 12%,transparent); border-radius:12px; background:var(--white); box-shadow:0 18px 35px color-mix(in srgb,var(--ink) 16%,transparent); }
 .booking-qr-card img { display:block; width:100%; height:auto; }
 .booking-browser__pulse { position:absolute; width:62%; aspect-ratio:1; border:1px solid color-mix(in srgb,var(--accent) 58%,transparent); border-radius:50%; animation:booking-pulse 3.8s ease-in-out infinite; }
@@ -146,7 +146,7 @@ body { padding-top:88px; }
 
 /* QR scan to LINE login to booking flow, using the supplied phone-screen assets. */
 .booking-demo { max-width:520px; padding:16px; }
-.booking-demo__scene { position:relative; min-height:300px; overflow:hidden; border-radius:7px; background:linear-gradient(135deg,color-mix(in srgb,var(--surface) 85%,var(--bg)),var(--bg)); animation:booking-demo-cycle 18s ease-in-out infinite; }
+.booking-demo__scene { position:relative; min-height:280px; overflow:hidden; border-radius:7px; background:linear-gradient(135deg,color-mix(in srgb,var(--surface) 85%,var(--bg)),var(--bg)); animation:booking-demo-cycle 18s ease-in-out infinite; }
 .booking-demo__scan-target { position:absolute; top:84px; left:20px; z-index:1; width:122px; padding:8px; border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line)); border-radius:8px; background:var(--white); box-shadow:0 12px 25px color-mix(in srgb,var(--ink) 12%,transparent); animation:booking-target 18s ease-in-out infinite; }
 .booking-demo__scan-target small { display:block; margin-bottom:7px; color:var(--accent); font:9px var(--mono); letter-spacing:.05em; }
 .booking-demo__scan-target img { display:block; width:100%; height:auto; }
