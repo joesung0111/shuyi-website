@@ -38,13 +38,14 @@
     const notice = bookingCard.querySelector('.booking-notice');
     if (intro) intro.remove();
     if (notice) notice.remove();
-    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-browser" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__bar"><i></i><i></i><i></i><span>line.me → sy.up.railway.app</span></div><div class="booking-browser__body"><div class="booking-demo"><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt=""></div><div class="booking-demo__hand" aria-hidden="true"></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted loop playsinline><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div><span class="booking-demo__shot" aria-hidden="true">BOOKING / FLOW</span></div></div><div class="booking-entry__copy"><div class="booking-qr-card"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描加入舒逸 LINE 官方帳號"><span>掃描加入 LINE@</span></div><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" href="https://sy.up.railway.app" target="_blank" rel="noopener">開啟預約平台 <span>↗</span></a></div></div>');
+    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-browser" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__bar"><i></i><i></i><i></i><span>line.me → sy.up.railway.app</span></div><div class="booking-browser__body"><div class="booking-demo"><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt=""></div><div class="booking-demo__hand" aria-hidden="true"></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted loop playsinline><source src="../素材/預約流程影片.mp4" type="video/mp4"></video><span class="booking-demo__thumb" aria-hidden="true"></span></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div></div><div class="booking-entry__copy"><div class="booking-qr-card"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描加入舒逸 LINE 官方帳號"><span>掃描加入 LINE@</span></div><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" href="https://sy.up.railway.app" target="_blank" rel="noopener">開啟預約平台 <span>↗</span></a></div></div>');
     const bookingSteps = bookingCard.querySelector('.booking-browser__bar span');
     if (bookingSteps) bookingSteps.className = 'booking-browser__steps';
     if (bookingSteps) bookingSteps.innerHTML = '<b class="booking-browser__step booking-browser__step--scan">01 / 掃 QR Code 或點連結</b><b class="booking-browser__step booking-browser__step--login">02 / 登入 LINE</b><b class="booking-browser__step booking-browser__step--time">03 / 選日期與時間</b>';
     const bookingVideo = bookingCard.querySelector('.booking-demo__video');
+    if (bookingVideo) bookingVideo.loop = false;
     const bookingStepItems = [...bookingCard.querySelectorAll('.booking-browser__step')];
-    const bookingCycleMs = 18000;
+    const bookingCycleMs = 24000;
     const bookingScanMs = 4500;
     const bookingLoginMs = 9000;
     const bookingCycleStarted = performance.now();
@@ -57,7 +58,7 @@
       if (phase < bookingScanMs) {
         if (!bookingVideo.paused) bookingVideo.pause();
         if (bookingVideo.currentTime !== 0) bookingVideo.currentTime = 0;
-      } else if (bookingVideo.paused) {
+      } else if (bookingVideo.paused && !bookingVideo.ended) {
         bookingVideo.currentTime = 0;
         bookingVideo.play().catch(() => {});
       }
