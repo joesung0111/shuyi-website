@@ -48,6 +48,7 @@
     const bookingCycleMs = 31000;
     const bookingScanMs = 4500;
     const bookingLoginMs = 9000;
+    const bookingVideoMaxTime = 19;
     const bookingCycleStarted = performance.now();
     const syncBookingDemo = () => {
       const phase = (performance.now() - bookingCycleStarted) % bookingCycleMs;
@@ -58,6 +59,9 @@
       if (phase < bookingScanMs) {
         if (!bookingVideo.paused) bookingVideo.pause();
         if (bookingVideo.currentTime !== 0) bookingVideo.currentTime = 0;
+      } else if (bookingVideo.currentTime >= bookingVideoMaxTime) {
+        if (!bookingVideo.paused) bookingVideo.pause();
+        if (bookingVideo.currentTime > bookingVideoMaxTime) bookingVideo.currentTime = bookingVideoMaxTime;
       } else if (bookingVideo.paused && !bookingVideo.ended) {
         bookingVideo.currentTime = 0;
         bookingVideo.play().catch(() => {});
