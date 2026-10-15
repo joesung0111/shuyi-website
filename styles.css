@@ -153,9 +153,7 @@ body { padding-top:88px; }
 .booking-demo__phone { position:absolute; top:22px; right:54px; z-index:3; width:158px; height:286px; padding:7px; border:3px solid #211e1d; border-radius:22px; background:#151313; box-shadow:0 18px 28px color-mix(in srgb,var(--ink) 28%,transparent); transform-origin:center center; transform:translate(18px,14px) rotate(6deg); animation:booking-phone-scan 18s cubic-bezier(.2,.8,.2,1) infinite; }
 .booking-demo__phone::before { content:''; position:absolute; top:5px; left:50%; z-index:2; width:42px; height:5px; border-radius:99px; background:#080808; transform:translateX(-50%); }
 .booking-demo__phone-screen { position:relative; width:100%; height:100%; overflow:hidden; border-radius:15px; background:#000; }
-.booking-demo__login,.booking-demo__video { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:cover; }
-.booking-demo__login { opacity:0; animation:booking-login-screen 18s ease-in-out infinite; }
-.booking-demo__video { opacity:0; animation:booking-video-screen 18s ease-in-out infinite; }
+.booking-demo__video { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:cover; }
 .booking-demo__hand { position:absolute; right:-18px; bottom:-58px; z-index:2; width:142px; height:192px; border-radius:62% 48% 22% 26%; background:linear-gradient(135deg,#f2c1a5,#c98670); box-shadow:-8px -4px 18px color-mix(in srgb,var(--ink) 18%,transparent); transform-origin:center center; transform:rotate(-17deg); animation:booking-hand-scan 18s cubic-bezier(.2,.8,.2,1) infinite; }
 .booking-demo__hand::before { content:''; position:absolute; top:-18px; left:20px; width:43px; height:92px; border-radius:60% 60% 45% 45%; background:#e7ad91; transform:rotate(16deg); box-shadow:22px 9px 0 -5px #e7ad91,42px 21px 0 -8px #e7ad91; }
 .booking-demo__scan-line { position:absolute; top:104px; left:20px; z-index:4; width:118px; height:2px; background:var(--accent); box-shadow:0 0 12px var(--accent); animation:booking-scan-line 18s ease-in-out infinite; }
@@ -170,12 +168,10 @@ body { padding-top:88px; }
 @keyframes booking-phone-scan { 0%,5% { transform:translate(18px,14px) rotate(6deg) scale(1); } 12%,22% { transform:translate(-64px,55px) rotate(-5deg) scale(1); } 32% { transform:translate(-30px,38px) rotate(-2deg) scale(1.08); } 60% { transform:translate(-8px,12px) rotate(0) scale(1.28); } 84%,100% { transform:translate(-4px,2px) rotate(0) scale(1.46); } }
 @keyframes booking-hand-scan { 0%,5% { transform:translate(14px,18px) rotate(-17deg) scale(1); } 12%,22% { transform:translate(-56px,42px) rotate(-11deg) scale(1); } 32% { transform:translate(-36px,30px) rotate(-7deg) scale(1.08); } 60% { transform:translate(-18px,12px) rotate(-2deg) scale(1.2); } 84%,100% { transform:translate(-8px,2px) rotate(0) scale(1.35); } }
 @keyframes booking-scan-line { 0%,4% { opacity:0; transform:translateY(0); } 6%,9% { opacity:1; transform:translateY(0); } 17%,21% { opacity:1; transform:translateY(112px); } 25%,100% { opacity:0; transform:translateY(112px); } }
-@keyframes booking-login-screen { 0%,35% { opacity:0; } 40%,52% { opacity:1; } 58%,100% { opacity:0; } }
-@keyframes booking-video-screen { 0%,46% { opacity:0; } 52%,84% { opacity:1; } 94%,100% { opacity:0; } }
 @keyframes booking-caption-scan { 0%,34% { opacity:1; } 40%,100% { opacity:0; } }
 @keyframes booking-caption-login { 0%,38% { opacity:0; } 43%,52% { opacity:1; } 58%,100% { opacity:0; } }
 @keyframes booking-caption-flow { 0%,54% { opacity:0; } 60%,88% { opacity:1; } 94%,100% { opacity:0; } }
-@media (prefers-reduced-motion:reduce) { .booking-demo__scene,.booking-demo__scan-target,.booking-demo__phone,.booking-demo__hand,.booking-demo__scan-line,.booking-demo__caption,.booking-demo__login,.booking-demo__video { animation:none; }.booking-demo__scene { opacity:1; }.booking-demo__phone { transform:none; }.booking-demo__hand { transform:rotate(-17deg); }.booking-demo__scan-line,.booking-demo__caption--scan { opacity:1; }.booking-demo__caption--login,.booking-demo__caption--flow { opacity:0; }.booking-demo__login { opacity:1; }.booking-demo__video { opacity:0; } }
+@media (prefers-reduced-motion:reduce) { .booking-demo__scene,.booking-demo__scan-target,.booking-demo__phone,.booking-demo__hand,.booking-demo__scan-line,.booking-demo__caption { animation:none; }.booking-demo__scene { opacity:1; }.booking-demo__phone { transform:none; }.booking-demo__hand { transform:rotate(-17deg); }.booking-demo__scan-line,.booking-demo__caption--scan { opacity:1; }.booking-demo__caption--login,.booking-demo__caption--flow { opacity:0; } }
 
 /* Final booking layout overrides: compact first view with no intro transition. */
 .booking-card--ready { max-width:1180px; padding:clamp(34px,4vw,52px) 20px 44px; }
