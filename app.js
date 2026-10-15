@@ -51,27 +51,43 @@
     const bookingTimeMs = 14500;
     const bookingServiceMs = 18000;
     const bookingVideoMaxTime = 19;
+    let bookingVideoStopped = false;
+    let bookingPreviousPhase = 0;
     const stopBookingVideoAtLimit = () => {
       if (bookingVideo && bookingVideo.currentTime >= bookingVideoMaxTime) {
+        bookingVideoStopped = true;
         bookingVideo.pause();
         bookingVideo.currentTime = bookingVideoMaxTime;
         bookingVideo.classList.remove('is-active');
       }
     };
-    if (bookingVideo) bookingVideo.addEventListener('timeupdate', stopBookingVideoAtLimit);
+    if (bookingVideo) {
+      bookingVideo.addEventListener('timeupdate', stopBookingVideoAtLimit);
+      bookingVideo.addEventListener('ended', () => {
+        bookingVideoStopped = true;
+        bookingVideo.classList.remove('is-active');
+      });
+    }
     const bookingCycleStarted = performance.now();
     const syncBookingDemo = () => {
       const phase = (performance.now() - bookingCycleStarted) % bookingCycleMs;
+      if (phase < bookingPreviousPhase) bookingVideoStopped = false;
+      bookingPreviousPhase = phase;
       const activeStep = phase < bookingScanMs ? 0 : phase < bookingLoginMs ? 1 : phase < bookingTimeMs ? 2 : phase < bookingServiceMs ? 3 : 4;
       bookingStepItems.forEach((step, index) => step.classList.toggle('is-active', index === activeStep));
       if (!bookingVideo) return;
-      bookingVideo.classList.toggle('is-active', phase >= bookingScanMs && bookingVideo.currentTime < bookingVideoMaxTime);
+      bookingVideo.classList.toggle('is-active', phase >= bookingScanMs && !bookingVideoStopped);
       if (phase < bookingScanMs) {
         if (!bookingVideo.paused) bookingVideo.pause();
         if (bookingVideo.currentTime !== 0) bookingVideo.currentTime = 0;
+        bookingVideoStopped = false;
+      } else if (bookingVideoStopped) {
+        if (!bookingVideo.paused) bookingVideo.pause();
       } else if (bookingVideo.currentTime >= bookingVideoMaxTime) {
+        bookingVideoStopped = true;
         if (!bookingVideo.paused) bookingVideo.pause();
         if (bookingVideo.currentTime > bookingVideoMaxTime) bookingVideo.currentTime = bookingVideoMaxTime;
+        bookingVideo.classList.remove('is-active');
       } else if (bookingVideo.paused && !bookingVideo.ended) {
         bookingVideo.currentTime = 0;
         bookingVideo.play().catch(() => {});
