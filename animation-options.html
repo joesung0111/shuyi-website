@@ -248,6 +248,43 @@
     @media (max-width:760px) { .diagnostic-extensions { grid-template-columns:1fr; } }
   </style>
 </head>
+<style>
+  /* Compact comparison set: original + two requested diagnostic directions. */
+  .comparison-grid { max-width:1320px; margin:26px auto 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+  .comparison-grid .option:first-child { grid-column:1 / -1; }
+  .original-stage,.requested-stage { position:relative; display:grid; place-items:center; min-height:340px; overflow:hidden; border:1px solid var(--line); border-radius:16px; background:radial-gradient(circle at 50% 50%,rgba(242,140,113,.14),transparent 58%),#151414; }
+  .original-spine,.requested-spine { position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:7px; }
+  .original-spine::before,.requested-spine::before { content:""; position:absolute; top:-24px; bottom:-24px; left:50%; width:1px; background:linear-gradient(transparent,var(--accent),transparent); opacity:.6; }
+  .original-spine i,.requested-spine i { position:relative; display:block; width:92px; height:27px; border:1px solid rgba(248,238,232,.5); border-radius:50% 42% 48% 45%; background:rgba(248,238,232,.06); transform:rotate(var(--tilt,0deg)); box-shadow:0 8px 14px rgba(0,0,0,.18); }
+  .original-spine i:nth-child(odd) { --tilt:-8deg; }.original-spine i:nth-child(even) { --tilt:8deg; }
+  .original-spine i::before,.requested-spine i::before { content:""; position:absolute; top:50%; left:50%; width:13px; height:13px; border:1px solid rgba(248,238,232,.5); border-radius:50%; background:#111; transform:translate(-50%,-50%); }
+  .original-spine i::after { content:""; position:absolute; top:50%; left:50%; width:25px; height:25px; border:2px solid var(--accent); border-radius:50%; opacity:0; transform:translate(-50%,-50%) scale(.2); animation:original-repair 6s ease-in-out infinite; box-shadow:0 0 16px var(--accent); }
+  .original-spine i:nth-child(2)::after { animation-delay:.35s; }.original-spine i:nth-child(3)::after { animation-delay:.7s; }.original-spine i:nth-child(4)::after { animation-delay:1.05s; }.original-spine i:nth-child(5)::after { animation-delay:1.4s; }.original-spine i:nth-child(6)::after { animation-delay:1.75s; }.original-spine i:nth-child(7)::after { animation-delay:2.1s; }.original-spine i:nth-child(8)::after { animation-delay:2.45s; }.original-spine i:nth-child(9)::after { animation-delay:2.8s; }
+  .original-orbit { position:absolute; width:68%; aspect-ratio:1; border:1px solid var(--accent); border-radius:50%; opacity:.45; animation:original-orbit 9s linear infinite; }.original-orbit::after { content:""; position:absolute; top:0; left:50%; width:5px; height:5px; border-radius:50%; background:var(--accent); box-shadow:0 0 14px var(--accent); }
+  .requested-stage .scan-orb { position:absolute; z-index:3; width:94px; height:94px; border:2px solid var(--accent); border-radius:50%; background:radial-gradient(circle,rgba(242,140,113,.2),transparent 64%); box-shadow:0 0 18px rgba(242,140,113,.7); pointer-events:none; }
+  .requested-stage .scan-orb::after { content:""; position:absolute; inset:15px; border:1px dashed rgba(255,255,255,.75); border-radius:50%; animation:scan-orb-spin 2s linear infinite; }
+  .requested-stage .requested-spine i { border-color:rgba(248,238,232,.5); }
+  .requested-stage .requested-spine i:nth-child(4),.requested-stage .requested-spine i:nth-child(8) { border-color:#e85e55; background:rgba(232,94,85,.13); }
+  .requested-stage .requested-spine i:nth-child(4)::after,.requested-stage .requested-spine i:nth-child(8)::after { content:""; position:absolute; top:50%; left:50%; width:12px; height:12px; border-radius:50%; background:#e85e55; box-shadow:0 0 14px #e85e55; transform:translate(-50%,-50%); }
+  .requested-stage .scan-orb { animation:requested-orb 7s ease-in-out infinite; }
+  .requested-stage--red .requested-spine i:nth-child(4),.requested-stage--red .requested-spine i:nth-child(8) { animation:requested-red .95s ease-in-out infinite; }
+  .requested-stage--red .requested-spine i:nth-child(4)::before,.requested-stage--red .requested-spine i:nth-child(8)::before { animation:requested-overflow .95s ease-out infinite; }
+  .requested-stage--repair .requested-spine i:nth-child(4),.requested-stage--repair .requested-spine i:nth-child(8) { animation:requested-repair 7s ease-in-out infinite; }
+  .requested-stage--repair .requested-spine i:nth-child(4)::after,.requested-stage--repair .requested-spine i:nth-child(8)::after { animation:requested-heal-dot 7s ease-in-out infinite; }
+  .repair-wave { position:absolute; z-index:4; width:34px; height:34px; border:2px solid #baf2cc; border-radius:50%; opacity:0; pointer-events:none; box-shadow:0 0 20px #7ee39a; }
+  .repair-wave--fourth { left:calc(50% - 47px); top:120px; animation:repair-fourth 7s ease-out infinite; }
+  .repair-wave--eighth { left:calc(50% - 47px); top:216px; animation:repair-eighth 7s ease-out infinite; }
+  .comparison-label { position:absolute; left:16px; bottom:13px; color:var(--muted); font:10px var(--mono); letter-spacing:.06em; }.comparison-label b { color:var(--accent); font-weight:400; }
+  @keyframes original-orbit { to { transform:rotate(360deg); } } @keyframes original-repair { 0%,12% { opacity:0; transform:translate(-50%,-50%) scale(.2); } 28%,55% { opacity:1; transform:translate(-50%,-50%) scale(1); } 72%,100% { opacity:0; transform:translate(-50%,-50%) scale(1.65); } }
+  @keyframes scan-orb-spin { to { transform:rotate(360deg); } } @keyframes requested-orb { 0%,100% { transform:translate(-54px,-86px) scale(.82); } 18% { transform:translate(52px,-30px) scale(1.05); } 38% { transform:translate(22px,78px) scale(.76); } 61% { transform:translate(-56px,38px) scale(1.15); } 82% { transform:translate(36px,7px) scale(.88); } }
+  @keyframes requested-red { 0%,34% { border-color:#e85e55; background:rgba(232,94,85,.13); } 42%,62% { border-color:#fff; background:rgba(232,94,85,.48); box-shadow:0 0 25px #e85e55; } 70%,100% { border-color:rgba(248,238,232,.5); background:rgba(248,238,232,.06); box-shadow:none; } }
+  @keyframes requested-overflow { 0%,35% { box-shadow:0 0 0 0 rgba(232,94,85,.8); } 58%,70% { box-shadow:0 0 0 19px rgba(232,94,85,0); } 100% { box-shadow:0 0 0 0 rgba(232,94,85,0); } }
+  @keyframes requested-repair { 0%,45% { border-color:#e85e55; background:rgba(232,94,85,.13); } 53%,67% { border-color:#baf2cc; background:rgba(126,227,154,.26); box-shadow:0 0 25px #7ee39a; } 78%,100% { border-color:#7ee39a; background:rgba(126,227,154,.1); box-shadow:0 0 12px rgba(126,227,154,.5); } }
+  @keyframes requested-heal-dot { 0%,45% { background:#e85e55; box-shadow:0 0 14px #e85e55; } 53%,100% { background:#7ee39a; box-shadow:0 0 14px #7ee39a; } }
+  @keyframes repair-fourth { 0%,46% { opacity:0; transform:scale(.2); } 50%,63% { opacity:1; transform:scale(2.9); } 70%,100% { opacity:0; transform:scale(4.4); } }
+  @keyframes repair-eighth { 0%,61% { opacity:0; transform:scale(.2); } 65%,78% { opacity:1; transform:scale(2.9); } 85%,100% { opacity:0; transform:scale(4.4); } }
+  @media (max-width:760px) { .comparison-grid { grid-template-columns:1fr; }.comparison-grid .option:first-child { grid-column:auto; } }
+</style>
 <body>
   <header><div class="eyebrow">SHU YI / MOTION STUDY</div><h1>脊椎修復動畫風格</h1><p>先比較 10 種不同的動態語言。選定編號後，我再把該風格移植到「活化調理」頁首右側。</p></header>
   <main class="grid">
@@ -288,6 +325,12 @@
     <article class="option d29"><h2>29 / 跳格定位</h2><p>掃描器像訊號跳格一樣快速換位，鎖定後強制重置。</p><div class="stage"><div class="spine">${BONES}</div><div class="scanner"></div><div class="strike-burst"></div><div class="strike-burst"></div><span class="diagnostic-label">JUMP / <b>RESET</b></span></div></article>
     <article class="option d30"><h2>30 / 溫熱修復場</h2><p>掃描異常熱區，暖色修復場通過後恢復正常。</p><div class="stage"><div class="spine">${BONES}</div><div class="scanner"></div><div class="repair-wave"></div><span class="diagnostic-label">THERMAL / <b>HEAL</b></span></div></article>
   </main>
-  <script>const BONES='<i class="bone"></i>'.repeat(7);document.querySelectorAll('.stage').forEach(stage=>{if(stage.innerHTML.includes('${BONES}'))stage.innerHTML=stage.innerHTML.replaceAll('${BONES}',BONES);});</script>
+  <script>
+    (() => {
+      const spine = (count = 9, className = '') => `<div class="${className}">${'<i></i>'.repeat(count)}</div>`;
+      document.body.replaceChildren();
+      document.body.innerHTML = `<header><div class="eyebrow">SHU YI / MOTION STUDY</div><h1>脊椎掃描與修復</h1><p>先放目前正式網站的原始動畫，再比較兩個指定方向：異常檢測，以及掃描後的分段修復。</p></header><main class="comparison-grid"><article class="option"><h2>原始網站版本 / 目前正式頁面</h2><p>保留現在活化調理頁右側的脊椎、軌道與逐節亮起效果。</p><div class="original-stage"><div class="original-orbit"></div>${spine(9, 'original-spine')}<span class="comparison-label">ORIGINAL / <b>ALIGNMENT</b></span></div></article><article class="option"><h2>暫作一 / 掃描異常</h2><p>掃描圓不規則移動；第 4、8 節被掃到時變紅，紅圈外溢約 0.5 秒，再繼續掃描。</p><div class="requested-stage requested-stage--red"><div class="scan-orb"></div>${spine(9, 'requested-spine')}<span class="comparison-label">SCAN / <b>ABNORMAL</b></span></div></article><article class="option"><h2>暫作二 / 掃描後修復</h2><p>完成一輪掃描後，先修復第 4 節變綠，再換第 8 節；兩節完成後重新循環。</p><div class="requested-stage requested-stage--repair"><div class="scan-orb"></div>${spine(9, 'requested-spine')}<div class="repair-wave repair-wave--fourth"></div><div class="repair-wave repair-wave--eighth"></div><span class="comparison-label">SCAN → <b>REPAIR 04 / 08</b></span></div></article></main>`;
+    })();
+  </script>
 </body>
 </html>
