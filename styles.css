@@ -189,5 +189,6 @@ body { padding-top:88px; }
 /* Keep every page H1 at the same scale as the booking page title. */
 h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { font-size:clamp(26px,3.5vw,51px); }
 .page-hero--compact h1 { font-size:clamp(26px,3.5vw,51px); }
+.home-link h2,.intro h2,.motion-copy h2,.journal h2,.studio h2,.cta h2,.callout h2,.service-flow__intro h2,.booking-entry__copy h2 { font-size:clamp(26px,3.5vw,51px); }
 @media (max-width:720px) { .page-hero--service { display:block; }.page-hero--service .page-hero__copy { max-width:none; }.service-hero-art { min-height:390px; margin-top:48px; }.service-hero-art__label { top:18px; left:18px; }.service-hero-art__status { right:18px; bottom:18px; } }
 @media (prefers-reduced-motion:reduce) { .service-hero-art::before,.service-hero-art::after,.service-hero-art__status span,.service-spine i,.service-spine i::after { animation:none; }.service-spine i { transform:rotate(0); border-color:var(--accent); }.service-spine i::after { opacity:1; transform:translate(-50%,-50%) scale(1); } }
