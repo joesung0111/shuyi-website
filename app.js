@@ -14,6 +14,18 @@
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
   const currentPath = normalizePath(window.location.pathname);
   document.querySelectorAll('.site-nav a').forEach((link) => { const isCurrent = normalizePath(new URL(link.href, window.location.href).pathname) === currentPath; link.classList.toggle('is-current', isCurrent); if (isCurrent) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); link.addEventListener('click', () => document.body.classList.remove('menu-open')); });
+  const serviceHero = document.querySelector('.page-hero');
+  if (serviceHero && currentPath === '/services' && !serviceHero.classList.contains('page-hero--service')) {
+    const copy = document.createElement('div');
+    copy.className = 'page-hero__copy';
+    while (serviceHero.firstChild) copy.append(serviceHero.firstChild);
+    const art = document.createElement('div');
+    art.className = 'service-hero-art';
+    art.setAttribute('aria-label', '脊椎逐節修復的示意動畫');
+    art.innerHTML = '<div class="service-hero-art__label">ALIGNMENT / REPAIR</div><div class="service-spine" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="service-hero-art__status"><span></span>BODY IN MOTION</div>';
+    serviceHero.classList.add('page-hero--service');
+    serviceHero.append(copy, art);
+  }
   document.querySelectorAll('.hero h1, .page-hero h1, .booking-card h1, .studio-page__copy h1').forEach((heading) => { heading.innerHTML = heading.innerHTML.replaceAll('。', ''); });
   const heroStamp = document.querySelector('.hero-stamp');
   if (heroStamp) { const words = ['MOVE', 'WELL', 'LIVE', 'LIGHT']; heroStamp.setAttribute('aria-label', words.join(' ')); heroStamp.innerHTML = words.map((word, index) => `<span style="--word-index:${index}">${word}</span>`).join(''); }
