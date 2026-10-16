@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>脊椎修復動畫風格選擇｜舒逸</title>
+  <style>
+    :root { --bg:#111; --surface:#1b1a1a; --ink:#f8eee8; --muted:#bbaea8; --accent:#f28c71; --line:rgba(248,238,232,.18); --display:Arial,"Noto Sans TC",sans-serif; --mono:"SFMono-Regular",Consolas,monospace; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:34px; background:var(--bg); color:var(--ink); font-family:var(--display); }
+    header { max-width:1320px; margin:0 auto 28px; }
+    .eyebrow { color:var(--accent); font:11px var(--mono); letter-spacing:.12em; }
+    h1 { margin:12px 0 8px; font-size:clamp(32px,5vw,64px); letter-spacing:-.06em; }
+    header p { max-width:620px; margin:0; color:var(--muted); line-height:1.8; }
+    .grid { max-width:1320px; margin:auto; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .option { min-height:360px; padding:18px; border:1px solid var(--line); border-radius:16px; background:var(--surface); overflow:hidden; }
+    .option h2 { margin:0 0 5px; font-size:18px; }
+    .option p { margin:0 0 14px; color:var(--muted); font:11px/1.6 var(--mono); }
+    .stage { position:relative; display:grid; place-items:center; height:270px; overflow:hidden; border:1px solid var(--line); border-radius:10px; background:radial-gradient(circle,var(--glow,rgba(242,140,113,.12)),transparent 58%),#151414; }
+    .spine { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
+    .bone { position:relative; width:72px; height:17px; border:1px solid var(--accent); border-radius:50%; background:rgba(242,140,113,.12); }
+    .bone::after { content:""; position:absolute; top:50%; left:50%; width:8px; height:8px; border-radius:50%; background:#080808; border:1px solid var(--accent); transform:translate(-50%,-50%); }
+    .spine::before { content:""; position:absolute; top:-24px; bottom:-24px; left:50%; width:1px; background:linear-gradient(transparent,var(--accent),transparent); opacity:.55; }
+    .legend { position:absolute; right:12px; bottom:10px; color:var(--muted); font:9px var(--mono); }
+    .orbit { position:absolute; width:70%; aspect-ratio:1; border:1px solid var(--accent); border-radius:50%; opacity:.35; animation:orbit 7s linear infinite; }
+    .orbit::after { content:""; position:absolute; top:0; left:50%; width:5px; height:5px; border-radius:50%; background:var(--accent); box-shadow:0 0 14px var(--accent); }
+
+    /* 01: sequential repair rings */
+    .v1 .bone::after { animation:repair-ring 4s ease-in-out infinite; }
+    .v1 .bone:nth-child(2)::after { animation-delay:.25s; }.v1 .bone:nth-child(3)::after { animation-delay:.5s; }.v1 .bone:nth-child(4)::after { animation-delay:.75s; }.v1 .bone:nth-child(5)::after { animation-delay:1s; }.v1 .bone:nth-child(6)::after { animation-delay:1.25s; }.v1 .bone:nth-child(7)::after { animation-delay:1.5s; }
+    /* 02: breathing expansion */
+    .v2 .spine { animation:breathe 4s ease-in-out infinite; }.v2 .bone:nth-child(odd) { transform:translateX(-9px) rotate(-5deg); }.v2 .bone:nth-child(even) { transform:translateX(9px) rotate(5deg); }
+    /* 03: scan beam */
+    .v3 .stage > .stage-beam { position:absolute; left:8%; right:8%; height:2px; background:#fff; box-shadow:0 0 8px #fff,0 0 24px var(--accent); animation:scan 3.5s ease-in-out infinite; }
+    .v3 .bone::after { animation:scan-repair 3.5s linear infinite; }
+    /* 04: magnetic pull into alignment */
+    .v4 .bone { animation:magnet 4.5s cubic-bezier(.2,.8,.2,1) infinite; }.v4 .bone:nth-child(2) { animation-delay:.1s; }.v4 .bone:nth-child(3) { animation-delay:.2s; }.v4 .bone:nth-child(4) { animation-delay:.3s; }.v4 .bone:nth-child(5) { animation-delay:.4s; }.v4 .bone:nth-child(6) { animation-delay:.5s; }.v4 .bone:nth-child(7) { animation-delay:.6s; }
+    /* 05: orbit and settle */
+    .v5 .orbit { animation-duration:5s; }.v5 .spine { animation:settle 5s ease-in-out infinite; }
+    /* 06: particle reconstruction */
+    .v6 .bone { border-style:dashed; animation:particle 4s ease-in-out infinite; }.v6 .bone::after { box-shadow:0 0 0 0 var(--accent); animation:particle-core 4s ease-in-out infinite; }
+    /* 07: ripple from center */
+    .v7 .stage::before,.v7 .stage::after { content:""; position:absolute; width:55px; aspect-ratio:1; border:1px solid var(--accent); border-radius:50%; animation:ripple 4s ease-out infinite; }.v7 .stage::after { animation-delay:1.3s; }.v7 .bone { animation:ripple-bone 4s ease-in-out infinite; }
+    /* 08: rotating plates */
+    .v8 .bone { animation:plate-turn 5s ease-in-out infinite; }.v8 .bone:nth-child(even) { animation-delay:.3s; }
+    /* 09: liquid wave */
+    .v9 .spine { gap:0; animation:wave 3.8s ease-in-out infinite; }.v9 .bone { border-radius:45%; margin:-1px; }.v9 .bone:nth-child(2) { transform:rotate(8deg); }.v9 .bone:nth-child(3) { transform:rotate(-8deg); }.v9 .bone:nth-child(4) { transform:rotate(8deg); }.v9 .bone:nth-child(5) { transform:rotate(-8deg); }.v9 .bone:nth-child(6) { transform:rotate(8deg); }
+    /* 10: calm alignment grid */
+    .v10 .stage { background-image:linear-gradient(rgba(242,140,113,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(242,140,113,.08) 1px,transparent 1px); background-size:28px 28px; }.v10 .spine { animation:align 5s ease-in-out infinite; }.v10 .bone { border-radius:4px; }
+
+    @keyframes repair-ring { 0%,15% { transform:scale(.5); opacity:.25; } 38%,62% { transform:scale(1.7); opacity:1; box-shadow:0 0 18px var(--accent); } 82%,100% { transform:scale(.5); opacity:.25; } }
+    @keyframes orbit { to { transform:rotate(360deg); } }
+    @keyframes breathe { 0%,100% { transform:scale(.88); } 50% { transform:scale(1.08); } }
+    @keyframes scan { 0%,100% { top:20%; opacity:0; } 12%,88% { opacity:1; } 50% { top:80%; } }
+    @keyframes scan-repair { 0%,30% { transform:translate(-50%,-50%) scale(.4); } 55%,100% { transform:translate(-50%,-50%) scale(1.8); } }
+    @keyframes magnet { 0%,100% { transform:translateX(var(--x,0)) rotate(0); } 45%,70% { transform:translateX(0) rotate(0); box-shadow:0 0 18px var(--accent); } }
+    @keyframes settle { 0%,100% { transform:rotate(-5deg); } 45%,70% { transform:rotate(0); } }
+    @keyframes particle { 0%,100% { opacity:.45; transform:translateX(0); } 45%,70% { opacity:1; transform:translateX(0); box-shadow:0 0 16px var(--accent); } }
+    @keyframes particle-core { 0%,100% { box-shadow:0 0 0 0 transparent; } 50% { box-shadow:0 0 0 10px rgba(242,140,113,.28); } }
+    @keyframes ripple { 0% { transform:scale(.2); opacity:1; } 100% { transform:scale(5); opacity:0; } }
+    @keyframes ripple-bone { 0%,100% { transform:scale(.9); } 45%,70% { transform:scale(1.08); } }
+    @keyframes plate-turn { 0%,100% { transform:rotateX(0) rotateY(0); } 45%,70% { transform:rotateX(24deg) rotateY(12deg); box-shadow:0 0 18px var(--accent); } }
+    @keyframes wave { 0%,100% { transform:translateX(-12px) rotate(-4deg); } 50% { transform:translateX(12px) rotate(4deg); } }
+    @keyframes align { 0%,100% { transform:translateX(-10px) rotate(-3deg); } 45%,70% { transform:translateX(0) rotate(0); } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; } }
+    @media (max-width:760px) { body { padding:22px 16px; }.grid { grid-template-columns:1fr; }.option { min-height:330px; } }
+  </style>
+</head>
+<body>
+  <header><div class="eyebrow">SHU YI / MOTION STUDY</div><h1>脊椎修復動畫風格</h1><p>先比較 10 種不同的動態語言。選定編號後，我再把該風格移植到「活化調理」頁首右側。</p></header>
+  <main class="grid">
+    <article class="option v1"><h2>01 / 逐節修復光環</h2><p>由上而下逐節亮起，最接近「修復」的敘事。</p><div class="stage"><div class="orbit"></div><div class="spine">${BONES}</div><span class="legend">REPAIR SEQUENCE</span></div></article>
+    <article class="option v2"><h2>02 / 呼吸伸縮</h2><p>整條脊椎像呼吸一樣收縮與展開，柔和、療癒。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">BREATH / RESET</span></div></article>
+    <article class="option v3"><h2>03 / 科技掃描線</h2><p>掃描光束通過每節，洞孔被逐步校正。</p><div class="stage"><div class="spine">${BONES}</div><div class="stage-beam"></div><span class="legend">SCAN / ALIGN</span></div></article>
+    <article class="option v4"><h2>04 / 磁力對齊</h2><p>散開的骨節被吸回中心，動態感最明顯。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">MAGNETIC ALIGNMENT</span></div></article>
+    <article class="option v5"><h2>05 / 軌道穩定</h2><p>外圈軌道旋轉，中心脊椎逐漸穩定。</p><div class="stage"><div class="orbit"></div><div class="spine">${BONES}</div><span class="legend">STABILIZE</span></div></article>
+    <article class="option v6"><h2>06 / 粒子重組</h2><p>虛線骨節由鬆散變清晰，偏未來科技感。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">REBUILD / DATA</span></div></article>
+    <article class="option v7"><h2>07 / 中心漣漪</h2><p>從中央向外傳遞修復波，畫面較有呼吸感。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">RIPPLE / RELEASE</span></div></article>
+    <article class="option v8"><h2>08 / 骨節翻轉</h2><p>每節翻轉顯示厚度，偏 3D 物件展示。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">PLATE / ROTATE</span></div></article>
+    <article class="option v9"><h2>09 / 液態波形</h2><p>脊椎像流體般左右擺動，最柔軟、最生活化。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">FLOW / MOVE</span></div></article>
+    <article class="option v10"><h2>10 / 網格定位</h2><p>在定位網格中由偏移回到中線，乾淨、理性。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">POSITION / BALANCE</span></div></article>
+  </main>
+  <script>const BONES='<i class="bone"></i>'.repeat(7);document.querySelectorAll('.stage').forEach(stage=>{if(stage.innerHTML.includes('${BONES}'))stage.innerHTML=stage.innerHTML.replaceAll('${BONES}',BONES);});</script>
+</body>
+</html>
