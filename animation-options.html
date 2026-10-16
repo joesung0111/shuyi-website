@@ -65,6 +65,84 @@
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; } }
     @media (max-width:760px) { body { padding:22px 16px; }.grid { grid-template-columns:1fr; }.option { min-height:330px; } }
   </style>
+  <style>
+    .scan-grid { max-width:1320px; margin:26px auto 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .scan-option .stage { --scan-color:#f28c71; }
+    .scan-option .bone { border-color:rgba(248,238,232,.45); background:rgba(248,238,232,.05); transition:border-color .3s,box-shadow .3s; }
+    .scan-option .bone::after { width:8px; height:8px; background:#111; border-color:rgba(248,238,232,.65); }
+    .scan-option .bone:nth-child(2),.scan-option .bone:nth-child(5) { border-color:#e85e55; background:rgba(232,94,85,.13); box-shadow:0 0 0 1px rgba(232,94,85,.15); }
+    .scan-option .bone:nth-child(2)::after,.scan-option .bone:nth-child(5)::after { background:#e85e55; border-color:#ffb19d; box-shadow:0 0 13px #e85e55; }
+    .scan-option .beam { position:absolute; z-index:2; pointer-events:none; background:linear-gradient(90deg,transparent,#fff 45%,var(--scan-color),#fff 55%,transparent); box-shadow:0 0 7px #fff,0 0 24px var(--scan-color); opacity:0; }
+    .scan-option .impact { position:absolute; z-index:4; width:24px; height:24px; border:2px solid #fff; border-radius:50%; opacity:0; pointer-events:none; }
+    .scan-option .impact::before,.scan-option .impact::after { content:""; position:absolute; inset:50% auto auto 50%; width:32px; height:1px; background:#fff; box-shadow:0 0 10px var(--scan-color); transform:translate(-50%,-50%) rotate(45deg); }
+    .scan-option .impact::after { transform:translate(-50%,-50%) rotate(-45deg); }
+    .scan-option .repair { position:absolute; z-index:3; width:38px; height:38px; border:2px solid var(--scan-color); border-radius:50%; opacity:0; pointer-events:none; box-shadow:0 0 18px var(--scan-color); }
+    .scan-option .spine { transition:filter .3s; }
+    .scan-option .legend b { color:#e85e55; font-weight:400; }
+    .scan-option .legend { left:12px; right:auto; }
+
+    /* 11: thick horizontal diagnostic bar */
+    .s11 .beam { left:8%; right:8%; height:5px; animation:s11-scan 4.2s ease-in-out infinite; }
+    .s11 .bone:nth-child(2),.s11 .bone:nth-child(5) { animation:s11-abnormal 4.2s ease-in-out infinite; }
+    /* 12: diagonal medical laser */
+    .s12 .beam { left:15%; width:110%; height:2px; transform:rotate(-27deg); animation:s12-scan 4.8s ease-in-out infinite; }
+    .s12 .bone:nth-child(3),.s12 .bone:nth-child(6) { border-style:dashed; animation:s12-diagnose 4.8s ease-in-out infinite; }
+    /* 13: split scan lines from both sides */
+    .s13 .beam { left:9%; right:9%; height:2px; animation:s13-scan 4s ease-in-out infinite; }
+    .s13 .beam + .beam { animation-delay:.22s; filter:hue-rotate(30deg); }
+    .s13 .bone:nth-child(2)::after,.s13 .bone:nth-child(5)::after { animation:s13-dot 4s ease-in-out infinite; }
+    /* 14: radar fan */
+    .s14 .beam { width:170px; height:170px; border:1px solid var(--scan-color); border-left-color:transparent; border-bottom-color:transparent; border-radius:50%; transform-origin:center; animation:s14-radar 5s linear infinite; background:linear-gradient(135deg,transparent 48%,rgba(242,140,113,.3)); box-shadow:none; }
+    .s14 .bone:nth-child(4) { animation:s14-center 5s ease-in-out infinite; }
+    /* 15: glitch diagnostic */
+    .s15 .beam { left:10%; right:10%; height:2px; animation:s15-glitch 3.6s steps(2,end) infinite; }
+    .s15 .spine { animation:s15-shift 3.6s steps(2,end) infinite; }
+    .s15 .bone:nth-child(2),.s15 .bone:nth-child(5) { animation:s15-error 3.6s steps(2,end) infinite; }
+    /* 16: segmented barcode scan */
+    .s16 .beam { left:22%; width:7px; height:185px; background:var(--scan-color); animation:s16-scan 4.5s ease-in-out infinite; }
+    .s16 .beam:nth-of-type(2) { left:34%; width:2px; height:120px; animation-delay:.16s; opacity:.7; }
+    .s16 .beam:nth-of-type(3) { left:66%; width:3px; height:150px; animation-delay:.3s; opacity:.8; }
+    /* 17: circular body scan */
+    .s17 .beam { width:190px; height:190px; border:2px solid var(--scan-color); border-radius:50%; background:transparent; animation:s17-orbit 5s ease-in-out infinite; box-shadow:0 0 22px rgba(242,140,113,.32); }
+    .s17 .bone:nth-child(2),.s17 .bone:nth-child(5) { animation:s17-repair 5s ease-in-out infinite; }
+    /* 18: strike the abnormal points */
+    .s18 .beam { left:8%; right:8%; height:2px; animation:s18-scan 5.5s ease-in-out infinite; }
+    .s18 .impact--upper { left:calc(50% - 47px); top:91px; animation:s18-impact 5.5s ease-in-out infinite; }
+    .s18 .impact--lower { left:calc(50% - 47px); top:157px; animation:s18-impact 5.5s ease-in-out .32s infinite; }
+    .s18 .bone:nth-child(2),.s18 .bone:nth-child(5) { animation:s18-heal 5.5s ease-in-out infinite; }
+    /* 19: shockwave restoration */
+    .s19 .beam { width:18px; height:220px; border-left:1px solid var(--scan-color); border-right:1px solid var(--scan-color); background:rgba(242,140,113,.14); animation:s19-scan 5s ease-in-out infinite; }
+    .s19 .repair { animation:s19-wave 5s ease-out infinite; }
+    .s19 .bone:nth-child(2),.s19 .bone:nth-child(5) { animation:s19-restore 5s ease-in-out infinite; }
+    /* 20: thermal heat map */
+    .s20 .beam { left:10%; right:10%; height:3px; animation:s20-heat 5.2s ease-in-out infinite; }
+    .s20 .bone { background:linear-gradient(90deg,rgba(248,238,232,.05),transparent); }
+    .s20 .bone:nth-child(2),.s20 .bone:nth-child(5) { animation:s20-hotspot 5.2s ease-in-out infinite; }
+
+    @keyframes s11-scan { 0%,15% { top:15%; opacity:0; } 22%,78% { opacity:1; } 85%,100% { top:86%; opacity:0; } }
+    @keyframes s11-abnormal { 0%,35% { filter:none; } 45%,70% { border-color:#fff; box-shadow:0 0 25px #e85e55; } 80%,100% { filter:none; } }
+    @keyframes s12-scan { 0%,100% { top:110%; opacity:0; } 18%,84% { opacity:1; } 50% { top:-10%; } }
+    @keyframes s12-diagnose { 0%,35% { transform:translateX(0); } 48%,72% { transform:translateX(8px); border-color:#fff; } 85%,100% { transform:translateX(0); } }
+    @keyframes s13-scan { 0%,12% { top:16%; opacity:0; transform:translateX(-18px); } 20%,78% { opacity:1; } 90%,100% { top:84%; opacity:0; transform:translateX(18px); } }
+    @keyframes s13-dot { 0%,32% { transform:scale(1); } 48%,70% { transform:scale(1.9); box-shadow:0 0 20px #fff; } 84%,100% { transform:scale(1); } }
+    @keyframes s14-radar { to { transform:rotate(360deg); } }
+    @keyframes s14-center { 0%,100% { transform:scale(.9); } 45%,70% { transform:scale(1.15); box-shadow:0 0 24px var(--scan-color); } }
+    @keyframes s15-glitch { 0%,18% { top:20%; opacity:0; } 25%,35% { top:42%; opacity:1; transform:translateX(-20px); } 39%,46% { top:42%; transform:translateX(25px); } 50%,60% { top:65%; transform:translateX(-8px); } 70%,100% { opacity:0; } }
+    @keyframes s15-shift { 25%,40% { transform:translateX(6px); } 42%,58% { transform:translateX(-6px); } }
+    @keyframes s15-error { 20%,65% { filter:brightness(2) saturate(1.8); } }
+    @keyframes s16-scan { 0%,12% { left:20%; opacity:0; } 22%,80% { opacity:1; } 90%,100% { left:80%; opacity:0; } }
+    @keyframes s17-orbit { 0%,100% { transform:scale(.65) rotate(0); opacity:.2; } 45%,72% { transform:scale(1.1) rotate(180deg); opacity:1; } }
+    @keyframes s17-repair { 0%,30% { transform:rotate(0); } 48%,72% { transform:rotate(10deg) scale(1.12); border-color:#fff; } }
+    @keyframes s18-scan { 0%,14% { top:14%; opacity:0; } 23%,60% { opacity:1; } 68%,100% { top:86%; opacity:0; } }
+    @keyframes s18-impact { 0%,45% { opacity:0; transform:scale(.2); } 52%,64% { opacity:1; transform:scale(1.3); } 75%,100% { opacity:0; transform:scale(2); } }
+    @keyframes s18-heal { 0%,45% { border-color:#e85e55; } 58%,78% { border-color:#fff; background:rgba(242,140,113,.3); box-shadow:0 0 20px var(--scan-color); } 90%,100% { border-color:rgba(248,238,232,.45); } }
+    @keyframes s19-scan { 0%,15% { top:110%; opacity:0; } 25%,72% { opacity:1; } 85%,100% { top:-10%; opacity:0; } }
+    @keyframes s19-wave { 0%,48% { opacity:0; transform:translate(-50%,-50%) scale(.2); } 57%,80% { opacity:1; transform:translate(-50%,-50%) scale(4); } 95%,100% { opacity:0; } }
+    @keyframes s19-restore { 0%,50% { filter:saturate(1.4); } 62%,82% { border-color:#fff; box-shadow:0 0 25px var(--scan-color); } 92%,100% { filter:none; } }
+    @keyframes s20-heat { 0%,15% { top:18%; opacity:0; } 23%,76% { opacity:1; } 88%,100% { top:82%; opacity:0; } }
+    @keyframes s20-hotspot { 0%,42% { background:rgba(232,94,85,.13); } 53%,73% { background:linear-gradient(90deg,#e85e55,#ffd2a8,#e85e55); box-shadow:0 0 24px #e85e55; } 87%,100% { background:rgba(248,238,232,.05); } }
+    @media (max-width:760px) { .scan-grid { grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
   <header><div class="eyebrow">SHU YI / MOTION STUDY</div><h1>脊椎修復動畫風格</h1><p>先比較 10 種不同的動態語言。選定編號後，我再把該風格移植到「活化調理」頁首右側。</p></header>
@@ -79,6 +157,19 @@
     <article class="option v8"><h2>08 / 骨節翻轉</h2><p>每節翻轉顯示厚度，偏 3D 物件展示。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">PLATE / ROTATE</span></div></article>
     <article class="option v9"><h2>09 / 液態波形</h2><p>脊椎像流體般左右擺動，最柔軟、最生活化。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">FLOW / MOVE</span></div></article>
     <article class="option v10"><h2>10 / 網格定位</h2><p>在定位網格中由偏移回到中線，乾淨、理性。</p><div class="stage"><div class="spine">${BONES}</div><span class="legend">POSITION / BALANCE</span></div></article>
+  </main>
+  <header><div class="eyebrow">SHU YI / SCAN STUDIES</div><h1>03 科技掃描線：延伸風格</h1><p>這 10 款都加入正常／異常點差異；11–17 偏診斷掃描，18–20 會在掃描後針對異常位置打擊與修復。</p></header>
+  <main class="scan-grid">
+    <article class="option scan-option s11"><h2>11 / 厚光束診斷</h2><p>粗掃描光帶通過後，異常點短暫放大。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><span class="legend">NORMAL / <b>ABNORMAL</b></span></div></article>
+    <article class="option scan-option s12"><h2>12 / 斜向雷射</h2><p>斜向切入，異常骨節以虛線與位移區分。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><span class="legend">DIAGONAL / <b>DEVIATION</b></span></div></article>
+    <article class="option scan-option s13"><h2>13 / 雙向交叉掃描</h2><p>兩道掃描線交替通過，異常點產生強烈反應。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><div class="beam"></div><span class="legend">CROSS CHECK / <b>FLAGGED</b></span></div></article>
+    <article class="option scan-option s14"><h2>14 / 雷達扇面</h2><p>圓形雷達旋轉掃描，中段為核心檢測區。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><span class="legend">RADAR / <b>CORE</b></span></div></article>
+    <article class="option scan-option s15"><h2>15 / 故障訊號掃描</h2><p>掃描時出現短暫訊號偏移，呈現異常資料。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><span class="legend">SIGNAL / <b>GLITCH</b></span></div></article>
+    <article class="option scan-option s16"><h2>16 / 分段條碼掃描</h2><p>多條細光束像讀取條碼，分段判斷每個位置。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><div class="beam"></div><div class="beam"></div><span class="legend">SEGMENT / <b>CHECK</b></span></div></article>
+    <article class="option scan-option s17"><h2>17 / 環形身體掃描</h2><p>掃描環繞整體，異常點在環形通過時被標記。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><span class="legend">CIRCULAR / <b>DETECT</b></span></div></article>
+    <article class="option scan-option s18"><h2>18 / 異常點精準打擊</h2><p>掃描完成後，兩個紅色異常點依序被光束打擊。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><div class="impact impact--upper"></div><div class="impact impact--lower"></div><span class="legend">TARGET / <b>STRIKE</b></span></div></article>
+    <article class="option scan-option s19"><h2>19 / 修復震波</h2><p>掃描鎖定後釋放中心震波，異常點由紅轉亮再回復。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><div class="repair"></div><span class="legend">SHOCKWAVE / <b>RESTORE</b></span></div></article>
+    <article class="option scan-option s20"><h2>20 / 熱區修復圖</h2><p>異常點先形成熱區，掃描後降溫回到正常狀態。</p><div class="stage"><div class="spine">${BONES}</div><div class="beam"></div><span class="legend">HEAT MAP / <b>RECOVER</b></span></div></article>
   </main>
   <script>const BONES='<i class="bone"></i>'.repeat(7);document.querySelectorAll('.stage').forEach(stage=>{if(stage.innerHTML.includes('${BONES}'))stage.innerHTML=stage.innerHTML.replaceAll('${BONES}',BONES);});</script>
 </body>
