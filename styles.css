@@ -182,3 +182,6 @@ body { padding-top:88px; }
 .booking-card--ready > .eyebrow { display:none; }
 .booking-card--ready > h1 { max-height:none; margin-bottom:16px; font-size:clamp(26px,3.5vw,51px); }
 .booking-card--ready .booking-entry { margin-top:30px; }
+
+/* Keep every page H1 at the same scale as the booking page title. */
+h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { font-size:clamp(26px,3.5vw,51px); }
