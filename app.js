@@ -20,11 +20,62 @@
     copy.className = 'page-hero__copy';
     while (serviceHero.firstChild) copy.append(serviceHero.firstChild);
     const art = document.createElement('div');
-    art.className = 'service-hero-art';
+    art.className = 'service-hero-art service-hero-art--scan-error';
     art.setAttribute('aria-label', '脊椎逐節修復的示意動畫');
-    art.innerHTML = '<div class="service-hero-art__label">ALIGNMENT / REPAIR</div><div class="service-spine" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="service-hero-art__status"><span></span>BODY IN MOTION</div>';
+    art.innerHTML = '<div class="service-spine" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="service-hero-art__status"><span></span><span>BODY IN MOTION<br><small>身體持續律動</small></span></div>';
     serviceHero.classList.add('page-hero--service');
     serviceHero.append(copy, art);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const nodes = [...art.querySelectorAll('.service-spine i')];
+      const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+      const clearNodes = () => nodes.forEach((node) => node.classList.remove('is-scanned', 'is-error', 'is-repaired', 'is-repairing', 'is-restoring', 'is-normalized'));
+      const scanDown = async () => {
+        art.classList.remove('phase-repair', 'phase-release');
+        art.classList.add('phase-scan');
+        clearNodes();
+        for (let index = 0; index < nodes.length; index += 1) {
+          const node = nodes[index];
+          node.classList.add('is-scanned');
+          if (index === 3 || index === 7) {
+            node.classList.add('is-error');
+            await wait(850);
+          } else await wait(430);
+        }
+        await wait(260);
+        repairDown();
+      };
+      const repairDown = async () => {
+        art.classList.remove('phase-scan');
+        art.classList.add('phase-repair');
+        await wait(350);
+        for (const index of [3, 7]) {
+          nodes[index].classList.add('is-repairing');
+          await wait(900);
+          nodes[index].classList.remove('is-repairing');
+          nodes[index].classList.add('is-repaired');
+          await wait(300);
+        }
+        releaseDown();
+      };
+      const releaseDown = async () => {
+        art.classList.remove('phase-repair');
+        art.classList.add('phase-release');
+        await wait(300);
+        for (let index = 0; index < nodes.length; index += 1) {
+          const node = nodes[index];
+          node.classList.remove('is-scanned');
+          if (index === 3 || index === 7) {
+            node.classList.add('is-restoring');
+            await wait(430);
+            node.classList.remove('is-restoring', 'is-repaired', 'is-error');
+            node.classList.add('is-normalized');
+          } else await wait(430);
+        }
+        await wait(900);
+        scanDown();
+      };
+      scanDown();
+    }
   }
   document.querySelectorAll('.hero h1, .page-hero h1, .booking-card h1, .studio-page__copy h1').forEach((heading) => { heading.innerHTML = heading.innerHTML.replaceAll('。', ''); });
   const heroStamp = document.querySelector('.hero-stamp');
