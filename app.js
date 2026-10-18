@@ -14,6 +14,9 @@
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
   const currentPath = normalizePath(window.location.pathname);
   if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=scan-smooth-20261018`; }
+  if (currentPath === '/services') { const callout = document.querySelector('.callout'); const formula = callout?.querySelector('h2 em'); if (formula) formula.textContent = '一套固定公式'; if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
+  if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); if (journalTitle) journalTitle.innerHTML = '<em>更懂自己</em>'; if (journalLead) { journalLead.classList.add('journal-spotlight'); journalLead.textContent = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; } }
+  if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '<em>更懂自己</em>'; }
   document.querySelectorAll('.site-nav a').forEach((link) => { const isCurrent = normalizePath(new URL(link.href, window.location.href).pathname) === currentPath; link.classList.toggle('is-current', isCurrent); if (isCurrent) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); link.addEventListener('click', () => document.body.classList.remove('menu-open')); });
   const serviceHero = document.querySelector('.page-hero');
   if (serviceHero && currentPath === '/services' && !serviceHero.classList.contains('page-hero--service')) {
@@ -84,17 +87,18 @@
   if (heroStamp) { const words = ['MOVE', 'WELL', 'LIVE', 'LIGHT']; heroStamp.setAttribute('aria-label', words.join(' ')); heroStamp.innerHTML = words.map((word, index) => `<span style="--word-index:${index}">${word}</span>`).join(''); }
   const homeHero = document.querySelector('.hero');
   if (homeHero && !matchMedia('(prefers-reduced-motion: reduce)').matches) { const heroStage = homeHero.querySelector('.hero-stage'); homeHero.classList.add('home-intro'); if (heroStage) { const stageBounds = heroStage.getBoundingClientRect(); const heroBounds = homeHero.getBoundingClientRect(); const targetX = window.innerWidth / 2; const targetY = heroBounds.top + heroBounds.height / 2; heroStage.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`); heroStage.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`); heroStage.classList.add('hero-stage--intro'); window.setTimeout(() => heroStage.classList.remove('hero-stage--intro'), 3150); } homeHero.addEventListener('pointermove', (event) => { const bounds = homeHero.getBoundingClientRect(); homeHero.style.setProperty('--pointer-x', `${((event.clientX - bounds.left) / bounds.width * 100).toFixed(1)}%`); homeHero.style.setProperty('--pointer-y', `${((event.clientY - bounds.top) / bounds.height * 100).toFixed(1)}%`); }); homeHero.addEventListener('pointerleave', () => { homeHero.style.removeProperty('--pointer-x'); homeHero.style.removeProperty('--pointer-y'); }); const homeMotionTargets = [...document.querySelectorAll('.hero h1, .home-links .home-link, .motion-copy h2')]; homeMotionTargets.forEach((element, index) => { element.classList.add(index % 2 ? 'clip-reveal--right' : 'text-mask-reveal'); }); const revealHomeMotion = () => { homeMotionTargets.forEach((element) => { const bounds = element.getBoundingClientRect(); if (bounds.top < window.innerHeight * .92 && bounds.bottom > 0) element.classList.add('is-motion-visible'); }); if (heroStage) heroStage.style.setProperty('--hero-scroll-shift', `${Math.min(window.scrollY, 600) * -.075}px`); }; requestAnimationFrame(revealHomeMotion); window.addEventListener('scroll', revealHomeMotion, { passive:true }); }
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article, .service-flow__step'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
   const serviceList = document.querySelector('.service-list');
   if (serviceList && !document.querySelector('[data-flow-progress]')) {
-    serviceList.closest('section').insertAdjacentHTML('afterend', '<section class="service-flow section" data-flow-progress><div class="service-flow__intro"><p class="eyebrow">THE SHU YI WAY / 02</p><h2>從理解開始，<br><em>慢慢找回活動。</em></h2><p>每一次調理都從當下狀態出發，在過程裡感受身體，再把合適的照顧帶回日常。</p></div><div class="service-flow__track"><div class="service-flow__line" aria-hidden="true"><i></i></div><ol class="service-flow__steps"><li class="service-flow__step is-active"><span>01</span><div><h3>先理解狀態</h3><p>從今天的身體感受與日常活動開始，找到舒服的起點。</p></div></li><li class="service-flow__step"><span>02</span><div><h3>安排活化節奏</h3><p>依當下狀態安排調理，不套用每個人都一樣的固定流程。</p></div></li><li class="service-flow__step"><span>03</span><div><h3>留意身體變化</h3><p>在過程中保持感受，讓活動與舒適度成為調整的方向。</p></div></li><li class="service-flow__step"><span>04</span><div><h3>帶回日常裡</h3><p>留下能延續到生活中的身體照顧空間，慢慢找回自在。</p></div></li></ol></div></section>');
+    serviceList.closest('section').insertAdjacentHTML('afterend', '<section class="service-flow section" data-flow-progress><div class="service-flow__intro"><p class="eyebrow">THE SHU YI WAY / 02</p><h2>從理解開始<br><em>慢慢找回活動</em></h2><p>每一次調理都從當下狀態出發，在過程裡感受身體，再把合適的照顧帶回日常。</p></div><div class="service-flow__track"><div class="service-flow__line" aria-hidden="true"><i></i></div><ol class="service-flow__steps"><li class="service-flow__step is-active"><span>01</span><div><h3>先理解狀態</h3><p>從今天的身體感受與日常活動開始，找到舒服的起點。</p></div></li><li class="service-flow__step"><span>02</span><div><h3>安排活化節奏</h3><p>依當下狀態安排調理，不套用每個人都一樣的固定流程。</p></div></li><li class="service-flow__step"><span>03</span><div><h3>留意身體變化</h3><p>在過程中保持感受，讓活動與舒適度成為調整的方向。</p></div></li><li class="service-flow__step"><span>04</span><div><h3>帶回日常裡</h3><p>留下能延續到生活中的身體照顧空間，慢慢找回自在。</p></div></li></ol></div></section>');
   }
   const serviceFlow = document.querySelector('[data-flow-progress]');
   if (serviceFlow) {
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const flowSteps = [...serviceFlow.querySelectorAll('.service-flow__step')]; let flowRevealIndex = 0; let flowRevealTarget = -1; let flowRevealTimer = 0; const revealFlowThrough = (targetIndex) => { flowRevealTarget = Math.max(flowRevealTarget, Math.min(targetIndex, flowSteps.length - 1)); if (flowRevealTimer) return; const revealNext = () => { flowRevealTimer = 0; if (flowRevealIndex > flowRevealTarget) return; flowSteps[flowRevealIndex].classList.add('is-revealed'); flowRevealIndex += 1; if (flowRevealIndex <= flowRevealTarget) flowRevealTimer = window.setTimeout(revealNext, 240); }; revealNext(); }; const flowObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) revealFlowThrough(flowSteps.indexOf(entry.target)); }), { threshold: .12 }); flowSteps.forEach((step) => { step.classList.add('reveal-on-scroll'); flowObserver.observe(step); }); }
     const steps = [...serviceFlow.querySelectorAll('.service-flow__step')]; const progress = serviceFlow.querySelector('.service-flow__line i'); let progressFrame = 0;
     const updateFlow = () => { progressFrame = 0; const bounds = serviceFlow.getBoundingClientRect(); const travel = Math.max(bounds.height - window.innerHeight * .35, 1); const amount = Math.min(1, Math.max(0, (window.innerHeight * .32 - bounds.top) / travel)); if (progress) progress.style.transform = `scaleY(${amount})`; };
     window.addEventListener('scroll', () => { if (!progressFrame) progressFrame = requestAnimationFrame(updateFlow); }, { passive: true }); window.addEventListener('resize', updateFlow, { passive: true }); updateFlow();
-    if ('IntersectionObserver' in window) { const stepObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { steps.forEach((step) => step.classList.remove('is-active')); entry.target.classList.add('is-active'); } }), { rootMargin: '-35% 0px -45% 0px', threshold: 0 }); steps.forEach((step) => stepObserver.observe(step)); }
+    if ('IntersectionObserver' in window) { let activeStepIndex = 0; let activeStepTarget = 0; let activeStepTimer = 0; let previousScrollY = window.scrollY; const moveActiveStep = (targetIndex) => { activeStepTarget = Math.max(0, Math.min(targetIndex, steps.length - 1)); if (activeStepTimer) return; const advance = () => { activeStepTimer = 0; if (activeStepIndex === activeStepTarget) return; activeStepIndex += activeStepIndex < activeStepTarget ? 1 : -1; steps.forEach((step) => step.classList.remove('is-active')); steps[activeStepIndex].classList.add('is-active'); if (activeStepIndex !== activeStepTarget) activeStepTimer = window.setTimeout(advance, 180); }; advance(); }; const stepObserver = new IntersectionObserver((entries) => { const visible = entries.filter((entry) => entry.isIntersecting).map((entry) => steps.indexOf(entry.target)).filter((index) => index >= 0); if (!visible.length) return; const scrollingDown = window.scrollY >= previousScrollY; previousScrollY = window.scrollY; moveActiveStep(scrollingDown ? Math.max(...visible) : Math.min(...visible)); }, { rootMargin: '-35% 0px -45% 0px', threshold: 0 }); steps.forEach((step) => stepObserver.observe(step)); }
   }
   const bookingCard = document.querySelector('.booking-card');
   if (bookingCard && !bookingCard.querySelector('[data-booking-entry]')) {
@@ -103,12 +107,12 @@
     const notice = bookingCard.querySelector('.booking-notice');
     if (intro) intro.remove();
     if (notice) notice.remove();
-    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-browser" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__bar"><i></i><i></i><i></i><span>line.me → sy.up.railway.app</span></div><div class="booking-browser__body"><div class="booking-demo"><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt=""></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted playsinline><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div></div></div><div class="booking-entry__copy"><div class="booking-qr-card"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描加入舒逸 LINE 官方帳號"><span>掃描加入 LINE@</span></div><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" href="https://sy.up.railway.app" target="_blank" rel="noopener">開啟預約平台 <span>↗</span></a></div></div>');
+    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-browser" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__bar"><i></i><i></i><i></i><span>line.me → sy.up.railway.app</span></div><div class="booking-browser__body"><div class="booking-demo"><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt=""></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted autoplay playsinline preload="auto"><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div></div></div><div class="booking-entry__copy"><div class="booking-qr-card"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描加入舒逸 LINE 官方帳號"><span>掃描加入 LINE@</span></div><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" href="https://sy.up.railway.app" target="_blank" rel="noopener">開啟預約平台 <span>↗</span></a></div></div>');
     const bookingSteps = bookingCard.querySelector('.booking-browser__bar span');
     if (bookingSteps) bookingSteps.className = 'booking-browser__steps';
     if (bookingSteps) bookingSteps.innerHTML = '<b class="booking-browser__step booking-browser__step--scan">01 / 掃 QR Code 或點連結</b><b class="booking-browser__step booking-browser__step--login">02 / 登入 LINE</b><b class="booking-browser__step booking-browser__step--time">03 / 選日期與時間</b><b class="booking-browser__step booking-browser__step--service">04 / 選服務項目</b><b class="booking-browser__step booking-browser__step--confirm">05 / 確認預約</b>';
     const bookingVideo = bookingCard.querySelector('.booking-demo__video');
-    if (bookingVideo) bookingVideo.loop = false;
+    if (bookingVideo) { bookingVideo.loop = false; bookingVideo.muted = true; bookingVideo.playsInline = true; bookingVideo.preload = 'auto'; }
     const bookingStepItems = [...bookingCard.querySelectorAll('.booking-browser__step')];
     const bookingCycleMs = 29000;
     const bookingScanMs = 4500;
@@ -118,7 +122,9 @@
     const bookingVideoMaxTime = 19;
     const bookingVideoFadeStart = 18.5;
     let bookingVideoStopped = false;
+    let bookingVideoReady = false;
     let bookingPreviousPhase = 0;
+    const bookingCycleStarted = performance.now();
     const stopBookingVideoAtLimit = () => {
       if (bookingVideo && bookingVideo.currentTime >= bookingVideoFadeStart) {
         bookingVideo.classList.remove('is-active');
@@ -131,13 +137,18 @@
       }
     };
     if (bookingVideo) {
+      const tryStartBookingVideo = () => {
+        bookingVideoReady = bookingVideo.readyState >= 2;
+        if (bookingVideoReady && !bookingVideoStopped && performance.now() - bookingCycleStarted >= bookingScanMs) bookingVideo.play().catch(() => {});
+      };
+      bookingVideo.addEventListener('loadeddata', tryStartBookingVideo, { once:false });
+      bookingVideo.addEventListener('canplay', tryStartBookingVideo, { once:false });
       bookingVideo.addEventListener('timeupdate', stopBookingVideoAtLimit);
       bookingVideo.addEventListener('ended', () => {
         bookingVideoStopped = true;
         bookingVideo.classList.remove('is-active');
       });
     }
-    const bookingCycleStarted = performance.now();
     const syncBookingDemo = () => {
       const phase = (performance.now() - bookingCycleStarted) % bookingCycleMs;
       if (phase < bookingPreviousPhase) bookingVideoStopped = false;
@@ -157,7 +168,7 @@
         if (!bookingVideo.paused) bookingVideo.pause();
         if (bookingVideo.currentTime > bookingVideoMaxTime) bookingVideo.currentTime = bookingVideoMaxTime;
         bookingVideo.classList.remove('is-active');
-      } else if (bookingVideo.paused && !bookingVideo.ended) {
+      } else if (bookingVideo.paused && !bookingVideo.ended && (bookingVideoReady || bookingVideo.readyState >= 2)) {
         bookingVideo.currentTime = 0;
         bookingVideo.play().catch(() => {});
       }
