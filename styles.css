@@ -208,8 +208,7 @@ body { padding-top:88px; }
 @keyframes booking-phone-scan-mobile {
   0%,5% { transform:translate(18px,4px) rotate(6deg) scale(1); }
   12%,22% { transform:translate(-64px,45px) rotate(-5deg) scale(1); }
-  30% { transform:translate(-64px,32px) rotate(0) scale(1); }
-  52% { transform:translate(-64px,14px) rotate(0) scale(1.03); }
+  56% { transform:translate(-64px,8px) rotate(0) scale(1.04); }
   72% { transform:translate(-64px,-3px) rotate(0) scale(1.05); }
   84%,100% { transform:translate(-64px,-12px) rotate(0) scale(1.05); }
 }
