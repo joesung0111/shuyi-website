@@ -126,6 +126,7 @@ body { padding-top:88px; }
 @keyframes booking-shot { 0%,50% { opacity:0; transform:translateY(8px); } 66%,100% { opacity:1; transform:none; } }
 @keyframes booking-metal-sweep { 0%,15% { opacity:0; transform:translateX(-55%) rotate(10deg); } 28% { opacity:1; } 62%,100% { opacity:0; transform:translateX(55%) rotate(10deg); } }
 @media (max-width:720px) { .booking-card--ready { padding-top:clamp(60px,13vw,100px); }.booking-entry { grid-template-columns:1fr; gap:42px; margin-top:58px; }.booking-browser__body { min-height:330px; padding:28px; }.booking-qr-card { width:min(68%,240px); }.booking-entry__copy h2 { font-size:clamp(36px,11vw,56px); }.booking-entry__copy .button { width:100%; justify-content:space-between; } }
+@media (max-width:720px) { .booking-demo__scan-line { z-index:2; } }
 @media (prefers-reduced-motion:reduce) { .booking-browser__pulse,.booking-browser__shot,.booking-entry__copy .button::after { animation:none; }.booking-browser__pulse { opacity:.7; transform:none; }.booking-browser__shot { opacity:1; transform:none; }.booking-entry__copy .button::after { opacity:.22; transform:translateX(0) rotate(10deg); } }
 
 /* Booking flow simulation: the browser body demonstrates the actual interaction sequence. */
