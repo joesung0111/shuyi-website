@@ -129,13 +129,13 @@ body { padding-top:88px; }
 @media (max-width:720px) { .booking-card--ready { padding-top:clamp(60px,13vw,100px); }.booking-entry { grid-template-columns:1fr; gap:42px; margin-top:58px; }.booking-browser__body { min-height:330px; padding:28px; }.booking-qr-card { width:min(68%,240px); }.booking-entry__copy h2 { font-size:clamp(36px,11vw,56px); }.booking-entry__copy .button { width:100%; justify-content:space-between; } }
 @media (max-width:900px) { .booking-entry { grid-template-columns:1fr; gap:42px; }.booking-browser { width:100%; }.booking-demo { margin:0 auto; }.booking-entry__copy { width:min(100%,420px); margin:0 auto; } }
 @media (max-width:900px) {
-  .booking-demo { width:100%; max-width:520px; margin-inline:auto; padding:16px; }
+  .booking-demo { width:100%; max-width:520px; margin-inline:auto; padding:16px; transform:translateX(clamp(12px,11vw,48px)); }
   .booking-demo__phone { right:clamp(18px,6vw,42px); }
   .booking-demo__scan-target { left:clamp(14px,5vw,20px); }
   .booking-demo__scan-line { left:clamp(14px,5vw,20px); }
 }
 @media (max-width:480px) {
-  .booking-demo { padding:12px; }
+  .booking-demo { padding:12px; transform:translateX(clamp(12px,11vw,44px)); }
   .booking-demo__phone { right:18px; width:148px; height:268px; }
   .booking-demo__scan-target { left:14px; width:112px; }
   .booking-demo__scan-line { left:14px; width:108px; }
