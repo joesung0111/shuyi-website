@@ -13,6 +13,7 @@
   if (menuButton) menuButton.addEventListener('click', () => { const open = document.body.classList.toggle('menu-open'); menuButton.setAttribute('aria-expanded', String(open)); });
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
   const currentPath = normalizePath(window.location.pathname);
+  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=e4e9718`; }
   document.querySelectorAll('.site-nav a').forEach((link) => { const isCurrent = normalizePath(new URL(link.href, window.location.href).pathname) === currentPath; link.classList.toggle('is-current', isCurrent); if (isCurrent) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); link.addEventListener('click', () => document.body.classList.remove('menu-open')); });
   const serviceHero = document.querySelector('.page-hero');
   if (serviceHero && currentPath === '/services' && !serviceHero.classList.contains('page-hero--service')) {
