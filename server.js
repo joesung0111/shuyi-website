@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
 import { mkdirSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { dirname, extname, join, normalize, relative, resolve } from 'node:path';
@@ -78,7 +79,51 @@ async function api(req, res, url) {
 }
 
 async function staticFile(req, res, pathname) {
-  let clean = decodeURIComponent(pathname); if (clean === '/') clean = '/index.html'; if (clean.endsWith('/')) clean += 'index.html'; const filePath = resolve(ROOT, `.${normalize(clean)}`); if (!filePath.startsWith(ROOT) || relative(ROOT, filePath).startsWith('..')) return json(res, 403, { error: 'Forbidden' }); try { const info = await stat(filePath); if (!info.isFile()) return json(res, 404, { error: 'Not found' }); const extension = extname(filePath); res.writeHead(200, { 'content-type': mime[extension] || 'application/octet-stream' }); if (extension === '.html') return res.end(withoutSloganStops((await readFile(filePath, 'utf8')).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replace('</head>', `${headEnhancements(clean.startsWith('/admin/'))}</head>`))); res.end(await readFile(filePath)); } catch { json(res, 404, { error: 'Not found' }); }
+  let clean = decodeURIComponent(pathname);
+  if (clean === '/') clean = '/index.html';
+  if (clean.endsWith('/')) clean += 'index.html';
+  const filePath = resolve(ROOT, `.${normalize(clean)}`);
+  if (!filePath.startsWith(ROOT) || relative(ROOT, filePath).startsWith('..')) return json(res, 403, { error: 'Forbidden' });
+  try {
+    const info = await stat(filePath);
+    if (!info.isFile()) return json(res, 404, { error: 'Not found' });
+    const extension = extname(filePath);
+    const contentType = mime[extension] || 'application/octet-stream';
+
+    // Safari requests video in byte ranges. Returning the whole MP4 works in
+    // Chromium, but can leave Safari playing only the first buffered segment.
+    if (extension === '.mp4') {
+      const total = info.size;
+      const range = req.headers.range;
+      if (range) {
+        const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+        if (!match || (!match[1] && !match[2])) {
+          res.writeHead(416, { 'content-range': `bytes */${total}` });
+          return res.end();
+        }
+        const start = match[1] ? Number(match[1]) : Math.max(total - Number(match[2]), 0);
+        const end = match[2] ? Math.min(Number(match[2]), total - 1) : total - 1;
+        if (start < 0 || start >= total || end < start) {
+          res.writeHead(416, { 'content-range': `bytes */${total}` });
+          return res.end();
+        }
+        res.writeHead(206, {
+          'accept-ranges': 'bytes',
+          'content-type': contentType,
+          'content-length': end - start + 1,
+          'content-range': `bytes ${start}-${end}/${total}`,
+          'cache-control': 'public, max-age=3600'
+        });
+        return createReadStream(filePath, { start, end }).pipe(res);
+      }
+      res.writeHead(200, { 'accept-ranges': 'bytes', 'content-type': contentType, 'content-length': total, 'cache-control': 'public, max-age=3600' });
+      return createReadStream(filePath).pipe(res);
+    }
+
+    res.writeHead(200, { 'content-type': contentType });
+    if (extension === '.html') return res.end(withoutSloganStops((await readFile(filePath, 'utf8')).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replace('</head>', `${headEnhancements(clean.startsWith('/admin/'))}</head>`)));
+    res.end(await readFile(filePath));
+  } catch { json(res, 404, { error: 'Not found' }); }
 }
 
 function dynamicArticle(req, res, pathname) {
