@@ -33,6 +33,15 @@ if (db.prepare('SELECT COUNT(*) AS count FROM content').get().count === 0) {
   const timestamp = now(); seed.forEach((item) => insert.run(...item, item[7] === 'published' ? timestamp : null, timestamp, timestamp));
 }
 
+// Editorial launch set: insert once so it reaches existing CMS databases on deploy
+// without replacing any content already managed by the site owner.
+const editorialArticles = JSON.parse(await readFile(join(ROOT, 'content', 'editorial-articles.json'), 'utf8'));
+const insertEditorial = db.prepare('INSERT OR IGNORE INTO content (title,slug,type,excerpt,body,video_url,cover_url,status,published_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,\'published\',?,?,?)');
+for (const item of editorialArticles) {
+  const timestamp = new Date(Date.now() - item.daysAgo * 86400000).toISOString();
+  insertEditorial.run(item.title, item.slug, 'article', item.excerpt, item.body, '', item.cover_url, timestamp, timestamp, timestamp);
+}
+
 const json = (res, status, value) => { const body = JSON.stringify(value); res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(body); };
 const readBody = async (req) => { let raw = ''; for await (const chunk of req) raw += chunk; if (!raw) return {}; try { return JSON.parse(raw); } catch { return null; } };
 const sessionToken = (req) => /^Bearer\s+(.+)$/i.exec(req.headers.authorization || '')?.[1] || /(?:^|; )shuyi_session=([^;]+)/.exec(req.headers.cookie || '')?.[1];
