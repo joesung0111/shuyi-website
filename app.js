@@ -111,7 +111,7 @@
       const heroText = '美式活化槍全身調理，搭配舒緩與個人化附加服務。不是按摩，是重新認識身體的節奏。';
       if (heroLead) {
         heroLead.textContent = '';
-        window.setTimeout(() => typewrite(heroLead, heroText), 2000);
+        window.setTimeout(() => { heroLead.classList.add('is-typing'); typewrite(heroLead, heroText); }, 2000);
       }
       if (heroStage) {
         const stageBounds = heroStage.getBoundingClientRect();
