@@ -133,7 +133,10 @@
         homeHero.style.removeProperty('--pointer-y');
       });
       const homeMotionTargets = [...document.querySelectorAll('.home-links .home-link, .motion-copy h2')];
-      homeMotionTargets.forEach((element, index) => element.classList.add(index % 2 ? 'clip-reveal--right' : 'text-mask-reveal'));
+      homeMotionTargets.forEach((element, index) => {
+        if (element.matches('.home-links .home-link')) element.classList.add('home-link-reveal');
+        else element.classList.add(index % 2 ? 'clip-reveal--right' : 'text-mask-reveal');
+      });
       const revealHomeMotion = () => {
         homeMotionTargets.forEach((element) => {
           const bounds = element.getBoundingClientRect();
