@@ -13,6 +13,19 @@
   if (menuButton) menuButton.addEventListener('click', () => { const open = document.body.classList.toggle('menu-open'); menuButton.setAttribute('aria-expanded', String(open)); });
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
   const currentPath = normalizePath(window.location.pathname);
+  const typewrite = (element, text) => {
+    element.classList.add('journal-typewriter');
+    element.setAttribute('aria-label', text);
+    element.textContent = '';
+    let textIndex = 0;
+    const typeNext = () => {
+      if (textIndex >= text.length) return;
+      const character = text[textIndex++];
+      element.textContent += character;
+      window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30);
+    };
+    typeNext();
+  };
   document.querySelectorAll('.site-nav a').forEach((link) => { if (normalizePath(new URL(link.href, window.location.href).pathname) === '/journal') link.textContent = '更懂自己'; });
   if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=scan-smooth-20261018`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); const formula = callout?.querySelector('h2 em'); if (formula) formula.textContent = '一套固定公式'; if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
@@ -87,7 +100,51 @@
   const heroStamp = document.querySelector('.hero-stamp');
   if (heroStamp) { const words = ['MOVE', 'WELL', 'LIVE', 'LIGHT']; heroStamp.setAttribute('aria-label', words.join(' ')); heroStamp.innerHTML = words.map((word, index) => `<span style="--word-index:${index}">${word}</span>`).join(''); }
   const homeHero = document.querySelector('.hero');
-  if (homeHero && !matchMedia('(prefers-reduced-motion: reduce)').matches) { const heroStage = homeHero.querySelector('.hero-stage'); homeHero.classList.add('home-intro'); if (heroStage) { const stageBounds = heroStage.getBoundingClientRect(); const heroBounds = homeHero.getBoundingClientRect(); const targetX = window.innerWidth / 2; const targetY = heroBounds.top + heroBounds.height / 2; heroStage.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`); heroStage.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`); heroStage.classList.add('hero-stage--intro'); window.setTimeout(() => heroStage.classList.remove('hero-stage--intro'), 3150); } homeHero.addEventListener('pointermove', (event) => { const bounds = homeHero.getBoundingClientRect(); homeHero.style.setProperty('--pointer-x', `${((event.clientX - bounds.left) / bounds.width * 100).toFixed(1)}%`); homeHero.style.setProperty('--pointer-y', `${((event.clientY - bounds.top) / bounds.height * 100).toFixed(1)}%`); }); homeHero.addEventListener('pointerleave', () => { homeHero.style.removeProperty('--pointer-x'); homeHero.style.removeProperty('--pointer-y'); }); const homeMotionTargets = [...document.querySelectorAll('.hero h1, .home-links .home-link, .motion-copy h2')]; homeMotionTargets.forEach((element, index) => { element.classList.add(index % 2 ? 'clip-reveal--right' : 'text-mask-reveal'); }); const revealHomeMotion = () => { homeMotionTargets.forEach((element) => { const bounds = element.getBoundingClientRect(); if (bounds.top < window.innerHeight * .92 && bounds.bottom > 0) element.classList.add('is-motion-visible'); }); if (heroStage) heroStage.style.setProperty('--hero-scroll-shift', `${Math.min(window.scrollY, 600) * -.075}px`); }; requestAnimationFrame(revealHomeMotion); window.addEventListener('scroll', revealHomeMotion, { passive:true }); }
+  if (homeHero) {
+    const heroStage = homeHero.querySelector('.hero-stage');
+    const heroTitle = homeHero.querySelector('h1');
+    const heroLead = homeHero.querySelector('.hero-lead');
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduceMotion) {
+      homeHero.classList.add('home-intro');
+      if (heroTitle) heroTitle.classList.add('home-title-fade');
+      const heroText = '美式活化槍全身調理，搭配舒緩與個人化附加服務。不是按摩，是重新認識身體的節奏。';
+      if (heroLead) {
+        heroLead.textContent = '';
+        window.setTimeout(() => typewrite(heroLead, heroText), 2000);
+      }
+      if (heroStage) {
+        const stageBounds = heroStage.getBoundingClientRect();
+        const heroBounds = homeHero.getBoundingClientRect();
+        const targetX = window.innerWidth / 2;
+        const targetY = heroBounds.top + heroBounds.height / 2;
+        heroStage.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`);
+        heroStage.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`);
+        heroStage.classList.add('hero-stage--intro');
+        window.setTimeout(() => heroStage.classList.remove('hero-stage--intro'), 3550);
+      }
+      homeHero.addEventListener('pointermove', (event) => {
+        const bounds = homeHero.getBoundingClientRect();
+        homeHero.style.setProperty('--pointer-x', `${((event.clientX - bounds.left) / bounds.width * 100).toFixed(1)}%`);
+        homeHero.style.setProperty('--pointer-y', `${((event.clientY - bounds.top) / bounds.height * 100).toFixed(1)}%`);
+      });
+      homeHero.addEventListener('pointerleave', () => {
+        homeHero.style.removeProperty('--pointer-x');
+        homeHero.style.removeProperty('--pointer-y');
+      });
+      const homeMotionTargets = [...document.querySelectorAll('.home-links .home-link, .motion-copy h2')];
+      homeMotionTargets.forEach((element, index) => element.classList.add(index % 2 ? 'clip-reveal--right' : 'text-mask-reveal'));
+      const revealHomeMotion = () => {
+        homeMotionTargets.forEach((element) => {
+          const bounds = element.getBoundingClientRect();
+          if (bounds.top < window.innerHeight * .92 && bounds.bottom > 0) element.classList.add('is-motion-visible');
+        });
+        if (heroStage) heroStage.style.setProperty('--hero-scroll-shift', `${Math.min(window.scrollY, 600) * -.075}px`);
+      };
+      requestAnimationFrame(revealHomeMotion);
+      window.addEventListener('scroll', revealHomeMotion, { passive:true });
+    }
+  }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
   const serviceList = document.querySelector('.service-list');
   if (serviceList && !document.querySelector('[data-flow-progress]')) {
