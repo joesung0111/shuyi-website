@@ -114,21 +114,17 @@
         window.setTimeout(() => { heroLead.classList.add('is-typing'); typewrite(heroLead, heroText); }, 2000);
       }
       if (heroStage) {
-        const stageMove = heroStage.querySelector('.hero-stage__move');
         const stageBounds = heroStage.getBoundingClientRect();
         const heroBounds = homeHero.getBoundingClientRect();
         const targetX = window.innerWidth / 2;
         const targetY = heroBounds.top + heroBounds.height / 2;
-        if (stageMove) {
-          stageMove.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`);
-          stageMove.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`);
-          stageMove.classList.add('hero-stage__move--intro');
-        }
+        heroStage.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`);
+        heroStage.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`);
         heroStage.classList.add('hero-stage--intro');
-        window.setTimeout(() => stageMove?.classList.add('hero-stage__move--moving'), 2000);
         window.setTimeout(() => {
           heroStage.classList.remove('hero-stage--intro');
-          stageMove?.classList.remove('hero-stage__move--intro', 'hero-stage__move--moving');
+          heroStage.style.removeProperty('--intro-x');
+          heroStage.style.removeProperty('--intro-y');
         }, 5050);
       }
       homeHero.addEventListener('pointermove', (event) => {
