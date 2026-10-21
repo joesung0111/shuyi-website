@@ -13,19 +13,19 @@
   if (menuButton) menuButton.addEventListener('click', () => { const open = document.body.classList.toggle('menu-open'); menuButton.setAttribute('aria-expanded', String(open)); });
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
   const currentPath = normalizePath(window.location.pathname);
-  const typewrite = (element, text) => {
+  const typewrite = (element, text) => new Promise((resolve) => {
     element.classList.add('journal-typewriter');
     element.setAttribute('aria-label', text);
     element.textContent = '';
     let textIndex = 0;
     const typeNext = () => {
-      if (textIndex >= text.length) return;
+      if (textIndex >= text.length) { resolve(); return; }
       const character = text[textIndex++];
       element.textContent += character;
       window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30);
     };
     typeNext();
-  };
+  });
   document.querySelectorAll('.site-nav a').forEach((link) => { if (normalizePath(new URL(link.href, window.location.href).pathname) === '/journal') link.textContent = '更懂自己'; });
   if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=scan-smooth-20261018`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); const formula = callout?.querySelector('h2 em'); if (formula) formula.textContent = '一套固定公式'; if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
@@ -109,10 +109,13 @@
       homeHero.classList.add('home-intro');
       if (heroTitle) heroTitle.classList.add('home-title-appear');
       const heroText = '美式活化槍全身調理，搭配舒緩與個人化附加服務。不是按摩，是重新認識身體的節奏。';
-      if (heroLead) {
-        heroLead.textContent = '';
-        window.setTimeout(() => { heroLead.classList.add('is-typing'); typewrite(heroLead, heroText); }, 2000);
-      }
+      const leadAnimation = heroLead
+        ? new Promise((resolve) => window.setTimeout(() => {
+          heroLead.textContent = '';
+          heroLead.classList.add('is-typing');
+          typewrite(heroLead, heroText).then(resolve);
+        }, 2000))
+        : Promise.resolve();
       if (heroStage) {
         const stageBounds = heroStage.getBoundingClientRect();
         const heroBounds = homeHero.getBoundingClientRect();
@@ -127,6 +130,8 @@
           heroStage.style.removeProperty('--intro-y');
         }, 5050);
       }
+      const stageAnimation = heroStage ? new Promise((resolve) => window.setTimeout(resolve, 5000)) : Promise.resolve();
+      Promise.all([leadAnimation, stageAnimation]).then(() => heroStamp?.classList.add('is-ready'));
       homeHero.addEventListener('pointermove', (event) => {
         const bounds = homeHero.getBoundingClientRect();
         homeHero.style.setProperty('--pointer-x', `${((event.clientX - bounds.left) / bounds.width * 100).toFixed(1)}%`);

@@ -44,7 +44,8 @@ body { padding-top:88px; }
 .site-nav a:hover { color:var(--ink); transform:translateY(-2px); }
 .hero-stage::after { content:''; position:absolute; z-index:1; width:87%; aspect-ratio:1; border:1px solid color-mix(in srgb,var(--accent) 76%,transparent); border-radius:50%; box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 0%,transparent),0 0 13px color-mix(in srgb,var(--accent) 28%,transparent); animation:ring-breathe 4.8s ease-in-out infinite; }
 .hero-stamp { display:grid; gap:3px; text-shadow:0 1px var(--bg); }
-.hero-stamp span { display:block; opacity:0; animation:stamp-arrive .65s cubic-bezier(.2,.85,.2,1) forwards; animation-delay:calc(.3s + var(--word-index) * .12s); }
+.hero-stamp span { display:block; opacity:0; }
+.hero-stamp.is-ready span { animation:stamp-arrive .65s cubic-bezier(.2,.85,.2,1) forwards; animation-delay:calc(.3s + var(--word-index) * .12s); }
 .hero-stamp span:nth-child(2),.hero-stamp span:nth-child(4) { color:var(--accent); }
 .content-card { transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .35s ease; }
 .content-card:hover { transform:translateY(-7px); border-color:color-mix(in srgb,var(--accent) 55%,var(--line)); box-shadow:0 18px 36px color-mix(in srgb,var(--ink) 11%,transparent); }
@@ -336,12 +337,15 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 
 /* Keep the homepage title independent from the growing typewriter copy. */
 .hero {
-  grid-template-rows:minmax(0,1fr) 7em;
+  grid-template-rows:auto auto;
   grid-template-areas:"copy stage" "lead stage";
+  align-content:center;
+  row-gap:16px;
 }
-.hero-copy { grid-area:copy; align-self:center; }
+.hero-copy { grid-area:copy; align-self:end; }
 .hero-stage { grid-area:stage; grid-row:1 / span 2; }
 .hero-lead { grid-area:lead; align-self:start; min-height:7em; margin:0; }
+.hero-copy h1 { margin-bottom:0; }
 @media (max-width:720px) {
   .hero {
     min-height:calc(100vh - 68px);
@@ -354,10 +358,11 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
     gap:0;
   }
   .hero-copy { grid-area:auto; order:1; align-self:stretch; }
-  .hero-stage { grid-area:auto; grid-row:auto; order:2; margin:24px auto 20px; width:min(78vw,430px); }
-  .hero-lead { grid-area:auto; order:3; align-self:stretch; width:100%; min-height:7em; margin:0; }
+  .hero-stage { grid-area:auto; grid-row:auto; order:2; margin:24px auto 0; width:min(78vw,430px); }
+  .hero-lead { grid-area:auto; order:3; align-self:stretch; width:100%; min-height:7em; margin:60px 0 0; }
 }
 .home-links .home-link:nth-child(1),.home-links .home-link:nth-child(2),.home-links .home-link:nth-child(3) { --card-tilt:0deg; margin-top:0; }
 @media (max-width:720px) {
   .home-links .home-link:nth-child(1),.home-links .home-link:nth-child(2),.home-links .home-link:nth-child(3) { transform:none; }
 }
+.motion-video .play-button { display:none; }
