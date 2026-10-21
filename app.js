@@ -107,7 +107,7 @@
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduceMotion) {
       homeHero.classList.add('home-intro');
-      if (heroTitle) heroTitle.classList.add('home-title-fade');
+      if (heroTitle) heroTitle.classList.add('home-title-appear');
       const heroText = '美式活化槍全身調理，搭配舒緩與個人化附加服務。不是按摩，是重新認識身體的節奏。';
       if (heroLead) {
         heroLead.textContent = '';
