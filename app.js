@@ -12,6 +12,15 @@
   const menuButton = document.querySelector('.menu-button');
   if (menuButton) menuButton.addEventListener('click', () => { const open = document.body.classList.toggle('menu-open'); menuButton.setAttribute('aria-expanded', String(open)); });
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a');
+    if (!link || typeof window.gtag !== 'function') return;
+    const send = (name) => window.gtag('event', name, { link_url: link.href, page_location: window.location.href });
+    if (link.hasAttribute('data-booking-cta')) send('booking_cta_click');
+    if (link.hasAttribute('data-booking-platform-outbound')) send('booking_platform_outbound');
+    if (link.hasAttribute('data-journal-to-service')) send('journal_to_service');
+    if (link.hasAttribute('data-journal-to-booking')) send('journal_to_booking');
+  });
   const currentPath = normalizePath(window.location.pathname);
   const typewrite = (element, text) => new Promise((resolve) => {
     element.classList.add('journal-typewriter');
@@ -177,7 +186,7 @@
     const notice = bookingCard.querySelector('.booking-notice');
     if (intro) intro.remove();
     if (notice) notice.remove();
-    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-browser" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__bar"><i></i><i></i><i></i><span>line.me → sy.up.railway.app</span></div><div class="booking-browser__body"><div class="booking-demo"><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt=""></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted autoplay playsinline webkit-playsinline preload="auto" poster="../素材/預約流程登入介面.jpg"><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div></div></div><div class="booking-entry__copy"><div class="booking-qr-card"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描加入舒逸 LINE 官方帳號"><span>掃描加入 LINE@</span></div><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" data-booking-cta="true" data-booking-platform-outbound="true" href="https://sy.up.railway.app/" target="_blank" rel="noopener">前往舒逸線上預約 <span>↗</span></a></div></div>');
+    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-browser" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__bar"><i></i><i></i><i></i><span>line.me → sy.up.railway.app</span></div><div class="booking-browser__body"><div class="booking-demo"><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="" aria-hidden="true"></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted autoplay playsinline webkit-playsinline preload="auto" poster="../素材/預約流程登入介面.jpg"><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div></div></div><div class="booking-entry__copy"><div class="booking-qr-card"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描加入舒逸 LINE 官方帳號"><span>掃描加入 LINE@</span></div><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" data-booking-cta="true" data-booking-platform-outbound="true" href="https://sy.up.railway.app/" target="_blank" rel="noopener">前往舒逸線上預約 <span>↗</span></a></div></div>');
     const bookingSteps = bookingCard.querySelector('.booking-browser__bar span');
     if (bookingSteps) bookingSteps.className = 'booking-browser__steps';
     if (bookingSteps) bookingSteps.innerHTML = '<b class="booking-browser__step booking-browser__step--scan">01 / 掃 QR Code 或點連結</b><b class="booking-browser__step booking-browser__step--login">02 / 登入 LINE</b><b class="booking-browser__step booking-browser__step--time">03 / 選日期與時間</b><b class="booking-browser__step booking-browser__step--service">04 / 選服務項目</b><b class="booking-browser__step booking-browser__step--confirm">05 / 確認預約</b>';
@@ -255,16 +264,40 @@
   const grid = document.querySelector('#content-grid');
   if (grid) {
     let activeFilter = 'all';
+    const returnStateKey = 'shuyi-journal-return';
+    const restoreListPosition = () => {
+      if (window.location.hash !== '#journal-return') return;
+      let saved;
+      try { saved = JSON.parse(sessionStorage.getItem(returnStateKey) || 'null'); } catch { saved = null; }
+      if (!saved) return;
+      activeFilter = saved.filter || 'all';
+      const selected = document.querySelector(`[data-filter="${activeFilter}"]`);
+      if (selected) {
+        document.querySelectorAll('[data-filter]').forEach((button) => { button.classList.toggle('is-active', button === selected); button.setAttribute('aria-selected', String(button === selected)); });
+      }
+      renderContent();
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        window.scrollTo(0, Number(saved.scrollY) || 0);
+        sessionStorage.removeItem(returnStateKey);
+      }));
+    };
+    grid.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href]');
+      if (!link || !/^\.\/|^\/journal\//.test(link.getAttribute('href') || '')) return;
+      try { sessionStorage.setItem(returnStateKey, JSON.stringify({ scrollY: window.scrollY, filter: activeFilter })); } catch {}
+    });
     const renderContent = () => {
       if (!Array.isArray(window.SHU_YI_CONTENT)) {
         grid.querySelectorAll('[data-content-type]').forEach((card) => { card.hidden = activeFilter !== 'all' && card.dataset.contentType !== activeFilter; });
         return;
       }
       const items = window.SHU_YI_CONTENT.filter((item) => activeFilter === 'all' || item.type === activeFilter);
-      grid.innerHTML = items.map((item) => { const title = escapeHtml(item.title); const cover = item.cover ? `<img class="card-cover" src="${escapeHtml(item.cover)}" alt="${title}" loading="lazy">` : ''; const visual = cover || (item.type === 'video' ? `<button class="card-play" ${item.embed_url ? `data-youtube="${escapeHtml(item.embed_url)}"` : `data-video="${escapeHtml(item.video)}"`} aria-label="播放 ${title}">▶</button>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`); return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}"><div class="card-art">${visual}</div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p><a href="${escapeHtml(item.href)}">閱讀內容 <span>→</span></a></article>`; }).join('');
+      grid.innerHTML = items.map((item) => { const title = escapeHtml(item.title); const href = escapeHtml(item.href); const cover = item.cover ? `<a class="card-art-link" href="${href}" aria-label="閱讀文章：${title}"><img class="card-cover" src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.imageAlt)}" loading="lazy"></a>` : ''; const visual = cover || (item.type === 'video' ? `<button class="card-play" ${item.embed_url ? `data-youtube="${escapeHtml(item.embed_url)}"` : `data-video="${escapeHtml(item.video)}"`} aria-label="播放 ${title}">▶</button>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`); return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}"><div class="card-art">${visual}</div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p><a href="${href}">閱讀內容 <span>→</span></a></article>`; }).join('');
     };
     renderContent();
     document.addEventListener('shuyi-content-ready', renderContent);
+    if (window.SHU_YI_CONTENT_READY && typeof window.SHU_YI_CONTENT_READY.then === 'function') window.SHU_YI_CONTENT_READY.then(restoreListPosition);
+    else restoreListPosition();
     document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => { document.querySelectorAll('[data-filter]').forEach((item) => { item.classList.remove('is-active'); item.setAttribute('aria-selected', 'false'); }); button.classList.add('is-active'); button.setAttribute('aria-selected', 'true'); activeFilter = button.dataset.filter; renderContent(); }));
   }
   const videoDialog = document.querySelector('#video-dialog'); const dialogVideo = document.querySelector('#dialog-video');

@@ -11,4 +11,4 @@
 5. 使用 URL Inspection 檢查首頁、服務頁、Journal 列表及已發布文章的抓取、索引、SEO 與結構化資料狀態；必要時測試即時網址。
 6. 查看 AI Performance（若該資源已有報表資料），觀察 Citations、被引用頁面、Grounding Queries，以及介面提供的主題／意圖分析。這些是可見度觀測，不代表排名或保證被引用。
 
-Bing 官方說明：[新增及驗證網站](https://www2.bing.com/webmasters/help/add-and-verify-site-12184f8b)、[提交 Sitemap](https://www2.bing.com/webmasters/help/sitemaps-3b5cf6ed)、[URL Inspection](https://www.bing.com/webmasters/help/URL-Inspection-55a30305)、[AI Performance](https://blogs.bing.com/webmaster/2026/2/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview/)。
+Bing 官方說明：[新增及驗證網站](https://www2.bing.com/webmasters/help/add-and-verify-site-12184f8b)、[提交 Sitemap](https://www2.bing.com/webmasters/help/sitemaps-3b5cf6ed)、[URL Inspection](https://www.bing.com/webmasters/help/URL-Inspection-55a30305)、[AI Performance 報表](https://www.bing.com/webmasters/help/ai-performance-9f8e7d6c)。

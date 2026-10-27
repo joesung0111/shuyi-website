@@ -1,0 +1,197 @@
+{
+  "sleep-full-still-tired": {
+    "kind": "一般睡眠生活資訊",
+    "basis": "本文關於成人睡眠需求會因年齡與個人狀況而異、持續睡眠困擾應諮詢醫療人員的說明，參考 CDC 睡眠資訊；睡前收拾與晨間安排是編輯提供的生活建議，不代表治療失眠。",
+    "boundary": "非診斷、非治療建議。長期疲倦或睡眠困擾應由醫療專業人員評估。",
+    "review": "尚未經睡眠或醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "CDC：About Sleep",
+        "url": "https://www.cdc.gov/sleep/about/"
+      }
+    ],
+    "imageAlt": "明亮臥室裡鋪有淺色寢具的雙人床。"
+  },
+  "third-coffee-still-tired": {
+    "kind": "一般咖啡因生活資訊",
+    "basis": "本文只以 FDA 消費者資訊支持咖啡因敏感度因人而異、攝取可能影響睡眠等一般說明；文中的走動與喝水步驟是生活提議。",
+    "boundary": "不提供個人咖啡因攝取量或醫療建議。懷孕、用藥或有健康疑慮者應詢問醫療人員。",
+    "review": "尚未經營養或醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "FDA：Spilling the Beans: How Much Caffeine is Too Much?",
+        "url": "https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much"
+      }
+    ],
+    "imageAlt": "幾雙手舉著咖啡杯，杯面有拉花。"
+  },
+  "three-minute-after-commute": {
+    "kind": "一般活動與工作姿勢資訊",
+    "basis": "本文關於長時間維持同一姿勢可安排姿勢變化與短暫活動的背景，參考美國 OSHA 電腦工作站指引；三分鐘分段是本文自訂的日常提議，不是臨床處方。",
+    "boundary": "動作以舒適、安全為限；不適或疼痛加劇時停止。本文不診斷或治療疼痛。",
+    "review": "尚未經職業醫學、物理治療或其他合格專業人員審閱。",
+    "sources": [
+      {
+        "title": "OSHA：Computer Workstations — Work Process and Recognition",
+        "url": "https://www.osha.gov/etools/computer-workstations/work-process"
+      },
+      {
+        "title": "OSHA：Computer Workstations — Good Working Positions",
+        "url": "https://www.osha.gov/etools/computer-workstations/positions"
+      }
+    ],
+    "imageAlt": "道路穿過紅色岩石山谷，延伸至遠方。"
+  },
+  "travel-with-room-to-breathe": {
+    "kind": "個人行程安排建議",
+    "basis": "本文談行程留白、交通緩衝與同行者溝通，屬編輯提供的旅行安排想法，未宣稱健康或療效結果。",
+    "boundary": "非醫療資訊；依個人需求、交通與目的地狀況安排。",
+    "review": "不涉及醫療審閱；尚未經旅行服務專業人員審稿。",
+    "sources": [],
+    "imageAlt": "高山湖畔的木屋，四周環繞山峰與森林。"
+  },
+  "screen-break-twenty-seconds": {
+    "kind": "一般螢幕休息與工作姿勢資訊",
+    "basis": "20-20-20 休息口訣參考美國驗光協會；長時間固定姿勢宜安排休息與姿勢變化的背景參考美國 OSHA。個人症狀不由本文判斷。",
+    "boundary": "持續眼睛不適、視力改變或疼痛應尋求眼科專業評估；本文不是眼科建議。",
+    "review": "尚未經眼科或驗光專業人員審閱。",
+    "sources": [
+      {
+        "title": "American Optometric Association：20/20/20 to Prevent Digital Eye Strain",
+        "url": "https://www.aoa.org/AOA/Images/Patients/Eye%20Conditions/20-20-20-rule.pdf"
+      },
+      {
+        "title": "OSHA：Computer Workstations — Work Process and Recognition",
+        "url": "https://www.osha.gov/etools/computer-workstations/work-process"
+      }
+    ],
+    "imageAlt": "筆電放在明亮的白色書桌上，螢幕顯示程式碼。"
+  },
+  "walk-without-step-goal": {
+    "kind": "一般身體活動生活資訊",
+    "basis": "本文主張以個人可持續的方式開始活動，不把單一每日步數當成人人適用的健康標準；CDC 指引指出活動量可分段並應按個人狀況開始。",
+    "boundary": "本文不是個人運動處方。有慢性病、受傷或活動安全疑慮者，先詢問醫療專業人員。",
+    "review": "尚未經運動或醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "CDC：Adult Activity — An Overview",
+        "url": "https://www.cdc.gov/physical-activity-basics/guidelines/adults.html"
+      }
+    ],
+    "imageAlt": "山腳松林與高聳岩壁構成的景色。"
+  },
+  "make-movement-too-small-to-fail": {
+    "kind": "一般身體活動起步建議",
+    "basis": "本文以小步驟作為行為安排建議；CDC 的活動入門資訊也建議循序開始、選擇喜歡的活動與時段。本文的具體小目標是編輯例子。",
+    "boundary": "不構成個人訓練計畫。已有健康疑慮或慢性狀況者，請先確認適合的活動方式。",
+    "review": "尚未經運動或醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "CDC：Steps for Getting Started With Physical Activity",
+        "url": "https://www.cdc.gov/healthy-weight-growth/physical-activity/getting-started.html"
+      }
+    ],
+    "imageAlt": "健身房地墊上的槓鈴與運動鞋。"
+  },
+  "remember-water-with-routines": {
+    "kind": "一般飲水生活資訊",
+    "basis": "本文不設定每日飲水量；CDC 指出飲水需求會依年齡、活動及其他個人條件而不同，並提供把水放在方便取得處等一般做法。",
+    "boundary": "本文不給個人補水處方。若有需限制水分的疾病或醫囑，依照醫療人員指示。",
+    "review": "尚未經營養或醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "CDC：About Water and Healthier Drinks",
+        "url": "https://www.cdc.gov/healthy-weight-growth/water-healthy-drinks/"
+      }
+    ],
+    "imageAlt": "水流注入透明玻璃杯，杯中可見氣泡。"
+  },
+  "shoes-comfort-over-looks": {
+    "kind": "一般購鞋與穿著觀察建議",
+    "basis": "本文列出的試穿步驟是消費者自我觀察清單，未宣稱能預防或治療足部疾病。",
+    "boundary": "若有足部疼痛、麻木、傷口或持續不適，請尋求適當醫療評估；本文不提供足部疾病建議。",
+    "review": "尚未經足科或醫療專業人員審閱。",
+    "sources": [],
+    "imageAlt": "紅色運動鞋置於紅色背景上。"
+  },
+  "weekend-rest-without-checklist": {
+    "kind": "一般休息與時間安排建議",
+    "basis": "本文以生活安排與個人偏好為主，不將特定休息方式描述為治療或具有保證效果。",
+    "boundary": "非心理治療或醫療建議。若情緒或疲倦長期影響生活，尋求專業協助。",
+    "review": "尚未經心理或醫療專業人員審閱。",
+    "sources": [],
+    "imageAlt": "服飾店內陳列衣物、鞋子與配件的層架。"
+  },
+  "one-minute-before-meeting": {
+    "kind": "一般呼吸覺察生活建議",
+    "basis": "本文建議不憋氣、以舒服姿勢留意自然呼吸；NHS 公開的壓力呼吸練習同樣提醒以舒服、不勉強的方式進行。本文不宣稱可治療焦慮。",
+    "boundary": "若練習造成不適請停止。呼吸困難或持續焦慮等症狀應尋求醫療或心理專業協助。",
+    "review": "尚未經心理或醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "NHS：Breathing Exercises for Stress",
+        "url": "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/"
+      }
+    ],
+    "imageAlt": "女子在室內瑜伽墊上盤腿靜坐，窗邊透入陽光。"
+  },
+  "five-minute-morning-start": {
+    "kind": "一般晨間生活安排建議",
+    "basis": "喝水、開窗簾、伸展與預先放好物品是本文提出的個人生活安排例子，不宣稱能治療疲倦或改善特定疾病。",
+    "boundary": "非醫療或睡眠治療建議。持續疲倦、頭暈或其他症狀應由醫療人員評估。",
+    "review": "尚未經睡眠或醫療專業人員審閱。",
+    "sources": [],
+    "imageAlt": "藍天下盛開的橙黃色鬱金香。"
+  },
+  "transition-out-of-workday": {
+    "kind": "一般工作後轉換與壓力照顧建議",
+    "basis": "本文列舉的寫下待辦、離開工作位置等方法是編輯的生活安排建議；WHO 資料僅提供工作與心理健康的一般背景，不證明特定步驟適用每個人。",
+    "boundary": "不診斷或治療壓力、焦慮或憂鬱。若狀況持續影響日常，尋求心理或醫療專業支持。",
+    "review": "尚未經心理或醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "WHO：Mental Health at Work",
+        "url": "https://www.who.int/news-room/fact-sheets/detail/mental-health-at-work"
+      }
+    ],
+    "imageAlt": "夕陽照亮層疊山巒，遠方天空泛著橘色光。"
+  },
+  "listen-after-workout": {
+    "kind": "一般運動恢復與求助界線資訊",
+    "basis": "本文提醒觀察疼痛、腫脹、活動受限與惡化情形並停止加劇不適的活動；背景參考 NHS 醫療機構的運動與痠痛指引。",
+    "boundary": "本文無法區分個人的正常痠痛與受傷。尖銳疼痛、明顯腫脹、活動受限或惡化時，應尋求醫療評估。",
+    "review": "尚未經醫師、物理治療或其他合格運動醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "Leicestershire Partnership NHS Trust：Musculoskeletal FAQs — Muscle soreness",
+        "url": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/msk-physiotherapy-resources-faqs/"
+      }
+    ],
+    "imageAlt": "瑜伽課程中，學員在墊上做伸展動作。"
+  },
+  "a-day-without-achievements": {
+    "kind": "一般情緒照顧生活資訊",
+    "basis": "本文對吃飯、休息、降低當日目標的建議是一般生活支持；關於低落持續並影響生活時尋求協助的提醒，參考 NHS 低落情緒資訊。",
+    "boundary": "不診斷憂鬱症，也不替代心理或醫療照護。若低落持續、嚴重影響生活或有立即危險，請聯繫當地醫療與緊急支援。",
+    "review": "尚未經心理或醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "NHS：Low Mood, Sadness and Depression",
+        "url": "https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/low-mood-sadness-depression/"
+      }
+    ],
+    "imageAlt": "日出照亮有樹木的草坡，遠處湖面被晨霧覆蓋。"
+  },
+  "first-breath": {
+    "kind": "一般呼吸覺察影片",
+    "basis": "影片邀請觀眾留意呼吸，屬非醫療的覺察練習；不主張診斷或療效。",
+    "boundary": "不適時停止；呼吸困難或其他症狀請尋求醫療協助。",
+    "review": "尚未經心理或醫療專業人員審閱。",
+    "sources": [
+      {
+        "title": "NHS：Breathing Exercises for Stress",
+        "url": "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/"
+      }
+    ]
+  }
+}
