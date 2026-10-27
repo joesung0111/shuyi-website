@@ -193,5 +193,20 @@
         "url": "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/"
       }
     ]
+  },
+  "ddd": {
+    "kind": "待確認的測試內容",
+    "basis": "目前標題與內文是無法判讀的測試字串，沒有可引用的資料來源。",
+    "boundary": "內容確認前不要視為任何健康資訊或操作建議。",
+    "review": "尚無審閱紀錄。",
+    "sources": []
+  },
+  "test01": {
+    "kind": "待確認的測試內容",
+    "basis": "目前標題、摘要與內文為測試佔位文字，沒有可引用的資料來源。",
+    "boundary": "內容確認前不要視為任何健康資訊或操作建議。",
+    "review": "尚無審閱紀錄。",
+    "sources": [],
+    "imageAlt": "復古廂型車停在棕櫚樹旁的海灘道路邊，背景可見海岸與行人。"
   }
 }

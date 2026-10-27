@@ -1,6 +1,8 @@
 # Journal 文章資料與審閱規範
 
-目前已發布的 CMS 範例文章逐篇對照在 [`../content/editorial-evidence.json`](../content/editorial-evidence.json)，文章頁會顯示內容性質、資料依據、醫療界線、專業審閱狀態和參考資料。
+目前已發布的 CMS 範例文章逐篇對照在 [`../content/editorial-evidence.json`](../content/editorial-evidence.json)，文章頁會顯示內容性質、資料依據、醫療界線、專業審閱狀態和參考資料。未登錄資料的 CMS 文章也會顯示「資料與審閱資訊待確認」，不會被呈現成已核實內容。
+
+目前正式站另有兩筆標題／內文是測試佔位字串的 CMS 文章（`ddd`、`test01`）。它們已明確標為來源與審閱待確認；CMS 發布狀態未由本次修改代為變更。
 
 ## 編輯與發布
 
