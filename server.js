@@ -83,7 +83,8 @@ function pageSeo(pathname) {
   const normalized = pathname === '/' ? '/' : `${pathname.replace(/\/+$/, '')}/`;
   const routes = {
     '/': ['舒逸 Shu Yi｜美式活化槍全身調理・預約制', '舒逸提供美式活化槍全身調理，依身體當下感受與日常活動安排服務；了解服務方式、舒逸日常、工作室資訊與線上預約入口。'],
-    '/services/': ['美式活化槍全身調理｜服務介紹｜舒逸 Shu Yi', '了解舒逸以美式活化槍為核心的全身活化調理服務理念、目前公開的服務說明與預約入口。'],
+    '/services/': ['美式活化槍全身調理｜服務介紹｜舒逸 Shu Yi', '了解舒逸以美式活化槍為核心的全身活化調理服務理念與方式。'],
+    '/offerings/': ['服務項目｜活化調理與舒緩安排｜舒逸 Shu Yi', '查看舒逸各項活化調理與舒緩服務的內容、時間與費用，依需求選擇適合的安排。'],
     '/booking/': ['舒逸預約｜全身活化調理線上預約入口', '查看舒逸全身活化調理的預約方式，並前往舒逸線上預約平台選擇服務與時段；預約平台另提供 AI 輔助問答。'],
     '/studio/': ['舒逸工作室｜預約制空間與到訪資訊', '認識舒逸工作室與目前公開的到訪資訊。工作室採預約制，地址與營業時段將於確認後公布。'],
     '/journal/': ['舒逸日常｜身體感受、活動與日常照顧', '舒逸日常整理身體感受、久坐、活動、休息與生活習慣相關內容，提供日常閱讀與自我照顧資訊。']
@@ -101,7 +102,7 @@ function addSeo(html, pathname) {
   if (pathname === '/') schemas.push({ '@context': 'https://schema.org', '@type': 'Organization', '@id': `${SITE_ORIGIN}/#organization`, name: '舒逸', alternateName: 'Shu Yi', url: `${SITE_ORIGIN}/`, description: '舒逸提供美式活化槍全身調理服務。' });
   if (pathname === '/services/') schemas.push({ '@context': 'https://schema.org', '@type': 'Service', name: '全身活化調理', provider: { '@id': `${SITE_ORIGIN}/#organization` }, url: `${SITE_ORIGIN}/services/`, description: '舒逸以美式活化槍為核心，依身體當下的感受與日常活動安排調理。' });
   if (pathname !== '/') {
-    const label = pathname === '/services/' ? '活化調理' : pathname === '/booking/' ? '預約' : pathname === '/studio/' ? '工作室' : '舒逸日常';
+    const label = pathname === '/services/' ? '活化調理' : pathname === '/offerings/' ? '服務項目' : pathname === '/booking/' ? '預約' : pathname === '/studio/' ? '工作室' : '舒逸日常';
     schemas.push({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: label, item: seo.canonical }] });
   }
   const tags = `${googleVerificationMeta}<link rel="canonical" href="${escapeHtml(seo.canonical)}"><meta property="og:title" content="${title}"><meta property="og:description" content="${description}"><meta property="og:url" content="${escapeHtml(seo.canonical)}"><meta property="og:type" content="${type}"><meta property="og:image" content="${SITE_ORIGIN}/素材/淺色系-1K.jpeg">${schemas.map((schema) => `<script type="application/ld+json">${jsonLd(schema)}</script>`).join('')}${ga4Boot}`;
@@ -109,7 +110,7 @@ function addSeo(html, pathname) {
 }
 
 function sitemapXml() {
-  const fixed = ['/', '/services/', '/journal/', '/studio/', '/booking/'];
+  const fixed = ['/', '/services/', '/offerings/', '/journal/', '/studio/', '/booking/'];
   const rows = db.prepare("SELECT slug, updated_at, published_at FROM content WHERE status = 'published' ORDER BY COALESCE(published_at, updated_at) DESC").all();
   const urls = [...fixed.map((loc) => ({ loc: `${SITE_ORIGIN}${loc}` })), ...rows.map((row) => ({ loc: `${SITE_ORIGIN}/journal/${encodeURIComponent(row.slug)}/`, lastmod: dateOnly(row.updated_at || row.published_at) }))];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(({ loc, lastmod }) => `<url><loc>${escapeHtml(loc)}</loc>${lastmod ? `<lastmod>${escapeHtml(lastmod)}</lastmod>` : ''}</url>`).join('')}</urlset>`;
@@ -229,9 +230,9 @@ createServer(async (req, res) => {
       return res.end(sitemapXml());
     }
     if (req.method === 'GET' && url.pathname === '/index.html') { res.writeHead(308, { location: '/' }); return res.end(); }
-    const pageAlias = url.pathname.match(/^\/(services|journal|studio|booking)$/);
+    const pageAlias = url.pathname.match(/^\/(services|offerings|journal|studio|booking)$/);
     if (req.method === 'GET' && pageAlias) { res.writeHead(308, { location: `${url.pathname}/${url.search}` }); return res.end(); }
-    const staticAlias = url.pathname.match(/^\/(services|journal|studio|booking)\/index\.html$/);
+    const staticAlias = url.pathname.match(/^\/(services|offerings|journal|studio|booking)\/index\.html$/);
     if (req.method === 'GET' && staticAlias) { res.writeHead(308, { location: `/${staticAlias[1]}/${url.search}` }); return res.end(); }
     const articleAlias = url.pathname.match(/^\/journal\/([a-z0-9-]+)$/);
     if (req.method === 'GET' && articleAlias) { res.writeHead(308, { location: `${url.pathname}/${url.search}` }); return res.end(); }
