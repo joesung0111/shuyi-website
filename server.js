@@ -230,9 +230,9 @@ createServer(async (req, res) => {
       res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
       return res.end(`User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nUser-agent: OAI-SearchBot\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nUser-agent: GPTBot\nDisallow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`);
     }
-    if (req.method === 'GET' && url.pathname === '/sitemap.xml') {
+    if ((req.method === 'GET' || req.method === 'HEAD') && url.pathname === '/sitemap.xml') {
       res.writeHead(200, { 'content-type': 'application/xml; charset=utf-8' });
-      return res.end(sitemapXml());
+      return res.end(req.method === 'HEAD' ? undefined : sitemapXml());
     }
     if (req.method === 'GET' && url.pathname === '/index.html') { res.writeHead(308, { location: '/' }); return res.end(); }
     const pageAlias = url.pathname.match(/^\/(services|offerings|journal|studio|booking)$/);
