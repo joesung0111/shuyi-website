@@ -11,6 +11,7 @@ const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const PORT = Number(process.env.PORT || 4173);
 const ADMIN_PASSWORD = process.env.SHUYI_ADMIN_PASSWORD || 'shuyi-local-dev';
 const SITE_ORIGIN = 'https://sy-body.com';
+const BOOKING_URL = new URL(process.env.BOOKING_URL || 'https://booking.sy-body.com/').href;
 const GOOGLE_SITE_VERIFICATION = /^[A-Za-z0-9_-]+$/.test(process.env.GOOGLE_SITE_VERIFICATION || '') ? process.env.GOOGLE_SITE_VERIFICATION : '';
 const googleVerificationMeta = GOOGLE_SITE_VERIFICATION ? `<meta name="google-site-verification" content="${GOOGLE_SITE_VERIFICATION}">` : '';
 const GA4_MEASUREMENT_ID = /^G-[A-Z0-9]+$/i.test(process.env.GA4_MEASUREMENT_ID || '') ? process.env.GA4_MEASUREMENT_ID : '';
@@ -83,7 +84,7 @@ function pageSeo(pathname) {
   const normalized = pathname === '/' ? '/' : `${pathname.replace(/\/+$/, '')}/`;
   const routes = {
     '/': ['舒逸 Shu Yi｜美式活化槍全身調理・預約制', '舒逸提供美式活化槍全身調理，依身體當下感受與日常活動安排服務；了解服務方式、舒逸日常、工作室資訊與線上預約入口。'],
-    '/services/': ['美式活化槍全身調理｜服務介紹｜舒逸 Shu Yi', '了解舒逸以美式活化槍為核心的全身活化調理服務理念與方式。'],
+    '/services/': ['美式活化槍全身調理 服務方式與預約 舒逸 Shu Yi', '了解舒逸美式活化槍全身調理的服務方式、與一般按摩的差異、適合了解的生活情境、第一次服務流程、時間、費用與線上預約方式。'],
     '/offerings/': ['服務項目 活化調理與舒緩安排 舒逸 Shu Yi', '查看舒逸各項活化調理與舒緩服務的內容、時間與費用，依需求選擇適合的安排。'],
     '/booking/': ['舒逸預約｜全身活化調理線上預約入口', '查看舒逸全身活化調理的預約方式，並前往舒逸線上預約平台選擇服務與時段；預約平台另提供 AI 輔助問答。'],
     '/studio/': ['舒逸工作室｜預約制空間與到訪資訊', '認識舒逸工作室與目前公開的到訪資訊。工作室採預約制，地址與營業時段將於確認後公布。'],
@@ -100,7 +101,7 @@ function addSeo(html, pathname) {
   const type = pathname === '/' ? 'website' : 'website';
   const schemas = [];
   if (pathname === '/') schemas.push({ '@context': 'https://schema.org', '@type': 'Organization', '@id': `${SITE_ORIGIN}/#organization`, name: '舒逸', alternateName: 'Shu Yi', url: `${SITE_ORIGIN}/`, description: '舒逸提供美式活化槍全身調理服務。' });
-  if (pathname === '/services/') schemas.push({ '@context': 'https://schema.org', '@type': 'Service', name: '全身活化調理', provider: { '@id': `${SITE_ORIGIN}/#organization` }, url: `${SITE_ORIGIN}/services/`, description: '舒逸以美式活化槍為核心，依身體當下的感受與日常活動安排調理。' });
+  if (pathname === '/services/') schemas.push({ '@context': 'https://schema.org', '@type': 'Service', name: '全身活化調理', provider: { '@id': `${SITE_ORIGIN}/#organization` }, url: `${SITE_ORIGIN}/services/`, description: '以美式活化槍為核心，透過了解當下狀況、分段檢查與觀察、安排調理、再次確認與系統化紀錄，提供預約制日常身體照顧與放鬆服務。' });
   if (pathname !== '/') {
     const label = pathname === '/services/' ? '活化調理' : pathname === '/offerings/' ? '服務項目' : pathname === '/booking/' ? '預約' : pathname === '/studio/' ? '工作室' : '舒逸日常';
     schemas.push({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: label, item: seo.canonical }] });
@@ -192,7 +193,7 @@ async function staticFile(req, res, pathname) {
     }
 
     if (extension === '.html') {
-      let html = (await readFile(filePath, 'utf8')).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT');
+      let html = (await readFile(filePath, 'utf8')).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replaceAll('{{BOOKING_URL}}', escapeHtml(BOOKING_URL));
       if (clean === '/journal/index.html') {
         const published = db.prepare("SELECT * FROM content WHERE status = 'published' ORDER BY COALESCE(published_at, updated_at) DESC").all();
         html = html.replace('<div class="content-grid" id="content-grid" aria-live="polite"></div>', `<div class="content-grid" id="content-grid" aria-live="polite">${published.map(cardHtml).join('')}</div>`);
