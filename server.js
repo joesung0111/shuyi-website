@@ -10,7 +10,7 @@ import { DatabaseSync } from 'node:sqlite';
 const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const PORT = Number(process.env.PORT || 4173);
 const ADMIN_PASSWORD = process.env.SHUYI_ADMIN_PASSWORD || 'shuyi-local-dev';
-const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://sy-web.up.railway.app').replace(/\/$/, '');
+const SITE_ORIGIN = 'https://sy-body.com';
 const GOOGLE_SITE_VERIFICATION = /^[A-Za-z0-9_-]+$/.test(process.env.GOOGLE_SITE_VERIFICATION || '') ? process.env.GOOGLE_SITE_VERIFICATION : '';
 const googleVerificationMeta = GOOGLE_SITE_VERIFICATION ? `<meta name="google-site-verification" content="${GOOGLE_SITE_VERIFICATION}">` : '';
 const GA4_MEASUREMENT_ID = /^G-[A-Z0-9]+$/i.test(process.env.GA4_MEASUREMENT_ID || '') ? process.env.GA4_MEASUREMENT_ID : '';
@@ -221,6 +221,10 @@ function dynamicArticle(req, res, pathname) {
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   try {
+    if (url.hostname.toLowerCase() === 'www.sy-body.com') {
+      res.writeHead(308, { location: `https://sy-body.com${url.pathname}${url.search}` });
+      return res.end();
+    }
     if (req.method === 'GET' && url.pathname === '/robots.txt') {
       res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
       return res.end(`User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nUser-agent: OAI-SearchBot\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nUser-agent: GPTBot\nDisallow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`);
