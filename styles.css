@@ -377,26 +377,29 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 .motion-video .play-button { display:none; }
 
 /* Service options: editorial guidance with fees kept secondary to the choice of care. */
-.offerings { scroll-margin-top:100px; border-top:1px solid var(--line); }
+.offerings { scroll-margin-top:110px; padding-top:clamp(20px,4vw,56px); }
 .offerings__heading { display:grid; grid-template-columns:1fr minmax(250px,.55fr); align-items:end; gap:48px; margin-bottom:clamp(45px,7vw,90px); }
 .offerings__heading h2 { margin:22px 0 0; font-size:clamp(40px,5.4vw,78px); line-height:1.12; letter-spacing:-.065em; }
 .offerings__heading > p { max-width:390px; margin:0 0 6px auto; color:var(--muted); line-height:1.9; }
-.offering-group { display:grid; grid-template-columns:minmax(190px,.65fr) minmax(0,1.35fr); gap:clamp(32px,7vw,100px); padding:35px 0 58px; border-top:1px solid var(--line); }
+.offering-group { display:grid; grid-template-columns:minmax(190px,.65fr) minmax(0,1.35fr); gap:clamp(32px,7vw,100px); padding:0 0 clamp(48px,6vw,80px); }
 .offering-group__label > span { color:var(--accent); font:11px var(--mono); }
-.offering-group__label h3 { margin:28px 0 12px; font-size:clamp(24px,3vw,38px); letter-spacing:-.05em; }
+.offering-group__label h2 { margin:16px 0 14px; font-size:clamp(24px,3vw,38px); letter-spacing:-.05em; }
 .offering-group__label p { max-width:290px; color:var(--muted); font-size:14px; line-height:1.9; }
-.offering-list { border-top:1px solid var(--line); }
-.offering { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:25px; padding:22px 0; border-bottom:1px solid var(--line); }
-.offering h4 { margin:0 0 8px; font-size:19px; font-weight:500; letter-spacing:-.025em; }
+.offering-list { display:grid; gap:30px; align-content:start; }
+.offering { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:28px; padding:0; }
+.offering h3 { margin:0 0 8px; font-size:19px; font-weight:500; letter-spacing:-.025em; }
 .offering p { max-width:540px; margin:0; color:var(--muted); font-size:13px; line-height:1.8; }
 .offering__meta { display:grid; justify-items:end; gap:6px; white-space:nowrap; }
 .offering__meta span { color:var(--muted); font:11px var(--mono); }
 .offering__meta strong { font-size:24px; font-weight:500; letter-spacing:-.04em; }
 .offering__meta small { font-size:11px; font-weight:400; letter-spacing:0; }
 .offering__meta del { opacity:.65; }
-.offering--bundle { padding-block:25px; }
-.offerings__note { max-width:760px; margin:10px 0 30px auto; color:var(--muted); font-size:12px; line-height:1.85; }
-@media (max-width:720px) { .offerings__heading,.offering-group { grid-template-columns:1fr; gap:22px; }.offerings__heading > p { margin:0; }.offering-group { padding-bottom:36px; }.offering-group__label h3 { margin:14px 0 8px; }.offering-group__label p { max-width:500px; margin:0; }.offering { grid-template-columns:minmax(0,1fr) auto; gap:12px; padding:18px 0; }.offering h4 { font-size:17px; }.offering p { font-size:12px; }.offering__meta strong { font-size:20px; }.offering__meta span { font-size:10px; white-space:normal; text-align:right; }.offerings__note { margin-left:0; } }
+.offering--bundle { padding:0; }
+.offering-group--series { background:color-mix(in srgb,var(--surface) 48%,transparent); border-radius:8px; padding:clamp(26px,4vw,48px); margin-bottom:36px; }
+.offering-group--series .offering-group__label p { margin-bottom:0; }
+.offering-group--series .offering-list { gap:32px; }
+.offerings__note { max-width:760px; margin:10px 0 30px; color:var(--muted); font-size:12px; line-height:1.85; }
+@media (max-width:720px) { .offerings__heading,.offering-group { grid-template-columns:1fr; gap:22px; }.offerings__heading > p { margin:0; }.offering-group { padding-bottom:40px; gap:30px; }.offering-group--series { padding:26px 20px; margin-inline:-8px; }.offering-list { gap:28px; }.offering-group__label h2 { margin:14px 0 8px; }.offering-group__label p { max-width:500px; margin:0; }.offering { grid-template-columns:minmax(0,1fr) auto; gap:18px; padding:0; }.offering h3 { font-size:17px; }.offering p { font-size:12px; }.offering__meta strong { font-size:20px; }.offering__meta span { font-size:10px; white-space:normal; text-align:right; }.offerings__note { margin-left:0; } }
 
 /* Services v2: retain the hero and give practical answers a calm reading rhythm. */
 .services-summary,.services-reading,.services-planning { border-bottom:1px solid var(--line); padding-block:clamp(56px,7vw,104px); }
@@ -466,3 +469,5 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 @media(max-width:680px){.booking-guide__intro{grid-template-columns:1fr;gap:22px;margin-bottom:32px}.booking-guide__lead{font-size:14px;margin:0}.booking-guide__steps{grid-template-columns:1fr;gap:0}.booking-guide__steps li{display:grid;grid-template-columns:32px minmax(0,1fr);column-gap:14px;padding:22px 0}.booking-guide__number{grid-row:1 / 3;padding-top:7px}.booking-guide__steps h3{margin:0 0 7px;font-size:17px}.booking-guide__steps p{grid-column:2;max-width:none}.booking-guide__footer{margin-top:18px;gap:16px}.booking-guide__footer .button{width:100%;max-width:360px;justify-content:space-between;white-space:normal}.booking-guide__footer p{max-width:28em}}
 
 #booking-guide-title,#booking-action{scroll-margin-top:110px}
+
+.offerings-page .page-hero{border-bottom:0}
