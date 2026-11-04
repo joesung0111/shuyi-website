@@ -10,7 +10,13 @@
         "url": "https://www.cdc.gov/sleep/about/"
       }
     ],
-    "imageAlt": "明亮臥室裡鋪有淺色寢具的雙人床。"
+    "imageAlt": "明亮臥室裡鋪有淺色寢具的雙人床。",
+    "sectionHeadings": [
+      "睡眠時數以外的日常觀察",
+      "今晚可以嘗試的小調整",
+      "早晨慢慢開始",
+      "持續疲倦時尋求協助"
+    ]
   },
   "third-coffee-still-tired": {
     "kind": "一般咖啡因生活資訊",
@@ -23,7 +29,13 @@
         "url": "https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much"
       }
     ],
-    "imageAlt": "幾雙手舉著咖啡杯，杯面有拉花。"
+    "imageAlt": "幾雙手舉著咖啡杯，杯面有拉花。",
+    "sectionHeadings": [
+      "續杯前觀察日常安排",
+      "咖啡無法代替休息",
+      "先走動再決定",
+      "留意自己的感受"
+    ]
   },
   "three-minute-after-commute": {
     "kind": "一般活動與工作姿勢資訊",
@@ -40,7 +52,13 @@
         "url": "https://www.osha.gov/etools/computer-workstations/positions"
       }
     ],
-    "imageAlt": "道路穿過紅色岩石山谷，延伸至遠方。"
+    "imageAlt": "道路穿過紅色岩石山谷，延伸至遠方。",
+    "sectionHeadings": [
+      "到站後留一點緩衝",
+      "前兩分鐘溫和活動",
+      "最後一分鐘自然呼吸",
+      "依感受安排轉場"
+    ]
   },
   "travel-with-room-to-breathe": {
     "kind": "個人行程安排建議",
@@ -48,7 +66,13 @@
     "boundary": "非醫療資訊；依個人需求、交通與目的地狀況安排。",
     "review": "不涉及醫療審閱；尚未經旅行服務專業人員審稿。",
     "sources": [],
-    "imageAlt": "高山湖畔的木屋，四周環繞山峰與森林。"
+    "imageAlt": "高山湖畔的木屋，四周環繞山峰與森林。",
+    "sectionHeadings": [
+      "觀察行程的密度",
+      "先選一個主行程",
+      "為交通與休息留緩衝",
+      "記下一個喜歡的片刻"
+    ]
   },
   "screen-break-twenty-seconds": {
     "kind": "一般螢幕休息與工作姿勢資訊",
@@ -65,7 +89,13 @@
         "url": "https://www.osha.gov/etools/computer-workstations/work-process"
       }
     ],
-    "imageAlt": "筆電放在明亮的白色書桌上，螢幕顯示程式碼。"
+    "imageAlt": "筆電放在明亮的白色書桌上，螢幕顯示程式碼。",
+    "sectionHeadings": [
+      "讓視線暫時離開螢幕",
+      "溫和變換姿勢",
+      "把休息放進工作節奏",
+      "持續不適時尋求協助"
+    ]
   },
   "walk-without-step-goal": {
     "kind": "一般身體活動生活資訊",
@@ -78,7 +108,13 @@
         "url": "https://www.cdc.gov/physical-activity-basics/guidelines/adults.html"
       }
     ],
-    "imageAlt": "山腳松林與高聳岩壁構成的景色。"
+    "imageAlt": "山腳松林與高聳岩壁構成的景色。",
+    "sectionHeadings": [
+      "從舒服的路開始",
+      "選一條容易出發的路",
+      "依狀況調整距離與速度",
+      "找到願意持續的理由"
+    ]
   },
   "make-movement-too-small-to-fail": {
     "kind": "一般身體活動起步建議",
@@ -91,7 +127,13 @@
         "url": "https://www.cdc.gov/healthy-weight-growth/physical-activity/getting-started.html"
       }
     ],
-    "imageAlt": "健身房地墊上的槓鈴與運動鞋。"
+    "imageAlt": "健身房地墊上的槓鈴與運動鞋。",
+    "sectionHeadings": [
+      "觀察起步門檻",
+      "先從小版本開始",
+      "固定時間與地點",
+      "有健康疑慮先詢問"
+    ]
   },
   "remember-water-with-routines": {
     "kind": "一般飲水生活資訊",
@@ -104,7 +146,13 @@
         "url": "https://www.cdc.gov/healthy-weight-growth/water-healthy-drinks/"
       }
     ],
-    "imageAlt": "水流注入透明玻璃杯，杯中可見氣泡。"
+    "imageAlt": "水流注入透明玻璃杯，杯中可見氣泡。",
+    "sectionHeadings": [
+      "把喝水連結生活節點",
+      "讓水杯容易取得",
+      "需求依個人狀況不同",
+      "先選一個時刻開始"
+    ]
   },
   "shoes-comfort-over-looks": {
     "kind": "一般購鞋與穿著觀察建議",
@@ -112,7 +160,13 @@
     "boundary": "若有足部疼痛、麻木、傷口或持續不適，請尋求適當醫療評估；本文不提供足部疾病建議。",
     "review": "尚未經足科或醫療專業人員審閱。",
     "sources": [],
-    "imageAlt": "紅色運動鞋置於紅色背景上。"
+    "imageAlt": "紅色運動鞋置於紅色背景上。",
+    "sectionHeadings": [
+      "試穿時模擬日常活動",
+      "觀察空間與磨壓",
+      "確認鞋款與退換規則",
+      "穿平常的襪子再試走"
+    ]
   },
   "weekend-rest-without-checklist": {
     "kind": "一般休息與時間安排建議",
@@ -120,7 +174,13 @@
     "boundary": "非心理治療或醫療建議。若情緒或疲倦長期影響生活，尋求專業協助。",
     "review": "尚未經心理或醫療專業人員審閱。",
     "sources": [],
-    "imageAlt": "服飾店內陳列衣物、鞋子與配件的層架。"
+    "imageAlt": "服飾店內陳列衣物、鞋子與配件的層架。",
+    "sectionHeadings": [
+      "觀察週末是否排得太滿",
+      "保留不設成果的時間",
+      "找到適合自己的休息方式",
+      "在行事曆留白"
+    ]
   },
   "one-minute-before-meeting": {
     "kind": "一般呼吸覺察生活建議",
@@ -133,7 +193,13 @@
         "url": "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/"
       }
     ],
-    "imageAlt": "女子在室內瑜伽墊上盤腿靜坐，窗邊透入陽光。"
+    "imageAlt": "女子在室內瑜伽墊上盤腿靜坐，窗邊透入陽光。",
+    "sectionHeadings": [
+      "會議前留一分鐘",
+      "觀察自然呼吸",
+      "注意力跑走也沒關係",
+      "不舒服時隨時停止"
+    ]
   },
   "five-minute-morning-start": {
     "kind": "一般晨間生活安排建議",
@@ -141,7 +207,13 @@
     "boundary": "非醫療或睡眠治療建議。持續疲倦、頭暈或其他症狀應由醫療人員評估。",
     "review": "尚未經睡眠或醫療專業人員審閱。",
     "sources": [],
-    "imageAlt": "藍天下盛開的橙黃色鬱金香。"
+    "imageAlt": "藍天下盛開的橙黃色鬱金香。",
+    "sectionHeadings": [
+      "留一小段晨間時間",
+      "挑一兩個順手的動作",
+      "前一晚減少準備負擔",
+      "依當天狀況調整"
+    ]
   },
   "transition-out-of-workday": {
     "kind": "一般工作後轉換與壓力照顧建議",
@@ -154,7 +226,13 @@
         "url": "https://www.who.int/news-room/fact-sheets/detail/mental-health-at-work"
       }
     ],
-    "imageAlt": "夕陽照亮層疊山巒，遠方天空泛著橘色光。"
+    "imageAlt": "夕陽照亮層疊山巒，遠方天空泛著橘色光。",
+    "sectionHeadings": [
+      "讓下班有明確的轉場",
+      "用小動作結束工作",
+      "安排不需要表現的事",
+      "壓力影響生活時求助"
+    ]
   },
   "listen-after-workout": {
     "kind": "一般運動恢復與求助界線資訊",
@@ -167,7 +245,13 @@
         "url": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/msk-physiotherapy-resources-faqs/"
       }
     ],
-    "imageAlt": "瑜伽課程中，學員在墊上做伸展動作。"
+    "imageAlt": "瑜伽課程中，學員在墊上做伸展動作。",
+    "sectionHeadings": [
+      "先觀察訓練後的感受",
+      "把休息納入安排",
+      "出現警訊時先停止",
+      "下次活動循序調整"
+    ]
   },
   "a-day-without-achievements": {
     "kind": "一般情緒照顧生活資訊",
@@ -180,7 +264,13 @@
         "url": "https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/low-mood-sadness-depression/"
       }
     ],
-    "imageAlt": "日出照亮有樹木的草坡，遠處湖面被晨霧覆蓋。"
+    "imageAlt": "日出照亮有樹木的草坡，遠處湖面被晨霧覆蓋。",
+    "sectionHeadings": [
+      "沒有完成待辦也值得被照顧",
+      "先照顧基本需要",
+      "允許今天放慢",
+      "低落持續時尋求支持"
+    ]
   },
   "first-breath": {
     "kind": "一般呼吸覺察影片",

@@ -69,7 +69,7 @@ function youtubeEmbedUrl(value) {
 }
 const safeContent = (row) => ({ ...row, href: `/journal/${row.slug}/`, tag: row.type === 'article' ? 'BODY NOTE' : row.type === 'video' ? 'SHU YI FILM' : 'STUDIO NEWS', date: row.status === 'published' ? (row.published_at || '').slice(0, 10) : 'DRAFT', video: row.video_url || undefined, embed_url: youtubeEmbedUrl(row.video_url) || undefined, cover: row.cover_url || undefined, imageAlt: editorialEvidence[row.slug]?.imageAlt || '', accent: row.type === 'article' ? 'peach' : row.type === 'video' ? 'violet' : 'lime' });
 const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
-const bodyHtml = (body) => escapeHtml(body).split(/\n{2,}/).filter(Boolean).map((paragraph) => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('') || '<p>內容準備中。</p>';
+const bodyHtml = (body, headings = []) => escapeHtml(body).split(/\n{2,}/).filter(Boolean).map((paragraph, index) => `${headings[index] ? `<h2>${escapeHtml(headings[index])}</h2>` : ''}<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('') || '<p>內容準備中。</p>';
 const jsonLd = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
 const dateOnly = (value) => value ? String(value).slice(0, 10) : '';
 const articleDescription = (row) => (row.excerpt || row.body || row.title).replace(/\s+/g, ' ').trim().slice(0, 300);
@@ -101,7 +101,7 @@ function addSeo(html, pathname) {
   const type = pathname === '/' ? 'website' : 'website';
   const schemas = [];
   if (pathname === '/') schemas.push({ '@context': 'https://schema.org', '@type': 'Organization', '@id': `${SITE_ORIGIN}/#organization`, name: '舒逸', alternateName: 'Shu Yi', url: `${SITE_ORIGIN}/`, description: '舒逸提供美式活化槍全身調理服務。' });
-  if (pathname === '/services/') schemas.push({ '@context': 'https://schema.org', '@type': 'Service', name: '全身活化調理', provider: { '@id': `${SITE_ORIGIN}/#organization` }, url: `${SITE_ORIGIN}/services/`, description: '以美式活化槍為核心，透過了解當下狀況、分段檢查與觀察、安排調理、再次確認與系統化紀錄，提供預約制日常身體照顧與放鬆服務。' });
+  if (pathname === '/services/') schemas.push({ '@context': 'https://schema.org', '@type': 'Service', name: '全身活化調理', provider: { '@type': 'Organization', '@id': `${SITE_ORIGIN}/#organization`, name: '舒逸', url: `${SITE_ORIGIN}/` }, url: `${SITE_ORIGIN}/services/`, description: '以美式活化槍為核心，透過了解當下狀況、分段檢查與觀察、安排調理、再次確認與系統化紀錄，提供預約制日常身體照顧與放鬆服務。' });
   if (pathname !== '/') {
     const label = pathname === '/services/' ? '活化調理' : pathname === '/offerings/' ? '服務項目' : pathname === '/booking/' ? '預約' : pathname === '/studio/' ? '工作室' : '舒逸日常';
     schemas.push({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: label, item: seo.canonical }] });
@@ -118,6 +118,16 @@ function sitemapXml() {
 }
 
 function articlePage(row) {
+  const relatedGroups = [
+    ['sleep-full-still-tired', 'third-coffee-still-tired', 'five-minute-morning-start', 'weekend-rest-without-checklist'],
+    ['listen-after-workout', 'make-movement-too-small-to-fail', 'walk-without-step-goal'],
+    ['screen-break-twenty-seconds', 'three-minute-after-commute', 'transition-out-of-workday'],
+    ['one-minute-before-meeting', 'first-breath', 'a-day-without-achievements']
+  ];
+  const relatedSlugs = relatedGroups.find(group => group.includes(row.slug)) || [];
+  const relatedRows = relatedSlugs.filter(slug => slug !== row.slug).map(slug => db.prepare("SELECT title, slug FROM content WHERE slug = ? AND status = 'published'").get(slug)).filter(Boolean).slice(0, 2);
+  const relatedLinks = relatedRows.length ? `<h3>延伸閱讀</h3><ul>${relatedRows.map(item => `<li><a href="/journal/${encodeURIComponent(item.slug)}/">${escapeHtml(item.title)}</a></li>`).join('')}</ul>` : '';
+
   const type = row.type === 'article' ? '文章' : row.type === 'video' ? '影片' : '情報';
   const canonical = `${SITE_ORIGIN}/journal/${encodeURIComponent(row.slug)}/`;
   const description = articleDescription(row);
@@ -130,8 +140,8 @@ function articlePage(row) {
   const cover = row.cover_url ? `<img class="article-cover" src="${escapeHtml(row.cover_url)}" alt="${escapeHtml(editorialEvidence[row.slug]?.imageAlt || '')}">` : '';
   const contentCard = (label, href, event) => `<a data-${event}="true" href="${href}">${label}</a>`;
   const evidence = editorialEvidence[row.slug] || { kind: '資料與審閱資訊待確認', basis: '本篇尚未登錄可核對的資料來源；請內容提供者先確認文字與依據。', boundary: '審核完成前，請勿將本篇內容視為健康指引、醫療資訊或治療建議。', review: '尚無審閱紀錄。', sources: [] };
-  const evidenceHtml = evidence ? `<section class="article-evidence" aria-labelledby="article-evidence-title"><h2 id="article-evidence-title">資料來源與內容界線</h2><p><strong>內容性質：</strong>${escapeHtml(evidence.kind)}</p><p><strong>資料依據：</strong>${escapeHtml(evidence.basis)}</p><p><strong>醫療界線：</strong>${escapeHtml(evidence.boundary)}</p><p><strong>專業審閱：</strong>${escapeHtml(evidence.review)}</p>${evidence.sources.length ? `<h3>參考資料</h3><ul>${evidence.sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title)} ↗</a></li>`).join('')}</ul>` : '<p>本篇沒有引用醫療或科學研究；內容為一般生活建議。</p>'}<p class="article-evidence__date">參考資料連結檢視日期：2026-10-27</p></section>` : '';
-  const articleHtml = `<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(description)}"><title>${escapeHtml(row.title)}｜舒逸日常</title>${googleVerificationMeta}<link rel="canonical" href="${escapeHtml(canonical)}"><meta property="og:title" content="${escapeHtml(row.title)}｜舒逸日常"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:type" content="article"><meta property="og:image" content="${escapeHtml(image)}">${ga4Boot}<script type="application/ld+json">${jsonLd(schema)}</script><script type="application/ld+json">${jsonLd({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: '舒逸日常', item: `${SITE_ORIGIN}/journal/` }, { '@type': 'ListItem', position: 3, name: row.title, item: canonical }] })}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/styles.css"></head><body><header class="site-header"><a class="brand" href="/" aria-label="舒逸首頁"><img class="brand-logo brand-logo--light" src="/素材/淺色系-1K.jpeg" alt="舒逸 Shu Yi"><img class="brand-logo brand-logo--dark" src="/素材/深色系-1K.jpeg" alt="" aria-hidden="true"><span>SHU YI</span></a><nav class="site-nav" aria-label="主要導覽"><a href="/services/">活化調理</a><a href="/journal/" aria-current="page">舒逸日常</a><a href="/studio/">工作室</a><a href="/booking/">預約</a></nav><div class="header-actions"><button class="theme-switch" type="button" aria-label="切換深淺色主題" aria-pressed="false"><span class="theme-switch__dot"></span><span class="theme-switch__label">LIGHT</span></button><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false"><span></span><span></span></button></div></header><main class="article"><a class="back-link" href="/journal/#journal-return">← 回到舒逸日常</a><div class="article-meta"><span>${type}</span><span>發布日期：${escapeHtml(dateOnly(published))}</span><span>最後更新：${escapeHtml(dateOnly(modified))}</span><span>內容提供：舒逸</span></div><h1>${escapeHtml(row.title)}</h1>${cover}${video}<div class="article-body">${bodyHtml(row.body)}</div>${evidenceHtml}<section class="article-related"><h2>相關內容</h2><p>深入了解舒逸全身活化調理服務。</p>${contentCard('了解舒逸全身活化調理', '/services/', 'journal-to-service')}　${contentCard('前往預約', '/booking/', 'journal-to-booking')}</section></main><footer class="site-footer"><a class="brand" href="/"><span>舒逸</span><small>SHU YI</small></a><p>© 2026 SHU YI. MOVE WELL, LIVE LIGHT.</p><div><a href="/journal/">JOURNAL</a><a href="/booking/">BOOKING</a></div></footer><script src="/app.js"></script></body></html>`;
+  const evidenceHtml = evidence ? `<section class="article-evidence" aria-labelledby="article-evidence-title"><h2 id="article-evidence-title">資料來源與內容界線</h2><p><strong>內容性質：</strong>${escapeHtml(evidence.kind)}</p><p><strong>資料依據：</strong>${escapeHtml(evidence.basis)}</p><p><strong>醫療界線：</strong>${escapeHtml(evidence.boundary)}</p><p><strong>專業審閱：</strong>${escapeHtml(evidence.review)}</p>${evidence.sources.length ? `<h3>參考資料</h3><ul>${evidence.sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title)} ↗</a></li>`).join('')}</ul>` : '<p>本篇沒有引用醫療或科學研究；內容為一般生活建議。</p>'}${evidence.sources.length ? '<p class="article-evidence__date">參考資料連結檢視日期：2026-10-27</p>' : ''}</section>` : '';
+  const articleHtml = `<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(description)}"><title>${escapeHtml(row.title)}｜舒逸日常</title>${googleVerificationMeta}<link rel="canonical" href="${escapeHtml(canonical)}"><meta property="og:title" content="${escapeHtml(row.title)}｜舒逸日常"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:type" content="article"><meta property="og:image" content="${escapeHtml(image)}">${ga4Boot}<script type="application/ld+json">${jsonLd(schema)}</script><script type="application/ld+json">${jsonLd({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: '舒逸日常', item: `${SITE_ORIGIN}/journal/` }, { '@type': 'ListItem', position: 3, name: row.title, item: canonical }] })}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/styles.css"></head><body><header class="site-header"><a class="brand" href="/" aria-label="舒逸首頁"><img class="brand-logo brand-logo--light" src="/素材/淺色系-1K.jpeg" alt="舒逸 Shu Yi"><img class="brand-logo brand-logo--dark" src="/素材/深色系-1K.jpeg" alt="" aria-hidden="true"><span>SHU YI</span></a><nav class="site-nav" aria-label="主要導覽"><a href="/services/">活化調理</a><a href="/journal/" aria-current="page">舒逸日常</a><a href="/studio/">工作室</a><a href="/booking/">預約</a></nav><div class="header-actions"><button class="theme-switch" type="button" aria-label="切換深淺色主題" aria-pressed="false"><span class="theme-switch__dot"></span><span class="theme-switch__label">LIGHT</span></button><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false"><span></span><span></span></button></div></header><main class="article"><a class="back-link" href="/journal/#journal-return">← 回到舒逸日常</a><div class="article-meta"><span>${type}</span><span>發布日期：${escapeHtml(dateOnly(published))}</span><span>最後更新：${escapeHtml(dateOnly(modified))}</span><span>內容提供：舒逸</span></div><h1>${escapeHtml(row.title)}</h1>${cover}${video}<div class="article-body">${bodyHtml(row.body, evidence?.sectionHeadings || [])}</div>${evidenceHtml}<section class="article-related"><h2>相關內容</h2>${relatedLinks}<p>深入了解舒逸全身活化調理服務。</p>${contentCard('了解舒逸全身活化調理', '/services/', 'journal-to-service')}　${contentCard('前往預約', '/booking/', 'journal-to-booking')}</section></main><footer class="site-footer"><a class="brand" href="/"><span>舒逸</span><small>SHU YI</small></a><p>© 2026 SHU YI. MOVE WELL, LIVE LIGHT.</p><div><a href="/journal/">JOURNAL</a><a href="/booking/">BOOKING</a></div></footer><script src="/app.js"></script></body></html>`;
   return articleHtml;
 }
 
@@ -142,7 +152,7 @@ async function api(req, res, url) {
   }
   if (req.method === 'POST' && url.pathname === '/api/admin/logout') { const token = sessionToken(req); if (token) db.prepare('DELETE FROM admin_sessions WHERE token = ?').run(token); res.setHeader('Set-Cookie', 'shuyi_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0'); return json(res, 200, { ok: true }); }
   if (!url.pathname.startsWith('/api/')) return false;
-  if (url.pathname === '/api/content' && req.method === 'GET') { const publishedOnly = url.searchParams.get('status') === 'published'; const rows = db.prepare(`SELECT * FROM content ${publishedOnly ? "WHERE status = 'published'" : ''} ORDER BY COALESCE(published_at, updated_at) DESC`).all(); return json(res, 200, rows.map(safeContent)); }
+  if (url.pathname === '/api/content' && req.method === 'GET') { res.setHeader('Cache-Control', 'private, no-store'); const publishedOnly = url.searchParams.get('status') === 'published' || !getSession(req); const rows = db.prepare(`SELECT * FROM content ${publishedOnly ? "WHERE status = 'published'" : ''} ORDER BY COALESCE(published_at, updated_at) DESC`).all(); return json(res, 200, rows.map(safeContent)); }
   if (!requireAuth(req, res)) return true;
   if (url.pathname === '/api/admin/session' && req.method === 'GET') return json(res, 200, { authenticated: true });
   if (url.pathname === '/api/content' && req.method === 'POST') { const body = await readBody(req); if (!body?.title || !body?.slug || !['article','video','news'].includes(body.type)) return json(res, 400, { error: '標題、網址代稱與類型為必填' }); const timestamp = now(); try { const result = db.prepare('INSERT INTO content (title,slug,type,excerpt,body,video_url,cover_url,status,published_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)').run(body.title.trim(), body.slug.trim(), body.type, body.excerpt || '', body.body || '', body.video_url || '', body.cover_url || '', body.status === 'published' ? 'published' : 'draft', body.status === 'published' ? timestamp : null, timestamp, timestamp); return json(res, 201, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(result.lastInsertRowid))); } catch (error) { return json(res, 409, { error: error.message.includes('UNIQUE') ? '網址代稱已存在' : '無法建立內容' }); } }
@@ -209,12 +219,13 @@ async function staticFile(req, res, pathname) {
 }
 
 function dynamicArticle(req, res, pathname) {
-  if (req.method !== 'GET') return false;
+  if (!['GET', 'HEAD'].includes(req.method)) return false;
   const match = pathname.match(/^\/journal\/([a-z0-9-]+)\/?$/);
   if (!match) return false;
   const row = db.prepare("SELECT * FROM content WHERE slug = ? AND status = 'published'").get(match[1]);
   if (!row) return false;
   res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+  if (req.method === 'HEAD') { res.end(); return true; }
   res.end(articlePage(row).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replace('</head>', `${headEnhancements()}</head>`));
   return true;
 }
@@ -226,7 +237,7 @@ createServer(async (req, res) => {
       res.writeHead(308, { location: `https://sy-body.com${url.pathname}${url.search}` });
       return res.end();
     }
-    if (req.method === 'GET' && url.pathname === '/robots.txt') {
+    if (['GET', 'HEAD'].includes(req.method) && url.pathname === '/robots.txt') {
       res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
       return res.end(`User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nUser-agent: OAI-SearchBot\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nUser-agent: GPTBot\nDisallow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`);
     }
@@ -234,20 +245,20 @@ createServer(async (req, res) => {
       res.writeHead(200, { 'content-type': 'application/xml; charset=utf-8' });
       return res.end(req.method === 'HEAD' ? undefined : sitemapXml());
     }
-    if (req.method === 'GET' && url.pathname === '/index.html') { res.writeHead(308, { location: '/' }); return res.end(); }
+    if (['GET', 'HEAD'].includes(req.method) && url.pathname === '/index.html') { res.writeHead(308, { location: '/' }); return res.end(); }
     const pageAlias = url.pathname.match(/^\/(services|offerings|journal|studio|booking)$/);
-    if (req.method === 'GET' && pageAlias) { res.writeHead(308, { location: `${url.pathname}/${url.search}` }); return res.end(); }
+    if (['GET', 'HEAD'].includes(req.method) && pageAlias) { res.writeHead(308, { location: `${url.pathname}/${url.search}` }); return res.end(); }
     const staticAlias = url.pathname.match(/^\/(services|offerings|journal|studio|booking)\/index\.html$/);
-    if (req.method === 'GET' && staticAlias) { res.writeHead(308, { location: `/${staticAlias[1]}/${url.search}` }); return res.end(); }
+    if (['GET', 'HEAD'].includes(req.method) && staticAlias) { res.writeHead(308, { location: `/${staticAlias[1]}/${url.search}` }); return res.end(); }
     const articleAlias = url.pathname.match(/^\/journal\/([a-z0-9-]+)$/);
-    if (req.method === 'GET' && articleAlias) { res.writeHead(308, { location: `${url.pathname}/${url.search}` }); return res.end(); }
+    if (['GET', 'HEAD'].includes(req.method) && articleAlias) { res.writeHead(308, { location: `${url.pathname}/${url.search}` }); return res.end(); }
     const articleIndexAlias = url.pathname.match(/^\/journal\/([a-z0-9-]+)\/index\.html$/);
-    if (req.method === 'GET' && articleIndexAlias) { res.writeHead(308, { location: `/journal/${articleIndexAlias[1]}/${url.search}` }); return res.end(); }
+    if (['GET', 'HEAD'].includes(req.method) && articleIndexAlias) { res.writeHead(308, { location: `/journal/${articleIndexAlias[1]}/${url.search}` }); return res.end(); }
     if (url.pathname === '/admin' || url.pathname === '/admin/dashboard') { res.writeHead(308, { location: `${url.pathname}/` }); return res.end(); }
     const handled = await api(req, res, url);
     if (!handled) {
       if (dynamicArticle(req, res, url.pathname)) return;
-      if (req.method === 'GET' && /^\/journal\/[a-z0-9-]+\/$/.test(url.pathname)) {
+      if (['GET', 'HEAD'].includes(req.method) && /^\/journal\/[a-z0-9-]+\/$/.test(url.pathname)) {
         res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
         return res.end('Not found');
       }

@@ -28,7 +28,7 @@ test('Services time copy and sitemap HTTP compatibility', async t => {
   await once(reservation, 'listening');
   const port = reservation.address().port;
   await new Promise(resolve => reservation.close(resolve));
-  const child = spawn(process.execPath, ['server.js'], { cwd: root, env: { ...process.env, PORT: String(port), DATABASE_PATH: databasePath, BOOKING_URL: 'https://booking.sy-body.com/' }, stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(process.execPath, ['server.js'], { cwd: root, env: { ...process.env, PORT: String(port), DATABASE_PATH: databasePath, BOOKING_URL: 'https://booking.sy-body.com/', SHUYI_ADMIN_PASSWORD: 'isolated-test-password' }, stdio: ['ignore', 'pipe', 'pipe'] });
   let logs = '';
   child.stdout.on('data', chunk => { logs += chunk; });
   child.stderr.on('data', chunk => { logs += chunk; });
@@ -41,6 +41,39 @@ test('Services time copy and sitemap HTTP compatibility', async t => {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     assert(ready, `Test server did not start: ${logs}`);
+    await t.test('public API excludes drafts while authenticated admin retains access', async () => {
+      for (const query of ['', '?status=draft', '?status=published']) {
+        const response = await fetch(base + '/api/content' + query);
+        assert.match(response.headers.get('cache-control'), /no-store/);
+        const rows = await response.json();
+        assert(rows.length > 0);
+        assert(rows.every(row => row.status === 'published'));
+      }
+      const login = await fetch(base + '/api/admin/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: 'isolated-test-password' }) });
+      assert.equal(login.status, 200);
+      const { token } = await login.json();
+      const headers = { authorization: `Bearer ${token}` };
+      const all = await (await fetch(base + '/api/content', { headers })).json();
+      assert(all.some(row => row.slug === 'qa-draft'));
+      const published = await (await fetch(base + '/api/content?status=published', { headers })).json();
+      assert(published.every(row => row.status === 'published'));
+      assert.equal((await fetch(base + '/api/content/1')).status, 401);
+      for (const path of ['/journal/qa-draft/', '/journal/activate-after-sitting/', '/journal/studio-in-progress/']) {
+        for (const method of ['GET', 'HEAD']) assert.equal((await fetch(base + path, { method })).status, 404);
+      }
+      const head = await fetch(base + '/journal/qa-keep/', { method: 'HEAD' });
+      assert.equal(head.status, 200);
+      assert.equal((await head.text()).length, 0);
+    });
+    await t.test('initial Journal contains final copy and articles have structured readable sections', async () => {
+      const journal = await (await fetch(base + '/journal/')).text();
+      assert(journal.includes('讓舒適的身體'));
+      assert(!journal.includes('未來後台維護'));
+      const article = await (await fetch(base + '/journal/five-minute-morning-start/')).text();
+      assert(article.includes('<h2>留一小段晨間時間</h2>'));
+      assert(!article.includes('參考資料連結檢視日期'));
+      assert(article.includes('一般生活建議'));
+    });
     let initialXml;
     await t.test('GET preserves fixed pages and all published fixtures while excluding drafts', async () => {
       const get = await fetch(base + '/sitemap.xml');
