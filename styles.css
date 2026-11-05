@@ -128,7 +128,7 @@ body { padding-top:88px; }
 .booking-browser__step--confirm { color:#5b83b6; }
 .booking-browser__step.is-active { animation:booking-step-fly-in .42s cubic-bezier(.2,.9,.2,1) both; }
 .booking-browser__body { position:relative; display:grid; place-items:center; min-height:320px; padding:20px; background:radial-gradient(circle at 50% 44%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 48%),var(--surface); }
-.booking-qr-card { position:relative; z-index:1; width:min(68%,300px); padding:18px; border:1px solid color-mix(in srgb,var(--ink) 12%,transparent); border-radius:12px; background:var(--white); box-shadow:0 18px 35px color-mix(in srgb,var(--ink) 16%,transparent); }
+.booking-qr-card { display:block; text-decoration:none; color:inherit; position:relative; z-index:1; width:min(68%,300px); padding:18px; border:1px solid color-mix(in srgb,var(--ink) 12%,transparent); border-radius:12px; background:var(--white); box-shadow:0 18px 35px color-mix(in srgb,var(--ink) 16%,transparent); }
 .booking-qr-card img { display:block; width:100%; height:auto; }
 .booking-browser__pulse { position:absolute; width:62%; aspect-ratio:1; border:1px solid color-mix(in srgb,var(--accent) 58%,transparent); border-radius:50%; animation:booking-pulse 3.8s ease-in-out infinite; }
 .booking-browser__shot { position:absolute; right:22px; bottom:20px; padding:7px 10px; border:1px dashed color-mix(in srgb,var(--accent) 65%,transparent); border-radius:6px; color:var(--accent); background:color-mix(in srgb,var(--surface) 88%,transparent); font:10px var(--mono); animation:booking-shot 3.8s ease-in-out infinite; }

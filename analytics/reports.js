@@ -27,14 +27,14 @@ export function createAnalyticsReports(db) {
 
   function overview(params) {
     const { from, to } = range(params);
-    const req = db.prepare('SELECT COUNT(*) requests, SUM(status BETWEEN 400 AND 599) errors, SUM(bot_category=\'search_engine\') crawlers, SUM(bot_category=\'other_bot\') other_bots FROM analytics_requests WHERE occurred_at>=? AND occurred_at<?').get(from, to) || {};
-    const views = db.prepare('SELECT COUNT(*) pageviews, COUNT(DISTINCT visitor_id) visitors, COUNT(DISTINCT session_id) sessions, AVG(duration_seconds) avg_duration FROM analytics_pageviews WHERE entered_at>=? AND entered_at<?').get(from, to) || {};
+    const req = db.prepare('SELECT COUNT(*) requests, SUM(status BETWEEN 400 AND 599) errors, SUM(is_admin) admin_requests, SUM(bot_category=\'search_engine\') crawlers, SUM(bot_category=\'other_bot\') other_bots FROM analytics_requests WHERE occurred_at>=? AND occurred_at<?').get(from, to) || {};
+    const views = db.prepare('SELECT COUNT(*) pageviews, COUNT(DISTINCT visitor_id) visitors, COUNT(DISTINCT session_id) sessions, AVG(duration_seconds) avg_duration FROM analytics_pageviews WHERE entered_at>=? AND entered_at<? AND session_id IN (SELECT session_id FROM analytics_sessions WHERE is_admin=0)').get(from, to) || {};
     return { ...req, ...views, avg_duration: Math.round(views.avg_duration || 0) };
   }
   function trend(params) {
     const { from, to, modifier } = range(params);
     const format = timeFormat(from, to);
-    const views = db.prepare(`SELECT strftime('${format}',datetime(entered_at,'${modifier}')) bucket,COUNT(DISTINCT visitor_id) visitors,COUNT(*) pageviews FROM analytics_pageviews WHERE entered_at>=? AND entered_at<? GROUP BY bucket ORDER BY bucket`).all(from, to);
+    const views = db.prepare(`SELECT strftime('${format}',datetime(entered_at,'${modifier}')) bucket,COUNT(DISTINCT visitor_id) visitors,COUNT(*) pageviews FROM analytics_pageviews WHERE entered_at>=? AND entered_at<? AND session_id IN (SELECT session_id FROM analytics_sessions WHERE is_admin=0) GROUP BY bucket ORDER BY bucket`).all(from, to);
     const requests = db.prepare(`SELECT strftime('${format}',datetime(occurred_at,'${modifier}')) bucket,COUNT(*) requests,SUM(bot_category='search_engine') crawlers FROM analytics_requests WHERE occurred_at>=? AND occurred_at<? GROUP BY bucket ORDER BY bucket`).all(from, to);
     const byBucket = new Map(requests.map((row) => [row.bucket, row]));
     const buckets = new Map(views.map((row) => [row.bucket, { ...row, requests: byBucket.get(row.bucket)?.requests || 0, crawlers: byBucket.get(row.bucket)?.crawlers || 0 }]));
@@ -48,6 +48,8 @@ export function createAnalyticsReports(db) {
     const query = `%${search.replace(/[\\%_]/g, '\\$&')}%`;
     return db.prepare(`WITH ranged_sessions AS (SELECT * FROM analytics_sessions WHERE started_at<? AND last_seen>=?)
       SELECT v.visitor_id,v.first_seen,COALESCE(MAX(p.entered_at),MAX(s.started_at)) last_seen,
+      MAX(s.is_admin) is_admin,
+      (SELECT rs.ip_source FROM ranged_sessions rs WHERE rs.visitor_id=v.visitor_id ORDER BY rs.last_seen DESC LIMIT 1) ip_source,
       (SELECT rs.ip FROM ranged_sessions rs WHERE rs.visitor_id=v.visitor_id ORDER BY rs.last_seen DESC LIMIT 1) ip,
       (SELECT rs.country FROM ranged_sessions rs WHERE rs.visitor_id=v.visitor_id ORDER BY rs.last_seen DESC LIMIT 1) country,
       (SELECT rs.device FROM ranged_sessions rs WHERE rs.visitor_id=v.visitor_id ORDER BY rs.last_seen DESC LIMIT 1) device,
@@ -79,6 +81,8 @@ export function createAnalyticsReports(db) {
     add('path LIKE ?', params.get('path') ? `%${String(params.get('path')).slice(0, 200)}%` : '');
     add('status=?', /^\d{3}$/.test(params.get('status') || '') ? Number(params.get('status')) : '');
     const botType = params.get('bot');
+    if (botType === 'admin') add('is_admin=?', 1);
+    if (botType === 'visitor') add('is_admin=?', 0);
     if (['visitor', 'search_engine', 'other_bot', 'suspected_automation', 'unknown'].includes(botType)) add('bot_category=?', botType);
     if (['Google', 'Bing'].includes(params.get('engine'))) add('bot_engine=?', params.get('engine'));
     const offset = (boundedPage(params.get('page')) - 1) * boundedLimit(params.get('limit'));
@@ -92,5 +96,9 @@ export function createAnalyticsReports(db) {
       recent: db.prepare("SELECT bot_engine engine,MAX(occurred_at) last_crawl,SUM(crawler_verified) verified,COUNT(*) requests FROM analytics_requests WHERE occurred_at>=? AND occurred_at<? AND bot_category='search_engine' GROUP BY bot_engine").all(from, to)
     };
   }
-  return { overview, trend, visitors, session, requests, crawlers };
+  function events(params) {
+    const { from, to } = range(params);
+    return db.prepare('SELECT event_name,COUNT(*) count,COUNT(DISTINCT e.session_id) sessions FROM analytics_events e JOIN analytics_sessions s ON e.session_id=s.session_id WHERE occurred_at>=? AND occurred_at<? AND s.is_admin=0 GROUP BY event_name ORDER BY count DESC').all(from, to);
+  }
+  return { overview, trend, visitors, session, requests, crawlers, events };
 }

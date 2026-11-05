@@ -66,11 +66,24 @@
       if (!element) return;
       const target = element.getAttribute('data-analytics-target') || (element instanceof HTMLAnchorElement && new URL(element.href).origin !== location.origin ? 'external_link' : element.id || element.getAttribute('aria-label') || '');
       const names = new Set([element.dataset.analyticsEvent || '']);
-      if (element.hasAttribute('data-booking-cta')) names.add('booking_cta_click');
+      if (element instanceof HTMLAnchorElement && /^(?:https?:\/\/(?:line\.me|lin\.ee)(?:[/:]|$)|line:)/i.test(element.href)) names.add('line_click');
+      if (element.hasAttribute('data-youtube')) names.add('video_open');
+      if (element.hasAttribute('data-booking-cta') || (element instanceof HTMLAnchorElement && element.origin === location.origin && element.pathname.replace(/\/$/, '') === '/booking')) names.add('booking_cta_click');
       if (element.hasAttribute('data-booking-platform-outbound')) names.add('booking_platform_outbound');
       if (element.hasAttribute('data-journal-to-service')) names.add('journal_to_service');
       if (element.hasAttribute('data-journal-to-booking')) names.add('journal_to_booking');
       send([...names].filter((name) => /^[a-z][a-z0-9_]{1,47}$/.test(name)).map((name) => ({ type: 'event', pageviewId, name, target })), true);
     }, { passive: true });
+    const played = new WeakSet();
+    document.addEventListener('playing', (event) => {
+      const video = event.target;
+      if (!(video instanceof HTMLVideoElement) || video.autoplay || video.classList.contains('booking-demo__video') || played.has(video)) return;
+      played.add(video);
+      window.shuyiAnalytics.track('video_play', video.id || 'content_video');
+    }, true);
+    document.addEventListener('ended', (event) => {
+      const video = event.target;
+      if (video instanceof HTMLVideoElement && played.has(video)) { window.shuyiAnalytics.track('video_complete', video.id || 'content_video'); played.delete(video); }
+    }, true);
   } catch { /* Analytics is optional and must never affect page behavior. */ }
 })();

@@ -6,10 +6,10 @@
 
 - 獨立路由：`/`、`/services/`、`/journal/`、`/studio/`、`/booking/`
 - 三個可直連內容頁：`/journal/activate-after-sitting/`、`/journal/first-breath/`、`/journal/studio-in-progress/`
-- `/admin/` 內容管理後台：登入後可新增、編輯、刪除文章／影片／情報，並控制草稿／發布
+- `/manage-center/` 內容管理後台：登入後可新增、編輯、刪除文章／影片／情報，並控制草稿／發布
 - SQLite 儲存於 `data/shuyi.sqlite`（已被 `.gitignore` 排除）
 - 自建第一方網站流量分析：SQLite 記錄伺服器請求、匿名訪客工作階段、頁面瀏覽及重要事件
-- `/admin/analytics/` 管理員流量分析儀表板；沿用既有後台登入權限
+- `/manage-center/analytics/` 管理員流量分析儀表板；沿用既有後台登入權限
 - 深色／淺色主題切換（會記住使用者上次選擇），並隨主題切換對應 Logo
 - 使用既有兩支影片作為首頁動態與可播放內容
 - 手機導覽、內容分類與影片燈箱
@@ -20,21 +20,15 @@
 需要用伺服器啟動，不能直接雙擊 HTML 資料夾。首次啟動：
 
 ```bash
-npm start
+SHUYI_ADMIN_PASSWORD='請設定自己的長密碼' npm start
 ```
 
-接著開啟 `http://localhost:4173/`；後台在 `http://localhost:4173/admin/`。
-
-預設僅供本機開發使用的密碼是 `shuyi-local-dev`。正式使用前請設定：
-
-```bash
-SHUYI_ADMIN_PASSWORD='請改成自己的密碼' npm start
-```
+接著開啟 `http://localhost:4173/`；後台在 `http://localhost:4173/manage-center/`。所有環境都必須提供管理密碼，沒有固定開發密碼。
 
 ## 後續擴充建議
 
 1. **內容後台**：目前已由 `server.js` 提供 SQLite CRUD API，欄位包含 `type`、`title`、`excerpt`、`body`、`published_at`、`cover_url`、`video_url`、`slug`。
-2. **正式部署**：正式環境需使用安全的 `SHUYI_ADMIN_PASSWORD`、HTTPS、反向代理與定期備份 `data/shuyi.sqlite`；目前登入 session 儲存在記憶體，重啟伺服器會要求重新登入。
+2. **正式部署**：正式環境需使用安全的 `SHUYI_ADMIN_PASSWORD`、HTTPS、反向代理與定期備份 `data/shuyi.sqlite`；登入 session 儲存在 SQLite 並設有到期時間。
 3. **真實資訊**：確認地址、營業方式、聯絡帳號、服務範圍與預約規則後，再加入頁尾與預約按鈕。現階段不假設任何尚未提供的聯絡資訊。
 
 ## 檔案責任
@@ -53,9 +47,13 @@ SHUYI_ADMIN_PASSWORD='請改成自己的密碼' npm start
 
 ## 網站流量分析
 
-- 管理頁：`/admin/analytics/`；分析 API 全部要求有效管理員 session，只有 `/api/analytics/collect` 可匿名送入經過格式與速率檢查的追蹤事件。
+- 管理頁：`/manage-center/analytics/`；分析 API 全部要求有效管理員 session，只有 `/api/analytics/collect` 可匿名送入經過格式與速率檢查的追蹤事件。
 - 前端分析以本站 `/analytics.js` 與 `/api/analytics/collect` 通訊；不載入 GA4 或第三方分析服務。追蹤失敗不影響網站瀏覽。
 - 預設保留 30 天，可設定 `ANALYTICS_RETENTION_DAYS`。Railway 的 `DATABASE_PATH` 必須指向持久化 Volume，例如 `/data/shuyi.sqlite`，並維持備份。
-- IP 在管理頁預設遮罩。只有 Node.js 的直接連線 peer 符合 Cloudflare 官方 IP 範圍時，才採信 `CF-Connecting-IP` 與 `CF-IPCountry`。若 Railway 代理先終結連線，程式會保守記錄可見 peer，不能假裝那是訪客真實 IP；部署後須驗證實際代理鏈。
+- IP 在管理頁預設遮罩。Railway 部署只允許明確列出的 ingress peer 使用 Railway 提供的 `X-Real-IP`。該來源屬於 Cloudflare 官方範圍時，才採信 `CF-Connecting-IP` 與 `CF-IPCountry`。不使用 `X-Forwarded-For` 判定來源；無法確認的代理來源留空。
 - Googlebot/Bingbot User-Agent 只作宣稱分類；反向與正向 DNS 驗證成功後才標示已驗證。查詢快取 7 天，不影響請求回應或限制爬蟲。
 - 上線前需完成 `docs/analytics-privacy-notice-draft.md` 標示的負責人、聯絡方式、資料儲存地及適用法規確認。
+
+- 所有環境都必須設定 `SHUYI_ADMIN_PASSWORD`；缺少時拒絕啟動，沒有固定備用密碼。
+- 公開資源採明確允許清單；環境檔、後端原始碼、資料庫、測試與 Git 內部檔案不提供下載。舊 `/admin` 路徑回 404。
+- 資安調整與上線驗證報告：`docs/security-analytics-report-2026-11-05.md`。

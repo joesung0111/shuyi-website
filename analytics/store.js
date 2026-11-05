@@ -1,7 +1,7 @@
 import { classifyRequest, deviceDetails, sanitizePath, sanitizeReferer, verifyClaimedCrawler } from './classify.js';
 
 const MAX_QUEUE = 10000;
-const ALLOWED_EVENTS = new Set(['booking_cta_click', 'booking_platform_outbound', 'journal_to_service', 'journal_to_booking', 'form_submit_success']);
+const ALLOWED_EVENTS = new Set(['booking_cta_click', 'booking_platform_outbound', 'journal_to_service', 'journal_to_booking', 'form_submit_success', 'line_click', 'video_play', 'video_open', 'video_complete', 'booking_submit_success']);
 const cleanId = (value) => /^[a-zA-Z0-9_-]{8,80}$/.test(String(value || '')) ? String(value) : '';
 const stamp = () => new Date().toISOString();
 
@@ -26,8 +26,17 @@ export function createAnalytics(db, { trustedProxy, retentionDays = 30 } = {}) {
     CREATE INDEX IF NOT EXISTS analytics_requests_bot_time ON analytics_requests(bot_category, bot_engine, occurred_at);
     CREATE INDEX IF NOT EXISTS analytics_requests_status_time ON analytics_requests(status, occurred_at);`);
 
+  // Additive migrations keep existing records intact. Legacy rows have unknown provenance.
+  for (const table of ['analytics_requests', 'analytics_sessions']) {
+    const columns = new Set(db.prepare(`PRAGMA table_info(${table})`).all().map((row) => row.name));
+    for (const [name, type] of [['ip_source', "TEXT NOT NULL DEFAULT 'legacy'"], ['peer_masked', "TEXT NOT NULL DEFAULT ''"], ['is_admin', 'INTEGER NOT NULL DEFAULT 0']]) {
+      if (!columns.has(name)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${name} ${type}`);
+    }
+    db.exec(`CREATE INDEX IF NOT EXISTS ${table}_admin_time ON ${table}(is_admin, ${table === 'analytics_requests' ? 'occurred_at' : 'started_at'})`);
+  }
+
   const requestQueue = [];
-  const insertRequest = db.prepare(`INSERT INTO analytics_requests (occurred_at,ip,country,method,path,status,user_agent,referer,request_kind,bot_category,bot_engine,crawler_claimed,crawler_verified) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+  const insertRequest = db.prepare(`INSERT INTO analytics_requests (occurred_at,ip,country,method,path,status,user_agent,referer,request_kind,bot_category,bot_engine,crawler_claimed,crawler_verified,ip_source,peer_masked,is_admin) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
   const flushRequests = () => {
     if (!requestQueue.length) return;
     const batch = requestQueue.splice(0, 500);
@@ -35,7 +44,7 @@ export function createAnalytics(db, { trustedProxy, retentionDays = 30 } = {}) {
     db.exec('BEGIN');
     try {
       for (const entry of batch) {
-        const result = insertRequest.run(entry.at, entry.data.ip, entry.data.country, entry.method, entry.data.path, entry.status, entry.data.ua, entry.data.referer, entry.data.kind, entry.data.bot.category, entry.data.bot.engine || '', Number(entry.data.bot.claimed), 0);
+        const result = insertRequest.run(entry.at, entry.data.ip, entry.data.country, entry.method, entry.data.path, entry.status, entry.data.ua, entry.data.referer, entry.data.kind, entry.data.bot.category, entry.data.bot.engine || '', Number(entry.data.bot.claimed), 0, entry.data.ipSource, entry.data.peerMasked, Number(entry.data.isAdmin));
         if (entry.data.bot.claimed && entry.data.bot.engine && entry.data.ip) rows.push({ id: Number(result.lastInsertRowid), ip: entry.data.ip, engine: entry.data.bot.engine });
       }
       db.exec('COMMIT');
@@ -69,7 +78,7 @@ export function createAnalytics(db, { trustedProxy, retentionDays = 30 } = {}) {
   if (!hasColumn('bot_category')) db.exec("ALTER TABLE analytics_sessions ADD COLUMN bot_category TEXT NOT NULL DEFAULT 'unknown'");
   if (!hasColumn('bot_engine')) db.exec("ALTER TABLE analytics_sessions ADD COLUMN bot_engine TEXT NOT NULL DEFAULT ''");
   if (!hasColumn('crawler_claimed')) db.exec('ALTER TABLE analytics_sessions ADD COLUMN crawler_claimed INTEGER NOT NULL DEFAULT 0');
-  const insertSession = db.prepare(`INSERT INTO analytics_sessions(session_id,visitor_id,started_at,last_seen,entry_path,referrer,device,browser,os,ip,country,bot_category,bot_engine,crawler_claimed) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(session_id) DO UPDATE SET last_seen=excluded.last_seen,ip=CASE WHEN excluded.ip='' THEN analytics_sessions.ip ELSE excluded.ip END,country=CASE WHEN excluded.country='' THEN analytics_sessions.country ELSE excluded.country END,bot_category=excluded.bot_category,bot_engine=excluded.bot_engine,crawler_claimed=excluded.crawler_claimed`);
+  const insertSession = db.prepare(`INSERT INTO analytics_sessions(session_id,visitor_id,started_at,last_seen,entry_path,referrer,device,browser,os,ip,country,bot_category,bot_engine,crawler_claimed,ip_source,peer_masked,is_admin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(session_id) DO UPDATE SET last_seen=excluded.last_seen,ip=CASE WHEN excluded.ip='' THEN analytics_sessions.ip ELSE excluded.ip END,country=CASE WHEN excluded.country='' THEN analytics_sessions.country ELSE excluded.country END,bot_category=excluded.bot_category,bot_engine=excluded.bot_engine,crawler_claimed=excluded.crawler_claimed,ip_source=excluded.ip_source,peer_masked=excluded.peer_masked,is_admin=MAX(analytics_sessions.is_admin,excluded.is_admin)`);
   const insertPageview = db.prepare('INSERT OR IGNORE INTO analytics_pageviews(id,visitor_id,session_id,entered_at,page_path,referrer,previous_path,device,browser,os) VALUES(?,?,?,?,?,?,?,?,?,?)');
   const insertEvent = db.prepare('INSERT INTO analytics_events(visitor_id,session_id,pageview_id,occurred_at,event_name,target) VALUES(?,?,?,?,?,?)');
 
@@ -82,15 +91,17 @@ export function createAnalytics(db, { trustedProxy, retentionDays = 30 } = {}) {
     const now = stamp();
     const referrer = sanitizeReferer(body.referrer || req.headers.referer);
     const path = sanitizePath(body.path);
+    const existing = db.prepare('SELECT visitor_id FROM analytics_sessions WHERE session_id=?').get(sessionId);
+    if (existing && existing.visitor_id !== visitorId) return { ok: false, error: 'session_mismatch' };
     insertVisitor.run(visitorId, now, now);
     const requestInfo = classifyRequest(req, trustedProxy || (() => false));
-    insertSession.run(sessionId, visitorId, now, now, path, referrer, ['mobile', 'tablet', 'desktop'].includes(body.device) ? body.device : details.device, String(body.browser || details.browser).slice(0, 40), String(body.os || details.os).slice(0, 40), requestInfo.ip, requestInfo.country, requestInfo.bot.category, requestInfo.bot.engine || '', Number(requestInfo.bot.claimed));
+    insertSession.run(sessionId, visitorId, now, now, path, referrer, details.device, details.browser, details.os, requestInfo.ip, requestInfo.country, requestInfo.bot.category, requestInfo.bot.engine || '', Number(requestInfo.bot.claimed), requestInfo.ipSource, requestInfo.peerMasked, Number(requestInfo.isAdmin));
     let saved = 0;
     for (const item of body.items) {
       if (item?.type === 'pageview') {
         const id = cleanId(item.id);
         if (!id) continue;
-        insertPageview.run(id, visitorId, sessionId, now, sanitizePath(item.path), sanitizeReferer(item.referrer), item.previousPath ? sanitizePath(item.previousPath) : '', ['mobile', 'tablet', 'desktop'].includes(item.device) ? item.device : details.device, String(item.browser || details.browser).slice(0, 40), String(item.os || details.os).slice(0, 40));
+        insertPageview.run(id, visitorId, sessionId, now, sanitizePath(item.path), sanitizeReferer(item.referrer), item.previousPath ? sanitizePath(item.previousPath) : '', details.device, details.browser, details.os);
         saved++;
       } else if (item?.type === 'duration') {
         const id = cleanId(item.id);
@@ -100,6 +111,7 @@ export function createAnalytics(db, { trustedProxy, retentionDays = 30 } = {}) {
         const name = ALLOWED_EVENTS.has(String(item.name || '')) ? String(item.name) : '';
         if (!name) continue;
         const pageviewId = cleanId(item.pageviewId);
+        if (pageviewId && !db.prepare('SELECT id FROM analytics_pageviews WHERE id=? AND session_id=?').get(pageviewId, sessionId)) continue;
         const target = String(item.target || '').replace(/[^a-zA-Z0-9_./:-]/g, '').slice(0, 64);
         insertEvent.run(visitorId, sessionId, pageviewId, now, name, target);
         saved++;

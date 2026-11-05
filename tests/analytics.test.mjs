@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { createServer } from 'node:net';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { classifyUserAgent, deviceDetails, sanitizePath, sanitizeReferer } from '../analytics/classify.js';
+import { classifyUserAgent, deviceDetails, sanitizePath, sanitizeReferer, resolveClient, maskedIp } from '../analytics/classify.js';
 
 test('analytics classifier distinguishes crawler claims from verified identity', () => {
   const google = classifyUserAgent('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
@@ -19,6 +19,27 @@ test('analytics classifier distinguishes crawler claims from verified identity',
   assert.equal(deviceDetails('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36').device, 'desktop');
   assert.equal(sanitizePath('/journal/a/?token=secret&email=user@example.test'), '/journal/a/');
   assert.equal(sanitizeReferer('https://example.test/path?secret=value#part'), 'https://example.test/path');
+});
+
+test('proxy attribution rejects forged headers outside the explicit ingress trust boundary', () => {
+  const options = { railway: true, railwayPeers: ['100.64.0.1'], cloudflare: (ip) => ip === '173.245.48.1' };
+  const req = (peer, headers = {}) => ({ socket: { remoteAddress: peer }, headers });
+  assert.equal(resolveClient(req('203.0.113.10', { 'x-real-ip': '198.51.100.66', 'x-forwarded-for': '198.51.100.67', 'cf-connecting-ip': '198.51.100.68' }), options).ip, '203.0.113.10');
+  const railway = resolveClient(req('100.64.0.1', { 'x-real-ip': '203.0.113.10', 'cf-connecting-ip': '198.51.100.66', 'x-forwarded-for': '198.51.100.67' }), options);
+  assert.equal(railway.ip, '203.0.113.10'); assert.equal(railway.source, 'railway-x-real-ip');
+  const cf = resolveClient(req('100.64.0.1', { 'x-real-ip': '173.245.48.1', 'cf-connecting-ip': '203.0.113.10', 'cf-ipcountry': 'TW' }), options);
+  assert.equal(cf.ip, '203.0.113.10'); assert.equal(cf.country, 'TW');
+  assert.equal(resolveClient(req('100.64.0.99', { 'x-real-ip': '203.0.113.10' }), options).source, 'unresolved-proxy');
+  assert.equal(resolveClient(req('100.64.0.1', { 'x-real-ip': 'invalid' }), options).ip, '');
+  assert.equal(maskedIp('100.64.0.13'), '100.64.0.0');
+  assert.equal(maskedIp('2001:db8::1234'), '2001:db8:0:0::');
+});
+
+test('server refuses to start without configured admin credentials', async () => {
+  const env = { ...process.env }; delete env.SHUYI_ADMIN_PASSWORD;
+  const child = spawn(process.execPath, ['server.js'], { cwd: new URL('../', import.meta.url), env, stdio: 'pipe' });
+  child.stdout.resume(); child.stderr.resume();
+  const [code] = await once(child, 'exit'); assert.notEqual(code, 0);
 });
 
 test('analytics collection is public but every report requires the existing admin session', async (t) => {
@@ -43,8 +64,15 @@ test('analytics collection is public but every report requires the existing admi
     assert(home.includes('<link rel="canonical" href="https://sy-body.com/">'));
     assert(home.includes('application/ld+json'));
     const robots = await (await fetch(`${base}/robots.txt`)).text();
-    assert(robots.includes('Disallow: /admin/')); assert(robots.includes('Disallow: /api/')); assert(robots.includes('Sitemap: https://sy-body.com/sitemap.xml'));
+    assert(robots.includes('Disallow: /admin/')); assert(robots.includes('Disallow: /manage-center/')); assert(robots.includes('Disallow: /api/')); assert(robots.includes('Sitemap: https://sy-body.com/sitemap.xml'));
     assert.equal((await fetch(`${base}/analytics.js`)).status, 200);
+    for (const path of ['/server.js', '/package.json', '/.env.example', '/.env', '/.git/config', '/data/shuyi.sqlite', '/analytics/store.js', '/content/editorial-articles.json', '/tests/analytics.test.mjs', '/admin/', '/admin/admin.js', '/public/analytics.js']) {
+      for (const method of ['GET', 'HEAD']) assert.equal((await fetch(`${base}${path}`, { method })).status, 404, `${method} ${path}`);
+    }
+    for (const path of ['/manage-center/', '/manage-center/admin.js', '/manage-center/admin.css', '/manage-center/analytics.js']) assert.equal((await fetch(`${base}${path}`)).status, 200, path);
+    assert.equal((await fetch(`${base}/api/admin/login`, { method: 'POST', headers: { origin: 'https://evil.example', 'content-type': 'application/json' }, body: '{}' })).status, 403);
+    assert.equal((await fetch(`${base}/api/analytics/diagnostics`)).status, 401);
+
     assert.equal((await fetch(`${base}/api/analytics/overview`)).status, 401);
 
     const visitorId = 'visitor_fixture_0001'; const sessionId = 'session_fixture_0001'; const pageviewId = 'pageview_fixture_0001';
@@ -61,12 +89,19 @@ test('analytics collection is public but every report requires the existing admi
     assert.equal(login.status, 200); const { token } = await login.json();
     const headers = { authorization: `Bearer ${token}` };
     const today = new Date().toISOString().slice(0, 10); const query = new URLSearchParams({ from: today, to: today });
+    const diagnostics = await (await fetch(`${base}/api/analytics/diagnostics`, { headers })).json();
+    assert.equal(diagnostics.source, 'socket');
+    const mismatch = await fetch(`${base}/api/analytics/collect`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ visitorId: 'another_visitor_0001', sessionId, items: [] }) });
+    assert.equal(mismatch.status, 400);
+    const adminCollect = await fetch(`${base}/api/analytics/collect`, { method: 'POST', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify({ visitorId: 'admin_visitor_0001', sessionId: 'admin_session_0001', path: '/', items: [{ type: 'pageview', id: 'admin_pageview_0001', path: '/' }, { type: 'event', pageviewId: 'admin_pageview_0001', name: 'line_click', target: 'line_official' }] }) });
+    assert.equal(adminCollect.status, 202);
     const overviewResponse = await fetch(`${base}/api/analytics/overview?${query}`, { headers });
     assert.equal(overviewResponse.status, 200); const overview = await overviewResponse.json();
     assert.equal(overview.visitors, 2); assert.equal(overview.sessions, 2); assert.equal(overview.pageviews, 2); assert(overview.requests >= 2);
     const trend = await fetch(`${base}/api/analytics/trend?${query}`, { headers }); assert.equal(trend.status, 200); assert(Array.isArray(await trend.json()));
     const visitorRows = await (await fetch(`${base}/api/analytics/visitors?${query}`, { headers })).json();
-    assert.equal(visitorRows.length, 2); assert(visitorRows.some((row) => row.device === 'mobile')); assert(visitorRows.some((row) => row.device === 'desktop'));
+    assert.equal(visitorRows.length, 3); assert(visitorRows.some((row) => row.device === 'mobile')); assert(visitorRows.some((row) => row.device === 'desktop'));
+    assert(visitorRows.some((row) => row.is_admin === 1));
     assert(visitorRows.every((row) => row.ip !== '203.0.113.9' && row.country !== 'TW'));
     const journey = await (await fetch(`${base}/api/analytics/sessions/${sessionId}`, { headers })).json();
     assert.equal(journey.pages[0].page_path, '/services/'); assert.equal(journey.pages[0].previous_path, '/'); assert.equal(journey.events[0].event_name, 'booking_cta_click');
@@ -76,13 +111,22 @@ test('analytics collection is public but every report requires the existing admi
     assert(requestRows.some((row) => row.status === 404));
     assert(requestRows.every((row) => !row.path.includes('?')));
     const crawlResponse = await fetch(`${base}/api/analytics/crawlers?${query}`, { headers }); assert.equal(crawlResponse.status, 200); assert((await crawlResponse.json()).pages.length > 0);
+    assert(requestRows.every((row) => !('cookie' in row) && !('authorization' in row)));
+    const events = await (await fetch(`${base}/api/analytics/events?${query}`, { headers })).json();
+    assert(events.some((event) => event.event_name === 'booking_cta_click'));
     const privateRequest = await (await fetch(`${base}/api/analytics/requests?${query}`, { headers })).json();
     assert(privateRequest.every((row) => !row.path.includes('must-not-be-stored')));
     const timeFiltered = await (await fetch(`${base}/api/analytics/requests?${query}&fromTime=${today}T00%3A00&toTime=${today}T23%3A59&status=404`, { headers })).json();
     assert(timeFiltered.length > 0); assert(timeFiltered.every((row) => row.status === 404));
     assert.equal((await fetch(`${base}/api/analytics/visitors`)).status, 401);
-    assert.equal((await fetch(`${base}/admin/analytics/`)).status, 200);
-    assert((await (await fetch(`${base}/admin/analytics/`)).text()).includes('流量分析'));
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    const adminRows = await (await fetch(`${base}/api/analytics/requests?${query}&bot=admin`, { headers })).json();
+    assert(adminRows.length > 0); assert(adminRows.every((row) => row.is_admin === 1));
+    for (let i = 0; i < 10; i++) assert.equal((await fetch(`${base}/api/admin/login`, { method: 'POST', body: JSON.stringify({ password: 'wrong-test-password' }) })).status, 401);
+    assert.equal((await fetch(`${base}/api/admin/login`, { method: 'POST', body: '{}' })).status, 429);
+
+    assert.equal((await fetch(`${base}/manage-center/analytics/`)).status, 200);
+    assert((await (await fetch(`${base}/manage-center/analytics/`)).text()).includes('流量分析'));
   } finally {
     child.kill('SIGTERM'); await once(child, 'exit'); await rm(directory, { recursive: true, force: true });
   }

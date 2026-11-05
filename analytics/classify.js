@@ -27,11 +27,31 @@ export function deviceDetails(userAgent = '') {
   return { device, browser, os };
 }
 
-export function maskedIp(ip) {
+export function maskedIp(value) {
+  const ip = cleanIp(value);
   if (!ip) return '';
-  if (ip.includes(':')) return `${ip.split(':').slice(0, 4).join(':')}::`;
-  const parts = ip.split('.');
-  return parts.length === 4 ? `${parts[0]}.${parts[1]}.${parts[2]}.0` : '';
+  if (!ip.includes(':')) return ip.split('.').slice(0, 3).join('.') + '.0';
+  const [left, right = ''] = ip.split('::');
+  const a = left ? left.split(':') : []; const b = right ? right.split(':') : [];
+  const groups = ip.includes('::') ? [...a, ...Array(8 - a.length - b.length).fill('0'), ...b] : a;
+  return groups.slice(0, 4).map((part) => parseInt(part, 16).toString(16)).join(':') + '::';
+}
+
+// Only the deployed Railway HTTP ingress peer may supply X-Real-IP.
+// X-Forwarded-For is deliberately never used for attribution or rate limits.
+export function resolveClient(req, { cloudflare = () => false, railway = false, railwayPeers = [] } = {}) {
+  const peer = cleanIp(req.socket?.remoteAddress);
+  const cfIp = cleanIp(req.headers['cf-connecting-ip']);
+  let ip = peer; let source = 'socket'; let cf = cloudflare(peer);
+  if (railway && railwayPeers.includes(peer)) {
+    ip = cleanIp(req.headers['x-real-ip']);
+    source = ip ? 'railway-x-real-ip' : 'unresolved-proxy';
+    cf = cloudflare(ip);
+  } else if (railway && /^100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./.test(peer)) {
+    ip = ''; source = 'unresolved-proxy'; cf = false;
+  }
+  if (cf && cfIp) { ip = cfIp; source = 'cloudflare'; }
+  return { ip, peer, source, country: cf ? String(req.headers['cf-ipcountry'] || '').replace(/[^A-Z]/gi, '').slice(0, 2).toUpperCase() : '' };
 }
 
 export function sanitizePath(value) {
@@ -58,11 +78,11 @@ export function cleanIp(value) {
 export function classifyRequest(req, trustedProxy) {
   const ua = String(req.headers['user-agent'] || '').slice(0, 512);
   const bot = classifyUserAgent(ua);
-  const peer = cleanIp(req.socket?.remoteAddress);
-  const ip = trustedProxy(peer) ? cleanIp(req.headers['cf-connecting-ip']) || peer : peer;
+  const info = req.analyticsClient || resolveClient(req, { cloudflare: trustedProxy });
+  const ip = info.ip;
   const details = deviceDetails(ua);
   const kind = req.url?.startsWith('/api/') ? 'api' : /\.(?:css|js|mjs|png|jpe?g|gif|svg|webp|ico|woff2?|ttf|mp4|webm|pdf)(?:\?|$)/i.test(req.url || '') ? 'static' : 'page';
-  return { ip, ua, bot, details, kind, referer: sanitizeReferer(req.headers.referer), path: sanitizePath(req.url), country: trustedProxy(peer) ? String(req.headers['cf-ipcountry'] || '').slice(0, 2).toUpperCase() : '' };
+  return { ip, ipSource: info.source, peerMasked: maskedIp(info.peer), isAdmin: Boolean(req.analyticsIsAdmin), ua, bot, details, kind, referer: sanitizeReferer(req.headers.referer), path: sanitizePath(req.url), country: info.country };
 }
 
 async function verifyByDns(ip, engine) {

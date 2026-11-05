@@ -1,18 +1,19 @@
 import { createServer } from 'node:http';
-import { readFile, stat } from 'node:fs/promises';
+import { readFile, stat, realpath } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import { mkdirSync, readFileSync } from 'node:fs';
-import { randomBytes } from 'node:crypto';
-import { dirname, extname, join, normalize, relative, resolve } from 'node:path';
+import { randomBytes, createHash, timingSafeEqual } from 'node:crypto';
+import { dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { createAnalytics } from './analytics/store.js';
 import { createAnalyticsReports } from './analytics/reports.js';
-import { cleanIp } from './analytics/classify.js';
+import { cleanIp, resolveClient, maskedIp } from './analytics/classify.js';
 
 const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const PORT = Number(process.env.PORT || 4173);
-const ADMIN_PASSWORD = process.env.SHUYI_ADMIN_PASSWORD || 'shuyi-local-dev';
+const ADMIN_PASSWORD = process.env.SHUYI_ADMIN_PASSWORD;
+if (!ADMIN_PASSWORD) throw new Error('SHUYI_ADMIN_PASSWORD must be configured; refusing to start without an admin credential.');
 const SITE_ORIGIN = 'https://sy-body.com';
 const BOOKING_URL = new URL(process.env.BOOKING_URL || 'https://booking.sy-body.com/').href;
 const GOOGLE_SITE_VERIFICATION = /^[A-Za-z0-9_-]+$/.test(process.env.GOOGLE_SITE_VERIFICATION || '') ? process.env.GOOGLE_SITE_VERIFICATION : '';
@@ -51,9 +52,25 @@ const isTrustedCloudflarePeer = (peer) => {
   return value !== null && trustedProxyCidrs.some((range) => range.width === width && (value >> BigInt(width - range.bits)) === (range.value >> BigInt(width - range.bits)));
 };
 const analyticsRetentionDays = Math.max(1, Math.min(3650, Number(process.env.ANALYTICS_RETENTION_DAYS || 30)));
+const clientOptions = { cloudflare: isTrustedCloudflarePeer, railway: Boolean(process.env.RAILWAY_ENVIRONMENT_ID), railwayPeers: (process.env.RAILWAY_PROXY_PEERS === undefined ? Array.from({ length: 21 }, (_, i) => `100.64.0.${i + 1}`).join(',') : process.env.RAILWAY_PROXY_PEERS).split(',').map(cleanIp).filter(Boolean) };
+const clientInfo = (req) => req.analyticsClient ||= resolveClient(req, clientOptions);
 const analytics = createAnalytics(db, { trustedProxy: isTrustedCloudflarePeer, retentionDays: analyticsRetentionDays });
 const analyticsReports = createAnalyticsReports(db);
+function privateReport(value, fullIp = false) {
+  if (Array.isArray(value)) return value.map((row) => privateReport(row, fullIp));
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, key === 'ip' ? (fullIp ? item : maskedIp(item)) : privateReport(item, fullIp)]));
+}
 const analyticsRate = new Map();
+const loginRate = new Map();
+function allowRate(map, key, limit, windowMs) {
+  const time = Date.now();
+  if (map.size > 5000) for (const [k, row] of map) if (time >= row.until) map.delete(k);
+  let row = map.get(key);
+  if (!row || time >= row.until) { if (map.size >= 10000 && !row) return false; row = { count: 0, until: time + windowMs }; map.set(key, row); }
+  return ++row.count <= limit;
+}
+const credentialMatches = (value) => typeof value === 'string' && timingSafeEqual(createHash('sha256').update(value).digest(), createHash('sha256').update(ADMIN_PASSWORD).digest());
 const now = () => new Date().toISOString();
 const seed = [
   ['久坐後的緊繃感，從哪裡開始聽？','activate-after-sitting','article','一段給日常身體感受的小筆記。','不是每一次卡住，都需要立刻處理。先停一秒，感受今天的肩、背、髖正在告訴你什麼。','', '', 'draft'],
@@ -174,14 +191,8 @@ function articlePage(row) {
 
 async function api(req, res, url) {
   if (url.pathname === '/api/analytics/collect' && req.method === 'POST') {
-    const nowMs = Date.now();
-    const key = cleanIp(req.socket?.remoteAddress) || 'unknown';
-    const rate = analyticsRate.get(key) || { start: nowMs, count: 0 };
-    if (nowMs - rate.start >= 60000) { rate.start = nowMs; rate.count = 0; }
-    rate.count++;
-    analyticsRate.set(key, rate);
-    if (rate.count > 600) return json(res, 429, { error: '請求過於頻繁' });
-    if (analyticsRate.size > 5000) for (const [entry, value] of analyticsRate) if (nowMs - value.start > 120000) analyticsRate.delete(entry);
+    const key = clientInfo(req).ip || clientInfo(req).peer;
+    if (!allowRate(analyticsRate, key, 600, 60000)) return json(res, 429, { error: '請求過於頻繁' });
     if (!/^application\/(?:json|octet-stream)/i.test(String(req.headers['content-type'] || ''))) return json(res, 415, { error: '不支援的內容格式' });
     const body = await readBodyLimited(req, 32768);
     if (!body) return json(res, 400, { error: '無效或過大的分析資料' });
@@ -189,7 +200,10 @@ async function api(req, res, url) {
     return json(res, result.ok ? 202 : 400, result);
   }
   if (req.method === 'POST' && url.pathname === '/api/admin/login') {
-    const body = await readBody(req); if (!body || body.password !== ADMIN_PASSWORD) return json(res, 401, { error: '密碼不正確' });
+    const key = clientInfo(req).ip || clientInfo(req).peer;
+    if (!allowRate(loginRate, key, 10, 15 * 60000)) return json(res, 429, { error: '登入嘗試過多，請稍後再試' });
+    const body = await readBodyLimited(req, 4096); if (!body || !credentialMatches(body.password)) return json(res, 401, { error: '密碼不正確' });
+    loginRate.delete(key);
     const token = randomBytes(32).toString('hex'); const createdAt = now(); const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(); db.prepare('DELETE FROM admin_sessions WHERE expires_at <= ?').run(createdAt); db.prepare('INSERT INTO admin_sessions (token,expires_at,created_at) VALUES (?,?,?)').run(token, expiresAt, createdAt); res.setHeader('Set-Cookie', `shuyi_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=28800`); return json(res, 200, { ok: true, token });
   }
   if (req.method === 'POST' && url.pathname === '/api/admin/logout') { const token = sessionToken(req); if (token) db.prepare('DELETE FROM admin_sessions WHERE token = ?').run(token); res.setHeader('Set-Cookie', 'shuyi_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0'); return json(res, 200, { ok: true }); }
@@ -197,25 +211,34 @@ async function api(req, res, url) {
   if (url.pathname === '/api/content' && req.method === 'GET') { res.setHeader('Cache-Control', 'private, no-store'); const publishedOnly = url.searchParams.get('status') === 'published' || !getSession(req); const rows = db.prepare(`SELECT * FROM content ${publishedOnly ? "WHERE status = 'published'" : ''} ORDER BY COALESCE(published_at, updated_at) DESC`).all(); return json(res, 200, rows.map(safeContent)); }
   if (!requireAuth(req, res)) return true;
   if (url.pathname === '/api/admin/session' && req.method === 'GET') return json(res, 200, { authenticated: true });
-  if (url.pathname === '/api/analytics/overview' && req.method === 'GET') return json(res, 200, analyticsReports.overview(url.searchParams));
-  if (url.pathname === '/api/analytics/trend' && req.method === 'GET') return json(res, 200, analyticsReports.trend(url.searchParams));
-  if (url.pathname === '/api/analytics/visitors' && req.method === 'GET') return json(res, 200, analyticsReports.visitors(url.searchParams));
-  if (url.pathname === '/api/analytics/requests' && req.method === 'GET') return json(res, 200, analyticsReports.requests(url.searchParams));
-  if (url.pathname === '/api/analytics/crawlers' && req.method === 'GET') return json(res, 200, analyticsReports.crawlers(url.searchParams));
+  if (url.pathname === '/api/analytics/diagnostics' && req.method === 'GET') { const info = clientInfo(req); return json(res, 200, { framework: 'node:http (no req.ip / trust proxy)', source: info.source, resolved: maskedIp(info.ip), socketPeer: maskedIp(info.peer), xRealIp: maskedIp(cleanIp(req.headers['x-real-ip'])), cfConnectingIp: maskedIp(cleanIp(req.headers['cf-connecting-ip'])), forwardedFor: String(req.headers['x-forwarded-for'] || '').split(',').slice(0, 8).map((ip) => maskedIp(cleanIp(ip))), note: 'X-Forwarded-For is diagnostic only; it is never used to choose the client IP.' }); }
+  if (url.pathname === '/api/analytics/overview' && req.method === 'GET') return json(res, 200, privateReport(analyticsReports.overview(url.searchParams), url.searchParams.get('fullIp') === '1'));
+  if (url.pathname === '/api/analytics/trend' && req.method === 'GET') return json(res, 200, privateReport(analyticsReports.trend(url.searchParams), url.searchParams.get('fullIp') === '1'));
+  if (url.pathname === '/api/analytics/visitors' && req.method === 'GET') return json(res, 200, privateReport(analyticsReports.visitors(url.searchParams), url.searchParams.get('fullIp') === '1'));
+  if (url.pathname === '/api/analytics/requests' && req.method === 'GET') return json(res, 200, privateReport(analyticsReports.requests(url.searchParams), url.searchParams.get('fullIp') === '1'));
+  if (url.pathname === '/api/analytics/crawlers' && req.method === 'GET') return json(res, 200, privateReport(analyticsReports.crawlers(url.searchParams), url.searchParams.get('fullIp') === '1'));
+  if (url.pathname === '/api/analytics/events' && req.method === 'GET') return json(res, 200, analyticsReports.events(url.searchParams));
   const sessionMatch = url.pathname.match(/^\/api\/analytics\/sessions\/([a-zA-Z0-9_-]{8,80})$/);
-  if (sessionMatch && req.method === 'GET') { const session = analyticsReports.session(sessionMatch[1]); return json(res, session ? 200 : 404, session || { error: '找不到工作階段' }); }
+  if (sessionMatch && req.method === 'GET') { const session = analyticsReports.session(sessionMatch[1]); return json(res, session ? 200 : 404, privateReport(session) || { error: '找不到工作階段' }); }
   if (url.pathname === '/api/content' && req.method === 'POST') { const body = await readBody(req); if (!body?.title || !body?.slug || !['article','video','news'].includes(body.type)) return json(res, 400, { error: '標題、網址代稱與類型為必填' }); const timestamp = now(); try { const result = db.prepare('INSERT INTO content (title,slug,type,excerpt,body,video_url,cover_url,status,published_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)').run(body.title.trim(), body.slug.trim(), body.type, body.excerpt || '', body.body || '', body.video_url || '', body.cover_url || '', body.status === 'published' ? 'published' : 'draft', body.status === 'published' ? timestamp : null, timestamp, timestamp); return json(res, 201, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(result.lastInsertRowid))); } catch (error) { return json(res, 409, { error: error.message.includes('UNIQUE') ? '網址代稱已存在' : '無法建立內容' }); } }
   const match = url.pathname.match(/^\/api\/content\/(\d+)$/); if (match) { const id = Number(match[1]); if (req.method === 'GET') return json(res, 200, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(id) || {})); if (req.method === 'PUT') { const body = await readBody(req); const current = db.prepare('SELECT * FROM content WHERE id = ?').get(id); if (!current) return json(res, 404, { error: '找不到內容' }); if (!body?.title || !body?.slug || !['article','video','news'].includes(body.type)) return json(res, 400, { error: '標題、網址代稱與類型為必填' }); const status = body.status === 'published' ? 'published' : 'draft'; const publishedAt = status === 'published' ? (current.published_at || now()) : null; try { db.prepare('UPDATE content SET title=?,slug=?,type=?,excerpt=?,body=?,video_url=?,cover_url=?,status=?,published_at=?,updated_at=? WHERE id=?').run(body.title.trim(), body.slug.trim(), body.type, body.excerpt || '', body.body || '', body.video_url || '', body.cover_url || '', status, publishedAt, now(), id); return json(res, 200, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(id))); } catch (error) { return json(res, 409, { error: error.message.includes('UNIQUE') ? '網址代稱已存在' : '無法更新內容' }); } } if (req.method === 'DELETE') { db.prepare('DELETE FROM content WHERE id = ?').run(id); return json(res, 200, { ok: true }); } }
   return json(res, 404, { error: 'API route not found' });
 }
 
 async function staticFile(req, res, pathname) {
-  let clean = decodeURIComponent(pathname);
+  let clean;
+  try { clean = decodeURIComponent(pathname); } catch { return json(res, 404, { error: 'Not found' }); }
+  if (clean.includes('\0') || clean.includes('\\') || clean.split('/').some((part) => part.startsWith('.') || part === '..')) return json(res, 404, { error: 'Not found' });
   if (clean === '/') clean = '/index.html';
   if (clean.endsWith('/')) clean += 'index.html';
-  const filePath = resolve(ROOT, `.${normalize(clean)}`);
-  if (!filePath.startsWith(ROOT) || relative(ROOT, filePath).startsWith('..')) return json(res, 403, { error: 'Forbidden' });
+  const publicFiles = new Set(['/index.html', '/app.js', '/content.js', '/styles.css', '/services/index.html', '/offerings/index.html', '/journal/index.html', '/studio/index.html', '/booking/index.html', '/journal/first-breath/index.html', '/journal/activate-after-sitting/index.html', '/journal/studio-in-progress/index.html']);
+  const managedFiles = { '/manage-center/index.html': '/admin/index.html', '/manage-center/analytics/index.html': '/admin/analytics.html', '/manage-center/admin.css': '/admin/admin.css', '/manage-center/admin.js': '/admin/admin.js', '/manage-center/analytics.css': '/admin/analytics.css', '/manage-center/analytics.js': '/admin/analytics.js', '/manage-center/favicon.svg': '/manage-center/favicon.svg', '/analytics.js': '/public/analytics.js' };
+  const media = clean.startsWith('/素材/') && /\.(?:jpe?g|png|gif|svg|webp|ico|mp4|webm|woff2?|ttf)$/i.test(clean);
+  if (!publicFiles.has(clean) && !Object.hasOwn(managedFiles, clean) && !media) return json(res, 404, { error: 'Not found' });
+  const filePath = resolve(ROOT, `.${managedFiles[clean] || clean}`);
   try {
+    const actualPath = await realpath(filePath);
+    if (relative(ROOT, actualPath).startsWith('..') || actualPath !== filePath) return json(res, 404, { error: 'Not found' });
     const info = await stat(filePath);
     if (!info.isFile()) return json(res, 404, { error: 'Not found' });
     const extension = extname(filePath);
@@ -257,9 +280,9 @@ async function staticFile(req, res, pathname) {
         const published = db.prepare("SELECT * FROM content WHERE status = 'published' ORDER BY COALESCE(published_at, updated_at) DESC").all();
         html = html.replace('<div class="content-grid" id="content-grid" aria-live="polite"></div>', `<div class="content-grid" id="content-grid" aria-live="polite">${published.map(cardHtml).join('')}</div>`);
       }
-      if (!clean.startsWith('/admin/')) html = addSeo(html, clean.endsWith('/index.html') ? clean.slice(0, -'index.html'.length) : clean);
-      html = html.replace('</head>', `${headEnhancements(clean.startsWith('/admin/'))}</head>`);
-      if (!clean.startsWith('/admin/')) html = html.replace('</body>', '<script src="/analytics.js" defer></script></body>');
+      if (!clean.startsWith('/manage-center/')) html = addSeo(html, clean.endsWith('/index.html') ? clean.slice(0, -'index.html'.length) : clean);
+      html = html.replace('</head>', `${headEnhancements(clean.startsWith('/manage-center/'))}</head>`);
+      if (!clean.startsWith('/manage-center/')) html = html.replace('</body>', '<script src="/analytics.js" defer></script></body>');
       res.writeHead(200, { 'content-type': contentType });
       return res.end(withoutSloganStops(html));
     }
@@ -282,16 +305,25 @@ function dynamicArticle(req, res, pathname) {
 }
 
 const server = createServer(async (req, res) => {
-  const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  analytics.recordRequest(req, res);
+  let url;
+  try { url = new URL(req.url, `http://${req.headers.host || 'localhost'}`); } catch { return json(res, 400, { error: 'Invalid URL' }); }
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  req.analyticsClient = clientInfo(req);
+  req.analyticsIsAdmin = Boolean(getSession(req));
+  try { analytics.recordRequest(req, res); } catch { /* Analytics cannot stop the website. */ }
   try {
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && (req.headers['sec-fetch-site'] === 'cross-site' || (req.headers.origin && ![SITE_ORIGIN, ...(!process.env.RAILWAY_ENVIRONMENT_ID && process.env.NODE_ENV !== 'production' ? [`http://localhost:${PORT}`, `http://127.0.0.1:${PORT}`] : [])].includes(req.headers.origin)))) return json(res, 403, { error: 'Forbidden origin' });
+    if (url.pathname === '/admin' || url.pathname.startsWith('/admin/')) return json(res, 404, { error: 'Not found' });
+    if (url.pathname.startsWith('/manage-center')) { res.setHeader('Cache-Control', 'private, no-store'); res.setHeader('X-Robots-Tag', 'noindex, nofollow'); }
     if (url.hostname.toLowerCase() === 'www.sy-body.com') {
       res.writeHead(308, { location: `https://sy-body.com${url.pathname}${url.search}` });
       return res.end();
     }
     if (['GET', 'HEAD'].includes(req.method) && url.pathname === '/robots.txt') {
       res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
-      return res.end(`User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nUser-agent: OAI-SearchBot\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nUser-agent: GPTBot\nDisallow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`);
+      return res.end(`User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /manage-center/\nDisallow: /api/\n\nUser-agent: OAI-SearchBot\nAllow: /\nDisallow: /admin/\nDisallow: /manage-center/\nDisallow: /api/\n\nUser-agent: GPTBot\nDisallow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`);
     }
     if ((req.method === 'GET' || req.method === 'HEAD') && url.pathname === '/sitemap.xml') {
       res.writeHead(200, { 'content-type': 'application/xml; charset=utf-8' });
@@ -306,9 +338,7 @@ const server = createServer(async (req, res) => {
     if (['GET', 'HEAD'].includes(req.method) && articleAlias) { res.writeHead(308, { location: `${url.pathname}/${url.search}` }); return res.end(); }
     const articleIndexAlias = url.pathname.match(/^\/journal\/([a-z0-9-]+)\/index\.html$/);
     if (['GET', 'HEAD'].includes(req.method) && articleIndexAlias) { res.writeHead(308, { location: `/journal/${articleIndexAlias[1]}/${url.search}` }); return res.end(); }
-    if (url.pathname === '/admin' || url.pathname === '/admin/dashboard') { res.writeHead(308, { location: `${url.pathname}/` }); return res.end(); }
-    if (url.pathname === '/admin/analytics') { res.writeHead(308, { location: '/admin/analytics/' }); return res.end(); }
-    if (url.pathname === '/analytics.js') url.pathname = '/public/analytics.js';
+    if (url.pathname === '/manage-center' || url.pathname === '/manage-center/analytics') { res.writeHead(308, { location: `${url.pathname}/` }); return res.end(); }
     const handled = await api(req, res, url);
     if (!handled) {
       if (dynamicArticle(req, res, url.pathname)) return;
@@ -316,13 +346,9 @@ const server = createServer(async (req, res) => {
         res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
         return res.end('Not found');
       }
-      if (url.pathname === '/admin/' || url.pathname === '/admin/dashboard/') url.pathname = '/admin/index.html';
-      if (url.pathname === '/admin/analytics/') url.pathname = '/admin/analytics.html';
-      if (url.pathname === '/admin/dashboard/admin.css') url.pathname = '/admin/admin.css';
-      if (url.pathname === '/admin/dashboard/admin.js') url.pathname = '/admin/admin.js';
       await staticFile(req, res, url.pathname);
     }
   } catch (error) { console.error(error); if (!res.headersSent) json(res, 500, { error: '伺服器發生錯誤' }); }
 });
-server.listen(PORT, () => { console.log(`舒逸網站：http://localhost:${PORT}`); console.log(`後台：http://localhost:${PORT}/admin/`); if (!process.env.SHUYI_ADMIN_PASSWORD) console.warn('未設定 SHUYI_ADMIN_PASSWORD，開發密碼為 shuyi-local-dev；正式環境請務必設定環境變數。'); });
+server.listen(PORT, () => { console.log(`舒逸網站：http://localhost:${PORT}`); console.log(`後台：http://localhost:${PORT}/manage-center/`); });
 for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => { analytics.flush(); server.close(() => process.exit(0)); const forceExit = setTimeout(() => process.exit(0), 5000); forceExit.unref(); });
