@@ -1,12 +1,13 @@
 # 舒逸網站資安與流量分析調整報告
 
-日期：2026-11-05。程式回歸與本機瀏覽器已驗證；正式站部署結果將於部署後補入。
+日期：2026-11-05。程式回歸、本機瀏覽器與正式站均已驗證。功能版本 feecc98 已由 Railway 部署成功。
 
 ## 調整前／調整後
 
 | 項目 | 調整前 | 調整後 |
 | --- | --- | --- |
 | 靜態檔案存取 | 公開目錄等於專案根目錄；正式站 `/server.js` HEAD 回 200 | Allowlist（允許清單）只提供指定頁面、前端程式、管理頁資源與媒體；環境檔、後端原始碼、Git、資料庫及測試檔回 404 |
+| CDN 快取 | 修正原站後 Cloudflare 仍曾以 HIT 回傳舊 `/server.js` | 已清除本網域 CDN 快取，重新檢查原網址回 404 / BYPASS；沒有停用 Cloudflare 安全防護 |
 | 符號連結 | 未檢查實際檔案目的地 | realpath（解析真正檔案路徑）防止連結指向未授權檔案 |
 | 管理密碼 | 未設定時使用固定開發密碼 | Fail closed（條件不安全就拒絕啟動）；必須設定 SHUYI_ADMIN_PASSWORD |
 | 登入保護 | 沒有限制嘗試次數 | Rate limiting（限流）：同來源 15 分鐘最多 10 次失敗嘗試；登入 body 限制 4KB；密碼以固定長度摘要做 timing-safe 比較 |
@@ -48,3 +49,15 @@ Railway 官方將 X-Real-IP 列為來源 IP Header：https://docs.railway.com/ne
 - LINE QR 被另一台手機掃描無法由原頁面得知。YouTube 只記開啟播放器，未接官方播放器事件時不能斷言已開始播放。
 - 只識別有效登入中的管理者；登出、換瀏覽器或無登入的同一個人不會被標成管理者。
 - 未執行實體手機及大型壓力測試。公開隱私告知仍需負責人補齊聯絡與法規資訊後發布。
+
+## 正式站驗證結果
+
+- Railway 顯示功能版本 feecc98 部署 SUCCESS；本次未變更正式密碼或環境變數。
+- 首頁、服務頁、預約頁、追蹤程式、新後台與管理資源回 200。
+- 舊 /admin/、/admin/analytics/、/server.js、/package.json、/.env、/.env.example、/.git/config、/data/shuyi.sqlite 回 404。其中 /server.js 曾受 CDN 舊快取影響，已執行 Cloudflare「清除全部」後再次確認 404、Cache-Control: no-store、CF-Cache-Status: BYPASS。
+- 未登入的 overview 與 diagnostics API 回 401；正式密碼登入及授權 overview API 回 200。沒有將正式密碼或 Token 寫入報告、測試檔或命令列參數。
+- 已透過本服務既有 Railway 原生網域逐一偽造 X-Real-IP、X-Forwarded-For、CF-Connecting-IP：請求正常回 200，系統採用的來源未變成偽造值。CF 標頭雖可由直連客戶端傳入，但來源不屬可信 Cloudflare 時不採信。原生網域與 sy-body.com 指向同一服務，測試登入憑證僅送往該服務。
+- 新資料已出現 railway-x-real-ip 與 is_admin 標記；查詢時新紀錄仍以 100.64.* 為訪客 IP 的筆數為 0。歷史代理資料保持原樣並標記 legacy。
+- 正式 Chrome 瀏覽器確認新 /manage-center/ 顯示登入介面；管理員須以既有密碼登入。自動化測試已驗證新後台登入與分析頁功能。
+- IP 與管理者診斷請求屬實際測試請求，保留於伺服器請求紀錄；正式資料庫未灌入模擬 pageview 或預約成功事件。
+- 現行限流為單程序記憶體計數，適用目前單實例部署；重啟會重設，將來多副本部署需改用共享計數儲存。可信 peer 清單若變動，需用管理員診斷確認後更新，不能直接擴大信任整個私有網段。
