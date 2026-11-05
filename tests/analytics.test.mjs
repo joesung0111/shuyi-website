@@ -127,6 +127,7 @@ test('analytics collection is public but every report requires the existing admi
 
     assert.equal((await fetch(`${base}/manage-center/analytics/`)).status, 200);
     assert((await (await fetch(`${base}/manage-center/analytics/`)).text()).includes('流量分析'));
+    assert(!logs.includes('ERR_HTTP_HEADERS_SENT'), 'Completed API responses must not fall through to static serving');
   } finally {
     child.kill('SIGTERM'); await once(child, 'exit'); await rm(directory, { recursive: true, force: true });
   }

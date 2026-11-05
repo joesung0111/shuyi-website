@@ -339,8 +339,8 @@ const server = createServer(async (req, res) => {
     const articleIndexAlias = url.pathname.match(/^\/journal\/([a-z0-9-]+)\/index\.html$/);
     if (['GET', 'HEAD'].includes(req.method) && articleIndexAlias) { res.writeHead(308, { location: `/journal/${articleIndexAlias[1]}/${url.search}` }); return res.end(); }
     if (url.pathname === '/manage-center' || url.pathname === '/manage-center/analytics') { res.writeHead(308, { location: `${url.pathname}/` }); return res.end(); }
-    const handled = await api(req, res, url);
-    if (!handled) {
+    await api(req, res, url);
+    if (!res.headersSent && !res.writableEnded) {
       if (dynamicArticle(req, res, url.pathname)) return;
       if (['GET', 'HEAD'].includes(req.method) && /^\/journal\/[a-z0-9-]+\/$/.test(url.pathname)) {
         res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
