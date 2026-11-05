@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { createAnalytics } from './analytics/store.js';
 import { createAnalyticsReports } from './analytics/reports.js';
+import { CSV_HEADER, csvRequest, LOG_LIMITS } from './analytics/request-log.js';
 import { cleanIp, resolveClient, maskedIp } from './analytics/classify.js';
 
 const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)));
@@ -23,7 +24,7 @@ const googleVerificationMeta = GOOGLE_SITE_VERIFICATION ? `<meta name="google-si
 const DB_PATH = resolve(process.env.DATABASE_PATH || join(ROOT, 'data', 'shuyi.sqlite'));
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.ico': 'image/x-icon' };
 const themeBoot = '<script>(function(){try{var t=localStorage.getItem("shuyi-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}}())<\/script>';
-const headEnhancements = (admin = false) => `${admin ? '<link rel="icon" href="/admin/favicon.svg" type="image/svg+xml">' : '<link rel="icon" href="/素材/淺色系-1K.jpeg" type="image/jpeg">'}${themeBoot}`;
+const headEnhancements = (admin = false) => `${admin ? '<link rel="icon" href="/manage-center/favicon.svg" type="image/svg+xml">' : '<link rel="icon" href="/素材/淺色系-1K.jpeg" type="image/jpeg">'}${themeBoot}`;
 const withoutSloganStops = (html) => ['不只放鬆。', '動起來。', '自在的樣子。', '新的情報。', '工作室。', '自己。'].reduce((result, phrase) => result.replaceAll(phrase, phrase.slice(0, -1)), html);
 
 mkdirSync(dirname(DB_PATH), { recursive: true });
@@ -63,6 +64,10 @@ function privateReport(value, fullIp = false) {
 }
 const analyticsRate = new Map();
 const loginRate = new Map();
+const reportRate = new Map();
+const exportRate = new Map();
+const activeExports = new Set();
+const dashboardCache = new Map();
 function allowRate(map, key, limit, windowMs) {
   const time = Date.now();
   if (map.size > 5000) for (const [k, row] of map) if (time >= row.until) map.delete(k);
@@ -210,6 +215,45 @@ async function api(req, res, url) {
   if (!url.pathname.startsWith('/api/')) return false;
   if (url.pathname === '/api/content' && req.method === 'GET') { res.setHeader('Cache-Control', 'private, no-store'); const publishedOnly = url.searchParams.get('status') === 'published' || !getSession(req); const rows = db.prepare(`SELECT * FROM content ${publishedOnly ? "WHERE status = 'published'" : ''} ORDER BY COALESCE(published_at, updated_at) DESC`).all(); return json(res, 200, rows.map(safeContent)); }
   if (!requireAuth(req, res)) return true;
+  const reportKey = createHash('sha256').update(sessionToken(req) || '').digest('hex');
+  if (url.pathname.startsWith('/api/analytics/') && !allowRate(reportRate, reportKey, 120, 60000)) return json(res, 429, { error: '查詢過於頻繁，請稍後再試。' });
+  if (url.pathname === '/api/analytics/dashboard' && req.method === 'GET') {
+    const keys = ['from', 'to', 'tzOffset'];
+    const params = new URLSearchParams(keys.filter((key) => url.searchParams.has(key)).map((key) => [key, url.searchParams.get(key)]));
+    const cacheKey = params.toString();
+    let cached = dashboardCache.get(cacheKey);
+    if (!cached || cached.until <= Date.now()) {
+      const trend = analyticsReports.trend(params);
+      const data = { overview: analyticsReports.overview(params), trend, crawlers: analyticsReports.crawlers(params), events: analyticsReports.events(params), limits: { ...LOG_LIMITS, retentionDays: analyticsRetentionDays }, generatedAt: new Date().toISOString() };
+      if (dashboardCache.size >= 50) dashboardCache.clear();
+      cached = { until: Date.now() + 5000, data }; dashboardCache.set(cacheKey, cached);
+    }
+    return json(res, 200, cached.data);
+  }
+  if (url.pathname === '/api/analytics/requests/page' && req.method === 'GET') return json(res, 200, privateReport(analyticsReports.requestPage(url.searchParams), url.searchParams.get('fullIp') === '1'));
+  if (url.pathname === '/api/analytics/requests/export' && req.method === 'GET') {
+    if (activeExports.has(reportKey) || activeExports.size >= 2 || !allowRate(exportRate, reportKey, 2, 60000)) return json(res, 429, { error: '一次只能匯出一份檔案，每分鐘最多兩次，請稍後再試。' });
+    const plan = analyticsReports.prepareExport(url.searchParams);
+    activeExports.add(reportKey);
+    const exportTimeout = setTimeout(() => res.destroy(), 60000); exportTimeout.unref();
+    try {
+      res.writeHead(200, { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="shuyi-requests-masked.csv"', 'cache-control': 'private, no-store', 'x-export-row-count': String(plan.total), 'x-export-snapshot': plan.snapshotAt });
+      const write = async (text) => {
+        if (res.destroyed) return false;
+        if (!res.write(text)) await new Promise((resolve) => { const done = () => { res.off('drain', done); res.off('close', done); resolve(); }; res.once('drain', done); res.once('close', done); });
+        return !res.destroyed;
+      };
+      await write('\uFEFF' + CSV_HEADER);
+      const started = Date.now();
+      for (const batch of plan.batches()) {
+        if (res.destroyed || Date.now() - started > 60000) { res.destroy(); return; }
+        if (!await write(batch.map(csvRequest).join(''))) return;
+        await new Promise(setImmediate);
+      }
+      res.end(); return;
+    } finally { clearTimeout(exportTimeout); activeExports.delete(reportKey); }
+  }
+  if (url.pathname === '/api/analytics/events/details' && req.method === 'GET') return json(res, 200, analyticsReports.eventDetails(url.searchParams));
   if (url.pathname === '/api/admin/session' && req.method === 'GET') return json(res, 200, { authenticated: true });
   if (url.pathname === '/api/analytics/diagnostics' && req.method === 'GET') { const info = clientInfo(req); return json(res, 200, { framework: 'node:http (no req.ip / trust proxy)', source: info.source, resolved: maskedIp(info.ip), socketPeer: maskedIp(info.peer), xRealIp: maskedIp(cleanIp(req.headers['x-real-ip'])), cfConnectingIp: maskedIp(cleanIp(req.headers['cf-connecting-ip'])), forwardedFor: String(req.headers['x-forwarded-for'] || '').split(',').slice(0, 8).map((ip) => maskedIp(cleanIp(ip))), note: 'X-Forwarded-For is diagnostic only; it is never used to choose the client IP.' }); }
   if (url.pathname === '/api/analytics/overview' && req.method === 'GET') return json(res, 200, privateReport(analyticsReports.overview(url.searchParams), url.searchParams.get('fullIp') === '1'));
@@ -232,7 +276,7 @@ async function staticFile(req, res, pathname) {
   if (clean === '/') clean = '/index.html';
   if (clean.endsWith('/')) clean += 'index.html';
   const publicFiles = new Set(['/index.html', '/app.js', '/content.js', '/styles.css', '/services/index.html', '/offerings/index.html', '/journal/index.html', '/studio/index.html', '/booking/index.html', '/journal/first-breath/index.html', '/journal/activate-after-sitting/index.html', '/journal/studio-in-progress/index.html']);
-  const managedFiles = { '/manage-center/index.html': '/admin/index.html', '/manage-center/analytics/index.html': '/admin/analytics.html', '/manage-center/admin.css': '/admin/admin.css', '/manage-center/admin.js': '/admin/admin.js', '/manage-center/analytics.css': '/admin/analytics.css', '/manage-center/analytics.js': '/admin/analytics.js', '/manage-center/favicon.svg': '/manage-center/favicon.svg', '/analytics.js': '/public/analytics.js' };
+  const managedFiles = { '/manage-center/index.html': '/admin/index.html', '/manage-center/analytics/index.html': '/admin/analytics.html', '/manage-center/admin.css': '/admin/admin.css', '/manage-center/admin.js': '/admin/admin.js', '/manage-center/analytics.css': '/admin/analytics.css', '/manage-center/analytics.js': '/admin/analytics.js', '/manage-center/favicon.svg': '/admin/favicon.svg', '/analytics.js': '/public/analytics.js' };
   const media = clean.startsWith('/素材/') && /\.(?:jpe?g|png|gif|svg|webp|ico|mp4|webm|woff2?|ttf)$/i.test(clean);
   if (!publicFiles.has(clean) && !Object.hasOwn(managedFiles, clean) && !media) return json(res, 404, { error: 'Not found' });
   const filePath = resolve(ROOT, `.${managedFiles[clean] || clean}`);
@@ -348,7 +392,7 @@ const server = createServer(async (req, res) => {
       }
       await staticFile(req, res, url.pathname);
     }
-  } catch (error) { console.error(error); if (!res.headersSent) json(res, 500, { error: '伺服器發生錯誤' }); }
+  } catch (error) { if (![400, 413].includes(error.statusCode)) console.error(error); if (!res.headersSent) json(res, error.statusCode || 500, { error: [400, 413].includes(error.statusCode) ? error.message : '伺服器發生錯誤' }); else res.destroy(); }
 });
 server.listen(PORT, () => { console.log(`舒逸網站：http://localhost:${PORT}`); console.log(`後台：http://localhost:${PORT}/manage-center/`); });
 for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => { analytics.flush(); server.close(() => process.exit(0)); const forceExit = setTimeout(() => process.exit(0), 5000); forceExit.unref(); });

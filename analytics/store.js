@@ -20,6 +20,7 @@ export function createAnalytics(db, { trustedProxy, retentionDays = 30 } = {}) {
     CREATE INDEX IF NOT EXISTS analytics_pageviews_session ON analytics_pageviews(session_id, entered_at);
     CREATE INDEX IF NOT EXISTS analytics_events_session_time ON analytics_events(session_id, occurred_at);
     CREATE INDEX IF NOT EXISTS analytics_events_time ON analytics_events(occurred_at);
+    CREATE INDEX IF NOT EXISTS analytics_events_name_time ON analytics_events(event_name, occurred_at);
     CREATE INDEX IF NOT EXISTS analytics_requests_time ON analytics_requests(occurred_at);
     CREATE INDEX IF NOT EXISTS analytics_requests_ip_time ON analytics_requests(ip, occurred_at);
     CREATE INDEX IF NOT EXISTS analytics_requests_path_time ON analytics_requests(path, occurred_at);

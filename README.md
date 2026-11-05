@@ -57,3 +57,5 @@ SHUYI_ADMIN_PASSWORD='請設定自己的長密碼' npm start
 - 所有環境都必須設定 `SHUYI_ADMIN_PASSWORD`；缺少時拒絕啟動，沒有固定備用密碼。
 - 公開資源採明確允許清單；環境檔、後端原始碼、資料庫、測試與 Git 內部檔案不提供下載。舊 `/admin` 路徑回 404。
 - 資安調整與上線驗證報告：`docs/security-analytics-report-2026-11-05.md`。
+
+- 分析圖表提示、管理者數列、完整請求分頁與安全 CSV 匯出：[功能與限制說明](docs/analytics-dashboard-improvements-2026-11-06.md)。

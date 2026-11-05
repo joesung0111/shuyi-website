@@ -1,7 +1,11 @@
+import { createRequestLog, queryError } from './request-log.js';
 const date = (value, fallback, offsetMinutes = 0, inclusiveEnd = false) => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ''))) return fallback;
+  if (!value) return fallback;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value))) throw queryError('請選擇有效日期。');
   const [year, month, day] = String(value).split('-').map(Number);
-  return new Date(Date.UTC(year, month - 1, day + (inclusiveEnd ? 1 : 0)) + offsetMinutes * 60000).toISOString();
+  const base = Date.UTC(year, month - 1, day);
+  if (new Date(base).toISOString().slice(0, 10) !== value) throw queryError('請選擇有效日期。');
+  return new Date(base + (inclusiveEnd ? 86400000 : 0) + offsetMinutes * 60000).toISOString();
 };
 const boundedPage = (value) => Math.max(1, Math.min(100000, Number.parseInt(value, 10) || 1));
 const boundedLimit = (value) => Math.max(10, Math.min(100, Number.parseInt(value, 10) || 50));
@@ -15,15 +19,19 @@ export function createAnalyticsReports(db) {
     let to = date(params.get('to'), fallbackTo, tzOffset, true);
     const localDateTime = (value) => {
       const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(String(value || ''));
-      return match ? Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5])) + tzOffset * 60000 : null;
+      if (!value) return null;
+      if (!match || Number(match[4]) > 23 || Number(match[5]) > 59) throw queryError('請選擇有效時間。');
+      return new Date(date(value.slice(0, 10), '', tzOffset)).getTime() + Number(match[4]) * 3600000 + Number(match[5]) * 60000;
     };
     const fromTime = localDateTime(params.get('fromTime'));
     const toTime = localDateTime(params.get('toTime'));
     if (fromTime !== null) from = new Date(fromTime).toISOString();
     if (toTime !== null) to = new Date(toTime + 60000).toISOString();
+    if (new Date(to) <= new Date(from)) throw queryError('結束時間必須晚於起始時間。');
     return { from, to, modifier: `${tzOffset <= 0 ? '+' : '-'}${Math.abs(tzOffset)} minutes` };
   };
-  const timeFormat = (from, to) => (new Date(to).getTime() - new Date(from).getTime() <= 2 * 86400000 ? '%Y-%m-%dT%H:00:00Z' : '%Y-%m-%d');
+  const requestLog = createRequestLog(db, range);
+  const timeFormat = (from, to) => (new Date(to).getTime() - new Date(from).getTime() <= 2 * 86400000 ? '%Y-%m-%dT%H:00' : '%Y-%m-%d');
 
   function overview(params) {
     const { from, to } = range(params);
@@ -33,12 +41,19 @@ export function createAnalyticsReports(db) {
   }
   function trend(params) {
     const { from, to, modifier } = range(params);
+    if (new Date(to) - new Date(from) > 366 * 86400000) throw queryError('趨勢查詢最多 366 天，請縮小日期區間。');
     const format = timeFormat(from, to);
     const views = db.prepare(`SELECT strftime('${format}',datetime(entered_at,'${modifier}')) bucket,COUNT(DISTINCT visitor_id) visitors,COUNT(*) pageviews FROM analytics_pageviews WHERE entered_at>=? AND entered_at<? AND session_id IN (SELECT session_id FROM analytics_sessions WHERE is_admin=0) GROUP BY bucket ORDER BY bucket`).all(from, to);
-    const requests = db.prepare(`SELECT strftime('${format}',datetime(occurred_at,'${modifier}')) bucket,COUNT(*) requests,SUM(bot_category='search_engine') crawlers FROM analytics_requests WHERE occurred_at>=? AND occurred_at<? GROUP BY bucket ORDER BY bucket`).all(from, to);
+    const requests = db.prepare(`SELECT strftime('${format}',datetime(occurred_at,'${modifier}')) bucket,COUNT(*) requests,SUM(bot_category='search_engine') crawlers,SUM(is_admin) admin_requests FROM analytics_requests WHERE occurred_at>=? AND occurred_at<? GROUP BY bucket ORDER BY bucket`).all(from, to);
     const byBucket = new Map(requests.map((row) => [row.bucket, row]));
-    const buckets = new Map(views.map((row) => [row.bucket, { ...row, requests: byBucket.get(row.bucket)?.requests || 0, crawlers: byBucket.get(row.bucket)?.crawlers || 0 }]));
-    for (const [key, row] of byBucket) if (!buckets.has(key)) buckets.set(key, { bucket: key, visitors: 0, pageviews: 0, requests: row.requests, crawlers: row.crawlers });
+    const buckets = new Map(views.map((row) => [row.bucket, { ...row, requests: byBucket.get(row.bucket)?.requests || 0, crawlers: byBucket.get(row.bucket)?.crawlers || 0, admin_requests: byBucket.get(row.bucket)?.admin_requests || 0 }]));
+    for (const [key, row] of byBucket) if (!buckets.has(key)) buckets.set(key, { bucket: key, visitors: 0, pageviews: 0, requests: row.requests, crawlers: row.crawlers, admin_requests: row.admin_requests });
+    const step = format.includes('T') ? 3600000 : 86400000;
+    const offsetMs = Number.parseInt(modifier.replace(' minutes', ''), 10) * 60000;
+    for (let time = Math.floor((new Date(from).getTime() + offsetMs) / step) * step; time < new Date(to).getTime() + offsetMs; time += step) {
+      const bucket = new Date(time).toISOString().slice(0, format.includes('T') ? 16 : 10);
+      if (!buckets.has(bucket)) buckets.set(bucket, { bucket, visitors: 0, pageviews: 0, requests: 0, crawlers: 0, admin_requests: 0 });
+    }
     return [...buckets.values()].sort((a, b) => a.bucket.localeCompare(b.bucket));
   }
   function visitors(params) {
@@ -100,5 +115,15 @@ export function createAnalyticsReports(db) {
     const { from, to } = range(params);
     return db.prepare('SELECT event_name,COUNT(*) count,COUNT(DISTINCT e.session_id) sessions FROM analytics_events e JOIN analytics_sessions s ON e.session_id=s.session_id WHERE occurred_at>=? AND occurred_at<? AND s.is_admin=0 GROUP BY event_name ORDER BY count DESC').all(from, to);
   }
-  return { overview, trend, visitors, session, requests, crawlers, events };
+  function eventDetails(params) {
+    const { from, to } = range(params);
+    if (new Date(to) - new Date(from) > 366 * 86400000) throw queryError('事件查詢最多 366 天。');
+    const name = params.get('event') || '';
+    if (!/^[a-z][a-z0-9_]{1,47}$/.test(name)) throw queryError('無效的事件名稱。');
+    return {
+      pages: db.prepare(`SELECT COALESCE(p.page_path,s.entry_path) page_path,COUNT(*) count,COUNT(DISTINCT e.session_id) sessions FROM analytics_events e JOIN analytics_sessions s ON s.session_id=e.session_id LEFT JOIN analytics_pageviews p ON p.id=e.pageview_id AND p.session_id=e.session_id WHERE e.occurred_at>=? AND e.occurred_at<? AND e.event_name=? AND s.is_admin=0 GROUP BY COALESCE(p.page_path,s.entry_path) ORDER BY count DESC,page_path LIMIT 20`).all(from, to, name),
+      recent: db.prepare(`SELECT e.occurred_at,e.session_id,e.target,COALESCE(p.page_path,s.entry_path) page_path FROM analytics_events e JOIN analytics_sessions s ON s.session_id=e.session_id LEFT JOIN analytics_pageviews p ON p.id=e.pageview_id AND p.session_id=e.session_id WHERE e.occurred_at>=? AND e.occurred_at<? AND e.event_name=? AND s.is_admin=0 ORDER BY e.occurred_at DESC,e.id DESC LIMIT 25`).all(from, to, name)
+    };
+  }
+  return { overview, trend, visitors, session, requests, crawlers, events, eventDetails, requestPage: requestLog.page, prepareExport: requestLog.prepareExport };
 }

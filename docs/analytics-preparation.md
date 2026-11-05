@@ -42,3 +42,7 @@ Googlebot 與 Bingbot 的 UA 只代表「宣稱身分」。伺服器以訪客 IP
 - 已支援預約 CTA、預約平台外連、LINE 連結、使用者操作的 HTML5 影片 playing/ended，以及外部影片開啟。自動播放裝飾影片不列入互動播放。QR Code 圖片現在可點擊，目的網址從現有 QR Code 解碼取得。
 - `form_submit_success` 與 `booking_submit_success` 只提供成功回報介面，不能將 click 或原生 submit 當作成功；實際預約在 booking.sy-body.com 的另一個專案，仍須該平台成功後接入。前端事件是行為回報，不是可信的交易憑證，也不能保證不被偽造。
 - `RAILWAY_PROXY_PEERS`：選填，以逗號分隔精確 IP；只填確認過的 HTTP ingress peer，勿填整個私有網段。部署識別 `RAILWAY_ENVIRONMENT_ID` 由 Railway 自動提供。
+
+## 儀表板查詢改善（2026-11-06）
+
+已增加圖表數量提示、管理者數列、簽章游標分頁、固定遮罩的受限 CSV 串流匯出及事件來源明細。圖表操作不增加追蹤請求，也不自動輪詢。詳細 API、限制與驗證見 [功能說明](analytics-dashboard-improvements-2026-11-06.md)。

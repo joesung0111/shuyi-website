@@ -66,14 +66,14 @@ test('analytics collection is public but every report requires the existing admi
     const robots = await (await fetch(`${base}/robots.txt`)).text();
     assert(robots.includes('Disallow: /admin/')); assert(robots.includes('Disallow: /manage-center/')); assert(robots.includes('Disallow: /api/')); assert(robots.includes('Sitemap: https://sy-body.com/sitemap.xml'));
     assert.equal((await fetch(`${base}/analytics.js`)).status, 200);
-    for (const path of ['/server.js', '/package.json', '/.env.example', '/.env', '/.git/config', '/data/shuyi.sqlite', '/analytics/store.js', '/content/editorial-articles.json', '/tests/analytics.test.mjs', '/admin/', '/admin/admin.js', '/public/analytics.js']) {
+    for (const path of ['/server.js', '/package.json', '/.env.example', '/.env', '/.git/config', '/data/shuyi.sqlite', '/analytics/store.js', '/analytics/request-log.js', '/content/editorial-articles.json', '/tests/analytics.test.mjs', '/admin/', '/admin/admin.js', '/public/analytics.js']) {
       for (const method of ['GET', 'HEAD']) assert.equal((await fetch(`${base}${path}`, { method })).status, 404, `${method} ${path}`);
     }
-    for (const path of ['/manage-center/', '/manage-center/admin.js', '/manage-center/admin.css', '/manage-center/analytics.js']) assert.equal((await fetch(`${base}${path}`)).status, 200, path);
+    for (const path of ['/manage-center/', '/manage-center/admin.js', '/manage-center/admin.css', '/manage-center/analytics.js', '/manage-center/favicon.svg']) assert.equal((await fetch(`${base}${path}`)).status, 200, path);
     assert.equal((await fetch(`${base}/api/admin/login`, { method: 'POST', headers: { origin: 'https://evil.example', 'content-type': 'application/json' }, body: '{}' })).status, 403);
     assert.equal((await fetch(`${base}/api/analytics/diagnostics`)).status, 401);
 
-    assert.equal((await fetch(`${base}/api/analytics/overview`)).status, 401);
+    for (const endpoint of ['overview', 'dashboard', 'requests/page', 'requests/export', 'events/details?event=line_click']) assert.equal((await fetch(`${base}/api/analytics/${endpoint}`)).status, 401);
 
     const visitorId = 'visitor_fixture_0001'; const sessionId = 'session_fixture_0001'; const pageviewId = 'pageview_fixture_0001';
     const collect = await fetch(`${base}/api/analytics/collect`, { method: 'POST', headers: { 'content-type': 'application/json', 'user-agent': 'Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36', referer: 'https://search.example.test/start?campaign=private', 'cf-connecting-ip': '203.0.113.9', 'cf-ipcountry': 'TW' }, body: JSON.stringify({ visitorId, sessionId, path: '/services/?email=private', referrer: 'https://search.example.test/start?campaign=private', device: 'mobile', browser: 'Chrome', os: 'Android', items: [{ type: 'pageview', id: pageviewId, path: '/services/?email=private', previousPath: '/' }, { type: 'event', pageviewId, name: 'booking_cta_click', target: 'booking' }] }) });
@@ -112,6 +112,23 @@ test('analytics collection is public but every report requires the existing admi
     assert(requestRows.every((row) => !row.path.includes('?')));
     const crawlResponse = await fetch(`${base}/api/analytics/crawlers?${query}`, { headers }); assert.equal(crawlResponse.status, 200); assert((await crawlResponse.json()).pages.length > 0);
     assert(requestRows.every((row) => !('cookie' in row) && !('authorization' in row)));
+    const dashboard = await (await fetch(`${base}/api/analytics/dashboard?${query}`, { headers })).json();
+    assert.equal(dashboard.limits.exportRows, 10000); assert.equal(dashboard.limits.exportBytes, 10 * 1024 * 1024);
+    assert(dashboard.trend.some((row) => Object.hasOwn(row, 'admin_requests')));
+    const logPage = await (await fetch(`${base}/api/analytics/requests/page?${query}`, { headers })).json();
+    assert(Array.isArray(logPage.rows)); assert(logPage.total >= logPage.rows.length); assert(logPage.startCursor);
+    assert(logPage.rows.every((row) => row.ip !== '127.0.0.1'));
+    const exportResponse = await fetch(`${base}/api/analytics/requests/export?${query}&cursor=${encodeURIComponent(logPage.startCursor)}&fullIp=1`, { headers });
+    assert.equal(exportResponse.status, 200); assert(exportResponse.headers.get('content-type').includes('text/csv'));
+    assert.equal(Number(exportResponse.headers.get('x-export-row-count')), logPage.total);
+    const csv = await exportResponse.text(); assert(csv.includes('IP（遮罩）')); assert(!csv.includes('127.0.0.1'));
+    const secondExport = await fetch(`${base}/api/analytics/requests/export?${query}&cursor=${encodeURIComponent(logPage.startCursor)}`, { headers });
+    assert.equal(secondExport.status, 200); await secondExport.text();
+    assert.equal((await fetch(`${base}/api/analytics/requests/export?${query}`, { headers })).status, 429);
+    const details = await (await fetch(`${base}/api/analytics/events/details?${query}&event=booking_cta_click`, { headers })).json();
+    assert(details.pages.some((row) => row.page_path === '/services/' && row.count === 1));
+    assert.equal((await (await fetch(`${base}/api/analytics/events/details?${query}&event=line_click`, { headers })).json()).recent.length, 0, 'Administrator events must stay out of visitor event detail');
+    assert.equal((await fetch(`${base}/api/analytics/requests/page?from=2026-01-01&to=2026-03-01`, { headers })).status, 400);
     const events = await (await fetch(`${base}/api/analytics/events?${query}`, { headers })).json();
     assert(events.some((event) => event.event_name === 'booking_cta_click'));
     const privateRequest = await (await fetch(`${base}/api/analytics/requests?${query}`, { headers })).json();
