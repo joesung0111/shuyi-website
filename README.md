@@ -8,6 +8,8 @@
 - 三個可直連內容頁：`/journal/activate-after-sitting/`、`/journal/first-breath/`、`/journal/studio-in-progress/`
 - `/admin/` 內容管理後台：登入後可新增、編輯、刪除文章／影片／情報，並控制草稿／發布
 - SQLite 儲存於 `data/shuyi.sqlite`（已被 `.gitignore` 排除）
+- 自建第一方網站流量分析：SQLite 記錄伺服器請求、匿名訪客工作階段、頁面瀏覽及重要事件
+- `/admin/analytics/` 管理員流量分析儀表板；沿用既有後台登入權限
 - 深色／淺色主題切換（會記住使用者上次選擇），並隨主題切換對應 Logo
 - 使用既有兩支影片作為首頁動態與可播放內容
 - 手機導覽、內容分類與影片燈箱
@@ -43,3 +45,17 @@ SHUYI_ADMIN_PASSWORD='請改成自己的密碼' npm start
 - `server.js`：網站伺服器、登入、SQLite schema 與 CRUD API
 - `admin/`：內容管理後台 UI
 - `素材/`：使用者提供的 Logo 與影片
+- `analytics/`：分析資料表、寫入、報表、爬蟲分類及 Cloudflare peer CIDR 清單
+- `public/analytics.js`：第一方非阻塞行為追蹤
+- `admin/analytics.*`：分析後台頁面、樣式及互動程式
+- `docs/analytics-preparation.md`：收集欄位、保存期限、部署與檢查方式
+- `docs/analytics-privacy-notice-draft.md`：需負責人審閱後才能發布的隱私權告知草稿
+
+## 網站流量分析
+
+- 管理頁：`/admin/analytics/`；分析 API 全部要求有效管理員 session，只有 `/api/analytics/collect` 可匿名送入經過格式與速率檢查的追蹤事件。
+- 前端分析以本站 `/analytics.js` 與 `/api/analytics/collect` 通訊；不載入 GA4 或第三方分析服務。追蹤失敗不影響網站瀏覽。
+- 預設保留 30 天，可設定 `ANALYTICS_RETENTION_DAYS`。Railway 的 `DATABASE_PATH` 必須指向持久化 Volume，例如 `/data/shuyi.sqlite`，並維持備份。
+- IP 在管理頁預設遮罩。只有 Node.js 的直接連線 peer 符合 Cloudflare 官方 IP 範圍時，才採信 `CF-Connecting-IP` 與 `CF-IPCountry`。若 Railway 代理先終結連線，程式會保守記錄可見 peer，不能假裝那是訪客真實 IP；部署後須驗證實際代理鏈。
+- Googlebot/Bingbot User-Agent 只作宣稱分類；反向與正向 DNS 驗證成功後才標示已驗證。查詢快取 7 天，不影響請求回應或限制爬蟲。
+- 上線前需完成 `docs/analytics-privacy-notice-draft.md` 標示的負責人、聯絡方式、資料儲存地及適用法規確認。

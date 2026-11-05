@@ -1,11 +1,14 @@
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { dirname, extname, join, normalize, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
+import { createAnalytics } from './analytics/store.js';
+import { createAnalyticsReports } from './analytics/reports.js';
+import { cleanIp } from './analytics/classify.js';
 
 const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const PORT = Number(process.env.PORT || 4173);
@@ -14,8 +17,6 @@ const SITE_ORIGIN = 'https://sy-body.com';
 const BOOKING_URL = new URL(process.env.BOOKING_URL || 'https://booking.sy-body.com/').href;
 const GOOGLE_SITE_VERIFICATION = /^[A-Za-z0-9_-]+$/.test(process.env.GOOGLE_SITE_VERIFICATION || '') ? process.env.GOOGLE_SITE_VERIFICATION : '';
 const googleVerificationMeta = GOOGLE_SITE_VERIFICATION ? `<meta name="google-site-verification" content="${GOOGLE_SITE_VERIFICATION}">` : '';
-const GA4_MEASUREMENT_ID = /^G-[A-Z0-9]+$/i.test(process.env.GA4_MEASUREMENT_ID || '') ? process.env.GA4_MEASUREMENT_ID : '';
-const ga4Boot = GA4_MEASUREMENT_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;gtag('js',new Date());gtag('config','${GA4_MEASUREMENT_ID}');</script>` : '';
 // Railway uses DATABASE_PATH on its mounted Volume (for example /data/shuyi.sqlite).
 // Local development keeps the database in the project data folder.
 const DB_PATH = resolve(process.env.DATABASE_PATH || join(ROOT, 'data', 'shuyi.sqlite'));
@@ -28,6 +29,31 @@ mkdirSync(dirname(DB_PATH), { recursive: true });
 const db = new DatabaseSync(DB_PATH);
 db.exec(`CREATE TABLE IF NOT EXISTS content (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, slug TEXT NOT NULL UNIQUE, type TEXT NOT NULL CHECK(type IN ('article','video','news')), excerpt TEXT NOT NULL DEFAULT '', body TEXT NOT NULL DEFAULT '', video_url TEXT NOT NULL DEFAULT '', cover_url TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','published')), published_at TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)`);
 db.exec(`CREATE TABLE IF NOT EXISTS admin_sessions (token TEXT PRIMARY KEY, expires_at TEXT NOT NULL, created_at TEXT NOT NULL)`);
+function ipToBigInt(value) {
+  const ip = cleanIp(value);
+  if (!ip) return null;
+  if (!ip.includes(':')) return BigInt(ip.split('.').reduce((n, part) => (n << 8n) | BigInt(part), 0n));
+  const halves = ip.split('::');
+  const left = halves[0] ? halves[0].split(':') : [];
+  const right = halves[1] ? halves[1].split(':') : [];
+  const groups = halves.length === 2 ? [...left, ...Array(8 - left.length - right.length).fill('0'), ...right] : ip.split(':');
+  if (groups.length !== 8) return null;
+  return groups.reduce((n, part) => (n << 16n) | BigInt(parseInt(part || '0', 16)), 0n);
+}
+const bundledCloudflareCidrs = readFileSync(join(ROOT, 'analytics', 'cloudflare-proxy-cidrs.txt'), 'utf8');
+const cloudflareCidrSource = process.env.CLOUDFLARE_PROXY_CIDRS === undefined ? bundledCloudflareCidrs : process.env.CLOUDFLARE_PROXY_CIDRS;
+const trustedProxyCidrs = cloudflareCidrSource.split(/[\s,]+/).filter(Boolean).map((cidr) => {
+  const [ip, bitsText] = cidr.split('/'); const value = ipToBigInt(ip); const bits = Number(bitsText); const width = ip?.includes(':') ? 128 : 32;
+  return value === null || !Number.isInteger(bits) || bits < 0 || bits > width ? null : { value, bits, width };
+}).filter(Boolean);
+const isTrustedCloudflarePeer = (peer) => {
+  const normalized = cleanIp(peer); const value = ipToBigInt(normalized); const width = normalized.includes(':') ? 128 : 32;
+  return value !== null && trustedProxyCidrs.some((range) => range.width === width && (value >> BigInt(width - range.bits)) === (range.value >> BigInt(width - range.bits)));
+};
+const analyticsRetentionDays = Math.max(1, Math.min(3650, Number(process.env.ANALYTICS_RETENTION_DAYS || 30)));
+const analytics = createAnalytics(db, { trustedProxy: isTrustedCloudflarePeer, retentionDays: analyticsRetentionDays });
+const analyticsReports = createAnalyticsReports(db);
+const analyticsRate = new Map();
 const now = () => new Date().toISOString();
 const seed = [
   ['久坐後的緊繃感，從哪裡開始聽？','activate-after-sitting','article','一段給日常身體感受的小筆記。','不是每一次卡住，都需要立刻處理。先停一秒，感受今天的肩、背、髖正在告訴你什麼。','', '', 'draft'],
@@ -51,6 +77,7 @@ for (const item of editorialArticles) {
 
 const json = (res, status, value) => { const body = JSON.stringify(value); res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(body); };
 const readBody = async (req) => { let raw = ''; for await (const chunk of req) raw += chunk; if (!raw) return {}; try { return JSON.parse(raw); } catch { return null; } };
+const readBodyLimited = async (req, maxBytes) => { let size = 0; let tooLarge = false; const chunks = []; for await (const chunk of req) { size += chunk.length; if (size > maxBytes) tooLarge = true; else if (!tooLarge) chunks.push(chunk); } if (!size) return {}; if (tooLarge) return null; try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { return null; } };
 const sessionToken = (req) => /^Bearer\s+(.+)$/i.exec(req.headers.authorization || '')?.[1] || /(?:^|; )shuyi_session=([^;]+)/.exec(req.headers.cookie || '')?.[1];
 const getSession = (req) => { const token = sessionToken(req); if (!token) return null; const session = db.prepare('SELECT token FROM admin_sessions WHERE token = ? AND expires_at > ?').get(token, now()); if (!session) db.prepare('DELETE FROM admin_sessions WHERE token = ?').run(token); return session; };
 const requireAuth = (req, res) => { if (!getSession(req)) { json(res, 401, { error: '需要登入後台' }); return false; } return true; };
@@ -106,7 +133,7 @@ function addSeo(html, pathname) {
     const label = pathname === '/services/' ? '活化調理' : pathname === '/offerings/' ? '服務項目' : pathname === '/booking/' ? '預約' : pathname === '/studio/' ? '工作室' : '舒逸日常';
     schemas.push({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: label, item: seo.canonical }] });
   }
-  const tags = `${googleVerificationMeta}<link rel="canonical" href="${escapeHtml(seo.canonical)}"><meta property="og:title" content="${title}"><meta property="og:description" content="${description}"><meta property="og:url" content="${escapeHtml(seo.canonical)}"><meta property="og:type" content="${type}"><meta property="og:image" content="${SITE_ORIGIN}/素材/淺色系-1K.jpeg">${schemas.map((schema) => `<script type="application/ld+json">${jsonLd(schema)}</script>`).join('')}${ga4Boot}`;
+  const tags = `${googleVerificationMeta}<link rel="canonical" href="${escapeHtml(seo.canonical)}"><meta property="og:title" content="${title}"><meta property="og:description" content="${description}"><meta property="og:url" content="${escapeHtml(seo.canonical)}"><meta property="og:type" content="${type}"><meta property="og:image" content="${SITE_ORIGIN}/素材/淺色系-1K.jpeg">${schemas.map((schema) => `<script type="application/ld+json">${jsonLd(schema)}</script>`).join('')}`;
   return html.replace('</head>', `${tags}</head>`);
 }
 
@@ -141,11 +168,26 @@ function articlePage(row) {
   const contentCard = (label, href, event) => `<a data-${event}="true" href="${href}">${label}</a>`;
   const evidence = editorialEvidence[row.slug] || { kind: '資料與審閱資訊待確認', basis: '本篇尚未登錄可核對的資料來源；請內容提供者先確認文字與依據。', boundary: '審核完成前，請勿將本篇內容視為健康指引、醫療資訊或治療建議。', review: '尚無審閱紀錄。', sources: [] };
   const evidenceHtml = evidence ? `<section class="article-evidence" aria-labelledby="article-evidence-title"><h2 id="article-evidence-title">資料來源與內容界線</h2><p><strong>內容性質：</strong>${escapeHtml(evidence.kind)}</p><p><strong>資料依據：</strong>${escapeHtml(evidence.basis)}</p><p><strong>醫療界線：</strong>${escapeHtml(evidence.boundary)}</p><p><strong>專業審閱：</strong>${escapeHtml(evidence.review)}</p>${evidence.sources.length ? `<h3>參考資料</h3><ul>${evidence.sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title)} ↗</a></li>`).join('')}</ul>` : '<p>本篇沒有引用醫療或科學研究；內容為一般生活建議。</p>'}${evidence.sources.length ? '<p class="article-evidence__date">參考資料連結檢視日期：2026-10-27</p>' : ''}</section>` : '';
-  const articleHtml = `<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(description)}"><title>${escapeHtml(row.title)}｜舒逸日常</title>${googleVerificationMeta}<link rel="canonical" href="${escapeHtml(canonical)}"><meta property="og:title" content="${escapeHtml(row.title)}｜舒逸日常"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:type" content="article"><meta property="og:image" content="${escapeHtml(image)}">${ga4Boot}<script type="application/ld+json">${jsonLd(schema)}</script><script type="application/ld+json">${jsonLd({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: '舒逸日常', item: `${SITE_ORIGIN}/journal/` }, { '@type': 'ListItem', position: 3, name: row.title, item: canonical }] })}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/styles.css"></head><body><header class="site-header"><a class="brand" href="/" aria-label="舒逸首頁"><img class="brand-logo brand-logo--light" src="/素材/淺色系-1K.jpeg" alt="舒逸 Shu Yi"><img class="brand-logo brand-logo--dark" src="/素材/深色系-1K.jpeg" alt="" aria-hidden="true"><span>SHU YI</span></a><nav class="site-nav" aria-label="主要導覽"><a href="/services/">活化調理</a><a href="/journal/" aria-current="page">舒逸日常</a><a href="/studio/">工作室</a><a href="/booking/">預約</a></nav><div class="header-actions"><button class="theme-switch" type="button" aria-label="切換深淺色主題" aria-pressed="false"><span class="theme-switch__dot"></span><span class="theme-switch__label">LIGHT</span></button><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false"><span></span><span></span></button></div></header><main class="article"><a class="back-link" href="/journal/#journal-return">← 回到舒逸日常</a><div class="article-meta"><span>${type}</span><span>發布日期：${escapeHtml(dateOnly(published))}</span><span>最後更新：${escapeHtml(dateOnly(modified))}</span><span>內容提供：舒逸</span></div><h1>${escapeHtml(row.title)}</h1>${cover}${video}<div class="article-body">${bodyHtml(row.body, evidence?.sectionHeadings || [])}</div>${evidenceHtml}<section class="article-related"><h2>相關內容</h2>${relatedLinks}<p>深入了解舒逸全身活化調理服務。</p>${contentCard('了解舒逸全身活化調理', '/services/', 'journal-to-service')}　${contentCard('前往預約', '/booking/', 'journal-to-booking')}</section></main><footer class="site-footer"><a class="brand" href="/"><span>舒逸</span><small>SHU YI</small></a><p>© 2026 SHU YI. MOVE WELL, LIVE LIGHT.</p><div><a href="/journal/">JOURNAL</a><a href="/booking/">BOOKING</a></div></footer><script src="/app.js"></script></body></html>`;
+  const articleHtml = `<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(description)}"><title>${escapeHtml(row.title)}｜舒逸日常</title>${googleVerificationMeta}<link rel="canonical" href="${escapeHtml(canonical)}"><meta property="og:title" content="${escapeHtml(row.title)}｜舒逸日常"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:type" content="article"><meta property="og:image" content="${escapeHtml(image)}"><script type="application/ld+json">${jsonLd(schema)}</script><script type="application/ld+json">${jsonLd({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: '舒逸日常', item: `${SITE_ORIGIN}/journal/` }, { '@type': 'ListItem', position: 3, name: row.title, item: canonical }] })}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/styles.css"></head><body><header class="site-header"><a class="brand" href="/" aria-label="舒逸首頁"><img class="brand-logo brand-logo--light" src="/素材/淺色系-1K.jpeg" alt="舒逸 Shu Yi"><img class="brand-logo brand-logo--dark" src="/素材/深色系-1K.jpeg" alt="" aria-hidden="true"><span>SHU YI</span></a><nav class="site-nav" aria-label="主要導覽"><a href="/services/">活化調理</a><a href="/journal/" aria-current="page">舒逸日常</a><a href="/studio/">工作室</a><a href="/booking/">預約</a></nav><div class="header-actions"><button class="theme-switch" type="button" aria-label="切換深淺色主題" aria-pressed="false"><span class="theme-switch__dot"></span><span class="theme-switch__label">LIGHT</span></button><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false"><span></span><span></span></button></div></header><main class="article"><a class="back-link" href="/journal/#journal-return">← 回到舒逸日常</a><div class="article-meta"><span>${type}</span><span>發布日期：${escapeHtml(dateOnly(published))}</span><span>最後更新：${escapeHtml(dateOnly(modified))}</span><span>內容提供：舒逸</span></div><h1>${escapeHtml(row.title)}</h1>${cover}${video}<div class="article-body">${bodyHtml(row.body, evidence?.sectionHeadings || [])}</div>${evidenceHtml}<section class="article-related"><h2>相關內容</h2>${relatedLinks}<p>深入了解舒逸全身活化調理服務。</p>${contentCard('了解舒逸全身活化調理', '/services/', 'journal-to-service')}　${contentCard('前往預約', '/booking/', 'journal-to-booking')}</section></main><footer class="site-footer"><a class="brand" href="/"><span>舒逸</span><small>SHU YI</small></a><p>© 2026 SHU YI. MOVE WELL, LIVE LIGHT.</p><div><a href="/journal/">JOURNAL</a><a href="/booking/">BOOKING</a></div></footer><script src="/app.js"></script><script src="/analytics.js" defer></script></body></html>`;
   return articleHtml;
 }
 
 async function api(req, res, url) {
+  if (url.pathname === '/api/analytics/collect' && req.method === 'POST') {
+    const nowMs = Date.now();
+    const key = cleanIp(req.socket?.remoteAddress) || 'unknown';
+    const rate = analyticsRate.get(key) || { start: nowMs, count: 0 };
+    if (nowMs - rate.start >= 60000) { rate.start = nowMs; rate.count = 0; }
+    rate.count++;
+    analyticsRate.set(key, rate);
+    if (rate.count > 600) return json(res, 429, { error: '請求過於頻繁' });
+    if (analyticsRate.size > 5000) for (const [entry, value] of analyticsRate) if (nowMs - value.start > 120000) analyticsRate.delete(entry);
+    if (!/^application\/(?:json|octet-stream)/i.test(String(req.headers['content-type'] || ''))) return json(res, 415, { error: '不支援的內容格式' });
+    const body = await readBodyLimited(req, 32768);
+    if (!body) return json(res, 400, { error: '無效或過大的分析資料' });
+    const result = analytics.receive(body, req);
+    return json(res, result.ok ? 202 : 400, result);
+  }
   if (req.method === 'POST' && url.pathname === '/api/admin/login') {
     const body = await readBody(req); if (!body || body.password !== ADMIN_PASSWORD) return json(res, 401, { error: '密碼不正確' });
     const token = randomBytes(32).toString('hex'); const createdAt = now(); const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(); db.prepare('DELETE FROM admin_sessions WHERE expires_at <= ?').run(createdAt); db.prepare('INSERT INTO admin_sessions (token,expires_at,created_at) VALUES (?,?,?)').run(token, expiresAt, createdAt); res.setHeader('Set-Cookie', `shuyi_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=28800`); return json(res, 200, { ok: true, token });
@@ -155,6 +197,13 @@ async function api(req, res, url) {
   if (url.pathname === '/api/content' && req.method === 'GET') { res.setHeader('Cache-Control', 'private, no-store'); const publishedOnly = url.searchParams.get('status') === 'published' || !getSession(req); const rows = db.prepare(`SELECT * FROM content ${publishedOnly ? "WHERE status = 'published'" : ''} ORDER BY COALESCE(published_at, updated_at) DESC`).all(); return json(res, 200, rows.map(safeContent)); }
   if (!requireAuth(req, res)) return true;
   if (url.pathname === '/api/admin/session' && req.method === 'GET') return json(res, 200, { authenticated: true });
+  if (url.pathname === '/api/analytics/overview' && req.method === 'GET') return json(res, 200, analyticsReports.overview(url.searchParams));
+  if (url.pathname === '/api/analytics/trend' && req.method === 'GET') return json(res, 200, analyticsReports.trend(url.searchParams));
+  if (url.pathname === '/api/analytics/visitors' && req.method === 'GET') return json(res, 200, analyticsReports.visitors(url.searchParams));
+  if (url.pathname === '/api/analytics/requests' && req.method === 'GET') return json(res, 200, analyticsReports.requests(url.searchParams));
+  if (url.pathname === '/api/analytics/crawlers' && req.method === 'GET') return json(res, 200, analyticsReports.crawlers(url.searchParams));
+  const sessionMatch = url.pathname.match(/^\/api\/analytics\/sessions\/([a-zA-Z0-9_-]{8,80})$/);
+  if (sessionMatch && req.method === 'GET') { const session = analyticsReports.session(sessionMatch[1]); return json(res, session ? 200 : 404, session || { error: '找不到工作階段' }); }
   if (url.pathname === '/api/content' && req.method === 'POST') { const body = await readBody(req); if (!body?.title || !body?.slug || !['article','video','news'].includes(body.type)) return json(res, 400, { error: '標題、網址代稱與類型為必填' }); const timestamp = now(); try { const result = db.prepare('INSERT INTO content (title,slug,type,excerpt,body,video_url,cover_url,status,published_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)').run(body.title.trim(), body.slug.trim(), body.type, body.excerpt || '', body.body || '', body.video_url || '', body.cover_url || '', body.status === 'published' ? 'published' : 'draft', body.status === 'published' ? timestamp : null, timestamp, timestamp); return json(res, 201, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(result.lastInsertRowid))); } catch (error) { return json(res, 409, { error: error.message.includes('UNIQUE') ? '網址代稱已存在' : '無法建立內容' }); } }
   const match = url.pathname.match(/^\/api\/content\/(\d+)$/); if (match) { const id = Number(match[1]); if (req.method === 'GET') return json(res, 200, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(id) || {})); if (req.method === 'PUT') { const body = await readBody(req); const current = db.prepare('SELECT * FROM content WHERE id = ?').get(id); if (!current) return json(res, 404, { error: '找不到內容' }); if (!body?.title || !body?.slug || !['article','video','news'].includes(body.type)) return json(res, 400, { error: '標題、網址代稱與類型為必填' }); const status = body.status === 'published' ? 'published' : 'draft'; const publishedAt = status === 'published' ? (current.published_at || now()) : null; try { db.prepare('UPDATE content SET title=?,slug=?,type=?,excerpt=?,body=?,video_url=?,cover_url=?,status=?,published_at=?,updated_at=? WHERE id=?').run(body.title.trim(), body.slug.trim(), body.type, body.excerpt || '', body.body || '', body.video_url || '', body.cover_url || '', status, publishedAt, now(), id); return json(res, 200, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(id))); } catch (error) { return json(res, 409, { error: error.message.includes('UNIQUE') ? '網址代稱已存在' : '無法更新內容' }); } } if (req.method === 'DELETE') { db.prepare('DELETE FROM content WHERE id = ?').run(id); return json(res, 200, { ok: true }); } }
   return json(res, 404, { error: 'API route not found' });
@@ -209,8 +258,10 @@ async function staticFile(req, res, pathname) {
         html = html.replace('<div class="content-grid" id="content-grid" aria-live="polite"></div>', `<div class="content-grid" id="content-grid" aria-live="polite">${published.map(cardHtml).join('')}</div>`);
       }
       if (!clean.startsWith('/admin/')) html = addSeo(html, clean.endsWith('/index.html') ? clean.slice(0, -'index.html'.length) : clean);
+      html = html.replace('</head>', `${headEnhancements(clean.startsWith('/admin/'))}</head>`);
+      if (!clean.startsWith('/admin/')) html = html.replace('</body>', '<script src="/analytics.js" defer></script></body>');
       res.writeHead(200, { 'content-type': contentType });
-      return res.end(withoutSloganStops(html.replace('</head>', `${headEnhancements(clean.startsWith('/admin/'))}</head>`)));
+      return res.end(withoutSloganStops(html));
     }
     const file = await readFile(filePath);
     res.writeHead(200, { 'content-type': contentType });
@@ -230,8 +281,9 @@ function dynamicArticle(req, res, pathname) {
   return true;
 }
 
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  analytics.recordRequest(req, res);
   try {
     if (url.hostname.toLowerCase() === 'www.sy-body.com') {
       res.writeHead(308, { location: `https://sy-body.com${url.pathname}${url.search}` });
@@ -255,6 +307,8 @@ createServer(async (req, res) => {
     const articleIndexAlias = url.pathname.match(/^\/journal\/([a-z0-9-]+)\/index\.html$/);
     if (['GET', 'HEAD'].includes(req.method) && articleIndexAlias) { res.writeHead(308, { location: `/journal/${articleIndexAlias[1]}/${url.search}` }); return res.end(); }
     if (url.pathname === '/admin' || url.pathname === '/admin/dashboard') { res.writeHead(308, { location: `${url.pathname}/` }); return res.end(); }
+    if (url.pathname === '/admin/analytics') { res.writeHead(308, { location: '/admin/analytics/' }); return res.end(); }
+    if (url.pathname === '/analytics.js') url.pathname = '/public/analytics.js';
     const handled = await api(req, res, url);
     if (!handled) {
       if (dynamicArticle(req, res, url.pathname)) return;
@@ -263,9 +317,12 @@ createServer(async (req, res) => {
         return res.end('Not found');
       }
       if (url.pathname === '/admin/' || url.pathname === '/admin/dashboard/') url.pathname = '/admin/index.html';
+      if (url.pathname === '/admin/analytics/') url.pathname = '/admin/analytics.html';
       if (url.pathname === '/admin/dashboard/admin.css') url.pathname = '/admin/admin.css';
       if (url.pathname === '/admin/dashboard/admin.js') url.pathname = '/admin/admin.js';
       await staticFile(req, res, url.pathname);
     }
   } catch (error) { console.error(error); if (!res.headersSent) json(res, 500, { error: '伺服器發生錯誤' }); }
-}).listen(PORT, () => { console.log(`舒逸網站：http://localhost:${PORT}`); console.log(`後台：http://localhost:${PORT}/admin/`); if (!process.env.SHUYI_ADMIN_PASSWORD) console.warn('未設定 SHUYI_ADMIN_PASSWORD，開發密碼為 shuyi-local-dev；正式環境請務必設定環境變數。'); });
+});
+server.listen(PORT, () => { console.log(`舒逸網站：http://localhost:${PORT}`); console.log(`後台：http://localhost:${PORT}/admin/`); if (!process.env.SHUYI_ADMIN_PASSWORD) console.warn('未設定 SHUYI_ADMIN_PASSWORD，開發密碼為 shuyi-local-dev；正式環境請務必設定環境變數。'); });
+for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, () => { analytics.flush(); server.close(() => process.exit(0)); const forceExit = setTimeout(() => process.exit(0), 5000); forceExit.unref(); });

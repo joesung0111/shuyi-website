@@ -12,15 +12,6 @@
   const menuButton = document.querySelector('.menu-button');
   if (menuButton) menuButton.addEventListener('click', () => { const open = document.body.classList.toggle('menu-open'); menuButton.setAttribute('aria-expanded', String(open)); });
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
-  document.addEventListener('click', (event) => {
-    const link = event.target.closest('a');
-    if (!link || typeof window.gtag !== 'function') return;
-    const send = (name) => window.gtag('event', name, { link_url: link.href, page_location: window.location.href });
-    if (link.hasAttribute('data-booking-cta')) send('booking_cta_click');
-    if (link.hasAttribute('data-booking-platform-outbound')) send('booking_platform_outbound');
-    if (link.hasAttribute('data-journal-to-service')) send('journal_to_service');
-    if (link.hasAttribute('data-journal-to-booking')) send('journal_to_booking');
-  });
   const currentPath = normalizePath(window.location.pathname);
   const typewrite = (element, text) => new Promise((resolve) => {
     element.classList.add('journal-typewriter');
