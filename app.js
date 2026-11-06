@@ -296,4 +296,49 @@
   if (videoDialog && dialogVideo) { const dialogYoutube = document.createElement('iframe'); dialogYoutube.id = 'dialog-youtube'; dialogYoutube.title = 'YouTube 影片'; dialogYoutube.hidden = true; dialogYoutube.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; dialogYoutube.allowFullscreen = true; dialogVideo.after(dialogYoutube); document.addEventListener('click', (event) => { const play = event.target.closest('[data-video],[data-youtube]'); if (!play) return; event.preventDefault(); if (play.dataset.youtube) { dialogVideo.pause(); dialogVideo.removeAttribute('src'); dialogVideo.hidden = true; dialogYoutube.src = play.dataset.youtube; dialogYoutube.hidden = false; } else { dialogYoutube.removeAttribute('src'); dialogYoutube.hidden = true; dialogVideo.hidden = false; dialogVideo.src = play.dataset.video; dialogVideo.play(); } videoDialog.showModal(); }); videoDialog.querySelector('.dialog-close').addEventListener('click', () => { dialogVideo.pause(); dialogVideo.removeAttribute('src'); dialogYoutube.removeAttribute('src'); videoDialog.close(); }); }
   document.body.style.visibility = 'visible';
   document.body.style.animation = 'none';
+
+  // Character art is decorative only. It never changes page copy, controls, or links.
+  const mascots = {
+    cat: { src: '/素材/人物/06_逸貓_酷臉貓.png' },
+    stone: { src: '/素材/人物/12_逸石_稜角石.png' },
+    sun: { src: '/素材/人物/17_舒光球_光球.png' }
+  };
+  const mascotForPath = currentPath === '/services' ? 'stone'
+    : currentPath === '/studio' || currentPath === '/booking' ? 'sun'
+    : currentPath === '/offerings' ? 'stone'
+    : currentPath.startsWith('/journal') ? 'cat'
+    : 'sun';
+  document.body.dataset.mascot = mascotForPath;
+  const addEmblem = (parent, mascotKey, className = 'character-emblem') => {
+    if (!parent || parent.querySelector(`.${className}`)) return;
+    const emblem = document.createElement('span');
+    emblem.className = className;
+    emblem.setAttribute('aria-hidden', 'true');
+    const image = document.createElement('img');
+    image.src = mascots[mascotKey].src;
+    image.alt = '';
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    emblem.append(image);
+    parent.append(emblem);
+  };
+  if (currentPath === '/') {
+    document.body.classList.add('has-character-trio');
+    const homeLinks = [...document.querySelectorAll('.home-links .home-link')];
+    homeLinks.forEach((link) => {
+      const path = new URL(link.href, window.location.href).pathname;
+      const mascotKey = path.startsWith('/services') ? 'stone' : path.startsWith('/journal') ? 'cat' : 'sun';
+      addEmblem(link, mascotKey);
+    });
+    document.body.dataset.mascot = 'sun';
+  }
+  const mascotFigure = document.createElement('span');
+  mascotFigure.className = 'site-mascot';
+  mascotFigure.setAttribute('aria-hidden', 'true');
+  addEmblem(mascotFigure, mascotForPath);
+  document.body.append(mascotFigure);
+  const footer = document.querySelector('.site-footer');
+  if (footer && 'IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => mascotFigure.classList.toggle('is-footer-visible', entries.some((entry) => entry.isIntersecting))).observe(footer);
+  }
 })();
