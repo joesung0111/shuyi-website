@@ -1,0 +1,3636 @@
+{
+  "audit_date": "2026-11-04",
+  "scope": "正式站 sitemap 所列公開網址的初始 HTML 自動檢查",
+  "sitemap_status": 200,
+  "pages": [
+    {
+      "url": "https://sy-body.com/",
+      "status": 200,
+      "final_url": "https://sy-body.com/",
+      "title": "舒逸 Shu Yi｜美式活化槍全身調理・預約制",
+      "description": "舒逸提供美式活化槍全身調理，依身體當下感受與日常活動安排服務；了解服務方式、舒逸日常、工作室資訊與線上預約入口。",
+      "canonical": [
+        "https://sy-body.com/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "把身體 調回 舒適的樣子"
+        },
+        {
+          "level": "h2",
+          "text": "不只放鬆， 重新動起來"
+        },
+        {
+          "level": "h2",
+          "text": "給生活一點 新的情報"
+        },
+        {
+          "level": "h2",
+          "text": "一個留給身體的 自在空間"
+        },
+        {
+          "level": "h2",
+          "text": "好好照顧 身體 不必等到 有空"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "@id": "https://sy-body.com/#organization",
+          "name": "舒逸",
+          "alternateName": "Shu Yi",
+          "url": "https://sy-body.com/",
+          "description": "舒逸提供美式活化槍全身調理服務。"
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "舒逸 Shu Yi｜美式活化槍全身調理・預約制",
+        "og:description": "舒逸提供美式活化槍全身調理，依身體當下感受與日常活動安排服務；了解服務方式、舒逸日常、工作室資訊與線上預約入口。",
+        "og:url": "https://sy-body.com/",
+        "og:type": "website",
+        "og:image": "https://sy-body.com/素材/淺色系-1K.jpeg"
+      },
+      "images": [
+        {
+          "src": "./素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "./素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "./素材/淺色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "./素材/深色系-1K.jpeg",
+          "alt": ""
+        }
+      ],
+      "links": [
+        "./booking/",
+        "./journal/",
+        "./services/",
+        "./studio/",
+        "/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "把身體 調回 舒適的樣子",
+          "text": "把身體 調回 舒適的樣子 美式活化槍全身調理，搭配舒緩與個人化附加服務。不是按摩，是重新認識身體的節奏。 MOVE WELL LIVE LIGHT"
+        },
+        {
+          "tag": "section",
+          "heading": "不只放鬆， 重新動起來",
+          "text": "THE SHU YI WAY 不只放鬆， 重新動起來 THE SHU YI JOURNAL 給生活一點 新的情報 YOUR PLACE TO RESET 一個留給身體的 自在空間"
+        },
+        {
+          "tag": "section",
+          "heading": "好好照顧 身體 不必等到 有空",
+          "text": "PLAY ↗ 好好照顧 身體 不必等到 有空 日常已經夠忙，留一段時間，重新感受身體。 前往預約 →"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "Hero 主標與服務介紹可讀；三個探索卡及預約連結存在。首頁 Journal 卡初始與執行後標題不同，見 P2-01。",
+      "body_review": "",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/services/",
+      "status": 200,
+      "final_url": "https://sy-body.com/services/",
+      "title": "美式活化槍全身調理 服務方式與預約 舒逸 Shu Yi",
+      "description": "了解舒逸美式活化槍全身調理的服務方式、與一般按摩的差異、適合了解的生活情境、第一次服務流程、時間、費用與線上預約方式。",
+      "canonical": [
+        "https://sy-body.com/services/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "不只放鬆 是讓你重新 動起來"
+        },
+        {
+          "level": "h2",
+          "text": "30 秒了解舒逸全身活化調理"
+        },
+        {
+          "level": "h2",
+          "text": "全身活化調理是什麼？"
+        },
+        {
+          "level": "h2",
+          "text": "全身活化調理和一般按摩有什麼不同？"
+        },
+        {
+          "level": "h2",
+          "text": "哪些生活情境會想了解全身活化調理？"
+        },
+        {
+          "level": "h2",
+          "text": "第一次來舒逸會怎麼進行？"
+        },
+        {
+          "level": "h3",
+          "text": "報到"
+        },
+        {
+          "level": "h3",
+          "text": "了解當下狀況"
+        },
+        {
+          "level": "h3",
+          "text": "分段檢查與觀察"
+        },
+        {
+          "level": "h3",
+          "text": "說明此次安排"
+        },
+        {
+          "level": "h3",
+          "text": "進行調理"
+        },
+        {
+          "level": "h3",
+          "text": "再次確認"
+        },
+        {
+          "level": "h3",
+          "text": "系統化紀錄"
+        },
+        {
+          "level": "h2",
+          "text": "全身活化調理一次需要多久？"
+        },
+        {
+          "level": "h2",
+          "text": "全身活化調理費用是多少？"
+        },
+        {
+          "level": "h2",
+          "text": "第一次來舒逸可以怎麼準備？"
+        },
+        {
+          "level": "h3",
+          "text": "穿著"
+        },
+        {
+          "level": "h3",
+          "text": "飲食"
+        },
+        {
+          "level": "h3",
+          "text": "到店與攜帶物品"
+        },
+        {
+          "level": "h3",
+          "text": "遲到"
+        },
+        {
+          "level": "h3",
+          "text": "改期與取消"
+        },
+        {
+          "level": "h2",
+          "text": "舒逸如何安排 每一次調理？"
+        },
+        {
+          "level": "h3",
+          "text": "了解"
+        },
+        {
+          "level": "h3",
+          "text": "檢查"
+        },
+        {
+          "level": "h3",
+          "text": "調理"
+        },
+        {
+          "level": "h3",
+          "text": "確認"
+        },
+        {
+          "level": "h3",
+          "text": "紀錄"
+        },
+        {
+          "level": "h2",
+          "text": "主要服務哪些部位？"
+        },
+        {
+          "level": "h2",
+          "text": "服務過程中可以提出調整嗎？"
+        },
+        {
+          "level": "h2",
+          "text": "哪些情況舒逸目前不提供服務？"
+        },
+        {
+          "level": "h3",
+          "text": "孕期"
+        },
+        {
+          "level": "h3",
+          "text": "曾接受手術的部位"
+        },
+        {
+          "level": "h3",
+          "text": "明顯身體警訊"
+        },
+        {
+          "level": "h2",
+          "text": "什麼情況應先尋求醫療專業評估？"
+        },
+        {
+          "level": "h2",
+          "text": "常見問題"
+        },
+        {
+          "level": "h2",
+          "text": "工作室與預約方式"
+        },
+        {
+          "level": "h2",
+          "text": "先理解 再安心開始"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "全身活化調理",
+          "provider": {
+            "@id": "https://sy-body.com/#organization"
+          },
+          "url": "https://sy-body.com/services/",
+          "description": "以美式活化槍為核心，透過了解當下狀況、分段檢查與觀察、安排調理、再次確認與系統化紀錄，提供預約制日常身體照顧與放鬆服務。"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "活化調理",
+              "item": "https://sy-body.com/services/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "美式活化槍全身調理 服務方式與預約 舒逸 Shu Yi",
+        "og:description": "了解舒逸美式活化槍全身調理的服務方式、與一般按摩的差異、適合了解的生活情境、第一次服務流程、時間、費用與線上預約方式。",
+        "og:url": "https://sy-body.com/services/",
+        "og:type": "website",
+        "og:image": "https://sy-body.com/素材/淺色系-1K.jpeg"
+      },
+      "images": [
+        {
+          "src": "../素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "../素材/深色系-1K.jpeg",
+          "alt": ""
+        }
+      ],
+      "links": [
+        "../",
+        "../booking/",
+        "../journal/",
+        "../studio/",
+        "./",
+        "/booking/",
+        "/journal/",
+        "/offerings/",
+        "/studio/",
+        "https://booking.sy-body.com/",
+        "https://www.nhs.uk/conditions/back-pain/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "不只放鬆 是讓你重新 動起來",
+          "text": "THE SHU YI WAY 01 不只放鬆 是讓你重新 動起來 舒逸以美式活化槍為核心，依身體當下的感受與日常活動安排調理；不套用制式流程，也不把它稱為按摩。"
+        },
+        {
+          "tag": "section",
+          "heading": "30 秒了解舒逸全身活化調理",
+          "text": "AT A GLANCE 30 秒了解舒逸全身活化調理 舒逸以美式活化槍為核心，會先了解你當下的身體感受、日常活動與工作習慣，再透過分段檢查與觀察安排此次調理。服務採預約制，不使用完全相同的固定流程套用在每一個人身上。 舒逸提供的是日常身體照顧與放鬆服務，不取代醫療診斷或治療。 核心方式 美式活化槍 主要部位 頸部、背部、腰部、骨盆 全身活化調理服務時間 約 40 分鐘 其他服務依各項目標示時間為準 建議預留到訪時間 約 60 分鐘 服務形式 預約制 基本價格 全身活化調理 NT$1,600 預約方式 舒逸線上預約平台 →"
+        },
+        {
+          "tag": "section",
+          "heading": "全身活化調理是什麼？",
+          "text": "UNDERSTAND THE CARE 全身活化調理是什麼？ 舒逸的全身活化調理以美式活化槍為核心，會先了解你當下的身體感受、工作型態、運動習慣、過往受傷情況與希望調理的部位，再依當次狀況安排服務。 服務開始前，會依預計調理的部位進行分段檢查與觀察，了解當下各部位的狀態與方向性，再作為後續服務安排的參考。 不使用完全相同的固定流程套用在每一個人身上，而是依當次溝通、檢查與實際感受安排此次調理。"
+        },
+        {
+          "tag": "section",
+          "heading": "全身活化調理和一般按摩有什麼不同？",
+          "text": "OUR APPROACH 全身活化調理和一般按摩有什麼不同？ 舒逸不把全身活化調理定位為一般按摩。服務以美式活化槍為核心，先透過溝通與分段檢查了解當下狀況，再依檢查結果安排頸部、背部、腰部與骨盆等部位的服務。 重點不只是單純追求按壓或放鬆感，而是有順序地進行 了解 → 檢查 → 調理 → 確認 → 紀錄 。 一般按摩的方式會依不同店家、技術與服務內容而有所不同，因此不對其他按摩服務作統一評價或優劣比較，讓你依自己的需求判斷。 舒逸全身活化調理的服務方式 項目 舒逸全身活化調理 核心工具 美式活化槍 開始前 了解當下身體感受與生活型態 檢查方式 分段檢查與觀察 服務安排 依當次狀況安排 主要部位 頸部、背部、腰部、骨盆 力道 通常較輕，可依感受調整 服務中 可提出跳過、調整、暫停或停止 服務後 再次確認並進行必要紀錄"
+        },
+        {
+          "tag": "section",
+          "heading": "哪些生活情境會想了解全身活化調理？",
+          "text": "IN EVERYDAY LIFE 哪些生活情境會想了解全身活化調理？ 如果工作、通勤、運動或生活習慣，讓你常注意到緊繃感、疲勞感，或覺得沒有到明顯疼痛但就是卡卡、不太自在，可以先了解服務方式，再決定是否安排一次身體照顧時間。 有些不舒服突然出現，很容易察覺；有些緊繃或活動不自在則慢慢累積，久了甚至可能習慣它的存在。 長時間坐著工作或使用電腦 久站或長時間維持固定姿勢 重複相同動作的工作 美睫或美甲等固定姿勢工作 長時間開車或長途通勤 旅行後 家務與照顧工作 運動或大量活動後 平常覺得緊繃或活動卡卡 長期習慣某些不自在的感受 長期出現和平常不同的感受，不代表一定有疾病，但值得留意。若伴隨明顯疼痛、麻木、無力、活動明顯受限或持續惡化，應先尋求醫療專業評估。"
+        },
+        {
+          "tag": "section",
+          "heading": "第一次來舒逸會怎麼進行？",
+          "text": "YOUR FIRST VISIT 第一次來舒逸會怎麼進行？ 從報到、了解與檢查開始，到調理、再次確認與必要紀錄，依當次狀況安排。 報到 採預約制，請依預約時間準時或提早抵達。 了解當下狀況 詢問目前的不適或感受、工作型態、運動習慣、過往受傷情況，以及希望調理的部位。 分段檢查與觀察 依預計調理部位了解當下各部位的狀態與方向性，作為後續服務安排參考。 說明此次安排 根據溝通及檢查結果，說明此次預計進行的部位與方式。 進行調理 以美式活化槍為主要工具，操作會接觸身體，並視實際情況隔著毛巾進行。只有實際屬於當次服務內容時，才搭配手部操作、熱敷或拔罐，並非每次固定包含。 再次確認 服務過程及結束後，依實際狀況再次確認你的感受。 系統化紀錄 必要服務資訊會進行系統化紀錄，供後續服務參考。"
+        },
+        {
+          "tag": "section",
+          "heading": "全身活化調理一次需要多久？",
+          "text": "MAKE TIME 全身活化調理一次需要多久？ 全身活化調理的服務時間約 40 分鐘 。其他服務項目依各項目實際標示的時間為準，可查看 服務項目 。 建議預留約 60 分鐘的到訪時間 ，包含報到、溝通、檢查、服務與再次確認；這與調理服務本身的時間不同。 PLAN YOUR CARE 全身活化調理費用是多少？ 目前全身活化調理價格為 NT$1,600 。 其他已公開服務與五次方案可查看 服務項目 。最新項目、價格與可預約時段，以舒逸線上預約平台目前顯示內容為準。"
+        },
+        {
+          "tag": "article",
+          "heading": "全身活化調理一次需要多久？",
+          "text": "MAKE TIME 全身活化調理一次需要多久？ 全身活化調理的服務時間約 40 分鐘 。其他服務項目依各項目實際標示的時間為準，可查看 服務項目 。 建議預留約 60 分鐘的到訪時間 ，包含報到、溝通、檢查、服務與再次確認；這與調理服務本身的時間不同。"
+        },
+        {
+          "tag": "article",
+          "heading": "全身活化調理費用是多少？",
+          "text": "PLAN YOUR CARE 全身活化調理費用是多少？ 目前全身活化調理價格為 NT$1,600 。 其他已公開服務與五次方案可查看 服務項目 。最新項目、價格與可預約時段，以舒逸線上預約平台目前顯示內容為準。"
+        },
+        {
+          "tag": "section",
+          "heading": "第一次來舒逸可以怎麼準備？",
+          "text": "BEFORE YOU ARRIVE 第一次來舒逸可以怎麼準備？ 穿著 建議穿著寬鬆、方便活動的衣物，不建議緊身褲或牛仔褲。 飲食 部分檢查或服務可能需要俯臥，建議避免在服務前吃得過飽。 到店與攜帶物品 請準時或提早抵達，目前不需要特別攜帶物品。 遲到 若可能遲到，請提前告知。視當日預約狀況，通常以重新安排時段為主。 改期與取消 可透過舒逸預約系統管理預約與改期；取消方式依系統當時顯示的功能及說明辦理。"
+        },
+        {
+          "tag": "article",
+          "heading": "穿著",
+          "text": "穿著 建議穿著寬鬆、方便活動的衣物，不建議緊身褲或牛仔褲。"
+        },
+        {
+          "tag": "article",
+          "heading": "飲食",
+          "text": "飲食 部分檢查或服務可能需要俯臥，建議避免在服務前吃得過飽。"
+        },
+        {
+          "tag": "article",
+          "heading": "到店與攜帶物品",
+          "text": "到店與攜帶物品 請準時或提早抵達，目前不需要特別攜帶物品。"
+        },
+        {
+          "tag": "article",
+          "heading": "遲到",
+          "text": "遲到 若可能遲到，請提前告知。視當日預約狀況，通常以重新安排時段為主。"
+        },
+        {
+          "tag": "article",
+          "heading": "改期與取消",
+          "text": "改期與取消 可透過舒逸預約系統管理預約與改期；取消方式依系統當時顯示的功能及說明辦理。"
+        },
+        {
+          "tag": "section",
+          "heading": "舒逸如何安排 每一次調理？",
+          "text": "THE SHU YI WAY 舒逸如何安排 每一次調理？ 先了解當下狀況，再分段檢查、安排調理、再次確認與系統化紀錄。每一次都有明確順序，服務內容依當次狀況安排。 了解 → 檢查 → 調理 → 確認 → 紀錄 01 了解 先了解當下感受、生活型態、運動習慣與過往狀況。 02 檢查 依預計服務部位進行分段檢查與觀察。 03 調理 根據當次溝通與檢查結果安排服務。 04 確認 服務後再次確認當下感受。 05 紀錄 將必要資訊進行系統化紀錄，作為後續服務參考。"
+        },
+        {
+          "tag": "section",
+          "heading": "主要服務哪些部位？",
+          "text": "AREAS OF CARE 主要服務哪些部位？ 目前主要服務 頸部、背部、腰部與骨盆 ，不操作 胸部與尾椎 。 實際安排依當次溝通、檢查與服務範圍確認。 YOUR COMFORT MATTERS 服務過程中可以提出調整嗎？ 可以。若希望跳過特定部位、調整方式、暫停或停止，都可以隨時提出。 操作力道通常較輕，會依實際狀況及服務人員判斷安排，過程中也會確認你的感受。"
+        },
+        {
+          "tag": "article",
+          "heading": "主要服務哪些部位？",
+          "text": "AREAS OF CARE 主要服務哪些部位？ 目前主要服務 頸部、背部、腰部與骨盆 ，不操作 胸部與尾椎 。 實際安排依當次溝通、檢查與服務範圍確認。"
+        },
+        {
+          "tag": "article",
+          "heading": "服務過程中可以提出調整嗎？",
+          "text": "YOUR COMFORT MATTERS 服務過程中可以提出調整嗎？ 可以。若希望跳過特定部位、調整方式、暫停或停止，都可以隨時提出。 操作力道通常較輕，會依實際狀況及服務人員判斷安排，過程中也會確認你的感受。"
+        },
+        {
+          "tag": "section",
+          "heading": "哪些情況舒逸目前不提供服務？",
+          "text": "OUR SERVICE POLICY 哪些情況舒逸目前不提供服務？ 以下是舒逸目前的服務政策，實際健康狀況應由醫療專業人員評估。 孕期 基於舒逸目前的服務政策，孕期暫不提供全身活化調理服務。 曾接受手術的部位 若預計調理的部位曾接受手術，或有人工關節、鋼釘等植入物，目前不提供該部位的調理服務。 明顯身體警訊 若已出現明顯麻木、無力、活動明顯受限或症狀持續惡化，舒逸不進行調理，建議先尋求醫療專業評估，由醫療人員判斷需要的檢查與科別。"
+        },
+        {
+          "tag": "section",
+          "heading": "什麼情況應先尋求醫療專業評估？",
+          "text": "WHEN TO SEEK MEDICAL HELP 什麼情況應先尋求醫療專業評估？ 若有新發生且明顯的疼痛、持續惡化的不適、明顯腫脹、麻木、無力、活動明顯受限、發燒，或其他讓你擔心的身體狀況，建議先尋求合適的醫療專業評估。 舒逸提供日常身體照顧與放鬆服務，不進行疾病診斷或醫療治療。若出現急性或可能危及生命的狀況，應立即尋求緊急醫療協助。 這是服務前的安全界線，不是疾病診斷工具，也不取代個別醫療建議。 就醫警訊延伸閱讀： NHS 背部疼痛與就醫警訊 。此資料不代表舒逸服務已經醫療專業審閱。"
+        },
+        {
+          "tag": "section",
+          "heading": "常見問題",
+          "text": "A FEW THINGS TO KNOW 常見問題 把預約前想確認的事先說清楚。 舒逸提供什麼服務？ 提供以美式活化槍為核心的全身活化調理，會先了解當下身體感受與日常活動，再透過分段檢查與觀察安排此次服務。 全身活化調理是按摩嗎？ 舒逸不把全身活化調理定位為一般按摩。服務以美式活化槍為核心，並採用了解 → 檢查 → 調理 → 確認 → 紀錄的流程安排每一次服務。 一次大約多久？ 全身活化調理服務約 40 分鐘，建議預留約 60 分鐘的到訪時間，包含報到、溝通、檢查、服務與再次確認。其他服務項目依 服務項目 各項實際標示的時間為準。 全身活化調理多少錢？ 目前全身活化調理價格為 NT$1,600。其他已公開服務與五次方案可查看 服務項目 ，最新資訊以預約平台為準。 需要預約嗎？ 需要。舒逸採預約制，可透過 舒逸線上預約入口 查看可預約的服務與時段。 預約前可以先問問題嗎？ 可以。預約平台的 AI 輔助問答可協助了解調理相關一般知識、服務方式、服務內容、價格、預約方式與已公開的工作室資訊。地址以實際公開資訊為準，不自行推測。AI 問答不提供醫療診斷或治療建議。 服務時可以要求調整或停止嗎？"
+        },
+        {
+          "tag": "section",
+          "heading": "工作室與預約方式",
+          "text": "YOUR NEXT STEP 工作室與預約方式 目前採預約制，可透過舒逸線上預約平台查看最新服務項目、價格、可預約時段與預約資訊。 LINE 官方帳號是入口與聯繫管道，最終預約流程會導向舒逸自己的線上預約平台。你也可以透過系統管理預約與改期。 想先了解空間與到訪資訊，可查看 工作室 ；日常的身體照顧筆記，整理在 更懂自己 。 查看預約方式與 LINE 入口 →"
+        },
+        {
+          "tag": "section",
+          "heading": "先理解 再安心開始",
+          "text": "先理解 再安心開始 看過服務內容後，選一段適合自己的時間。你可以在預約平台先詢問，再查看服務與時段。 前往舒逸線上預約 ↗"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "摘要、差異、情境、首次流程、時間價格、準備、限制、醫療界線、FAQ、預約均在初始 HTML。40 分鐘與 60 分鐘已區分；業主與專業人員仍須核對政策。",
+      "body_review": "",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/offerings/",
+      "status": 200,
+      "final_url": "https://sy-body.com/offerings/",
+      "title": "服務項目 活化調理與舒緩安排 舒逸 Shu Yi",
+      "description": "查看舒逸各項活化調理與舒緩服務的內容、時間與費用，依需求選擇適合的安排。",
+      "canonical": [
+        "https://sy-body.com/offerings/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "為身體留一點時間 從適合自己的方式開始"
+        },
+        {
+          "level": "h3",
+          "text": "活化調理"
+        },
+        {
+          "level": "h3",
+          "text": "慢慢累積的照顧"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "服務項目",
+              "item": "https://sy-body.com/offerings/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "服務項目 活化調理與舒緩安排 舒逸 Shu Yi",
+        "og:description": "查看舒逸各項活化調理與舒緩服務的內容、時間與費用，依需求選擇適合的安排。",
+        "og:url": "https://sy-body.com/offerings/",
+        "og:type": "website",
+        "og:image": "https://sy-body.com/素材/淺色系-1K.jpeg"
+      },
+      "images": [
+        {
+          "src": "../素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "../素材/深色系-1K.jpeg",
+          "alt": ""
+        }
+      ],
+      "links": [
+        "../",
+        "../booking/",
+        "../journal/",
+        "../services/",
+        "../studio/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "為身體留一點時間 從適合自己的方式開始",
+          "text": "A MOMENT FOR YOU SHU YI 為身體留一點時間 從適合自己的方式開始 服務依部位、當下感受與需求安排。你可以先看看內容，也可以預約前先聊聊，再決定從哪裡開始。"
+        },
+        {
+          "tag": "section",
+          "heading": "活化調理",
+          "text": "01 活化調理 依部位與當天狀態，搭配舒緩放鬆、活化槍調理；視情況加入熱敷或拔罐。 上半身調理 為上半身留一段舒緩與活化的時間。 約 30 分鐘 900 元 下半身調理 從下半身的活動感受開始，依當下狀態安排。 約 30 分鐘 900 元 全身調理 舒緩放鬆與活化槍調理，照顧全身活動節奏。 約 40 分鐘 1,600 元 產後骨盆調理 原始服務說明提及產後 3–6 個月；此時程尚待專業確認，不作為普遍建議。服務以舒緩放鬆與活化槍調理為主，視情況熱敷，不代表骨盆復位或產後復健；若有疼痛或產後健康疑慮，請先諮詢醫療專業人員。 約 20 分鐘 800 元 單部位調理 肩頸或手腕；特別為手作與美業工作者安排的局部照顧。視情況熱敷或拔罐。 約 20 分鐘 600 元 舒緩放鬆 以熱敷與拔罐，為忙碌的一天留一點放鬆空間。 約 10 分鐘 300 元 02 慢慢累積的照顧 適合想規律安排的人。五次方案依服務項目選擇，預約時可再確認使用方式。 上半身調理 五次 把上半身的照顧，分次放進生活裡。 原價 4,500 五次方案 4,000 元 下半身調理 五次 依每次的狀態，慢慢照顧下半身活動。 原價 4,"
+        },
+        {
+          "tag": "article",
+          "heading": "",
+          "text": "上半身調理 為上半身留一段舒緩與活化的時間。 約 30 分鐘 900 元"
+        },
+        {
+          "tag": "article",
+          "heading": "",
+          "text": "下半身調理 從下半身的活動感受開始，依當下狀態安排。 約 30 分鐘 900 元"
+        },
+        {
+          "tag": "article",
+          "heading": "",
+          "text": "全身調理 舒緩放鬆與活化槍調理，照顧全身活動節奏。 約 40 分鐘 1,600 元"
+        },
+        {
+          "tag": "article",
+          "heading": "",
+          "text": "產後骨盆調理 原始服務說明提及產後 3–6 個月；此時程尚待專業確認，不作為普遍建議。服務以舒緩放鬆與活化槍調理為主，視情況熱敷，不代表骨盆復位或產後復健；若有疼痛或產後健康疑慮，請先諮詢醫療專業人員。 約 20 分鐘 800 元"
+        },
+        {
+          "tag": "article",
+          "heading": "",
+          "text": "單部位調理 肩頸或手腕；特別為手作與美業工作者安排的局部照顧。視情況熱敷或拔罐。 約 20 分鐘 600 元"
+        },
+        {
+          "tag": "article",
+          "heading": "",
+          "text": "舒緩放鬆 以熱敷與拔罐，為忙碌的一天留一點放鬆空間。 約 10 分鐘 300 元"
+        },
+        {
+          "tag": "article",
+          "heading": "",
+          "text": "上半身調理 五次 把上半身的照顧，分次放進生活裡。 原價 4,500 五次方案 4,000 元"
+        },
+        {
+          "tag": "article",
+          "heading": "",
+          "text": "下半身調理 五次 依每次的狀態，慢慢照顧下半身活動。 原價 4,500 五次方案 4,000 元"
+        },
+        {
+          "tag": "article",
+          "heading": "",
+          "text": "全身調理 五次 全身調理搭配筋膜放鬆，讓照顧有延續的節奏。 原價 8,000 五次方案 7,000 元"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "六項單次及三項五次方案有時間或價格；產後項目需要確認政策，見 P1-04。",
+      "body_review": "",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/",
+      "title": "舒逸日常｜身體感受、活動與日常照顧",
+      "description": "舒逸日常整理身體感受、久坐、活動、休息與生活習慣相關內容，提供日常閱讀與自我照顧資訊。",
+      "canonical": [
+        "https://sy-body.com/journal/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "給生活一點 新的情報"
+        },
+        {
+          "level": "h3",
+          "text": "今天什麼都不想做，也算有好好照顧自己嗎？"
+        },
+        {
+          "level": "h3",
+          "text": "運動後隔天不想動，怎麼知道是正常疲勞還是該休息？"
+        },
+        {
+          "level": "h3",
+          "text": "壓力大到連休息都不會？從下班的第一個轉場開始"
+        },
+        {
+          "level": "h3",
+          "text": "早上醒來先別急著衝：給自己 5 分鐘的慢速開機"
+        },
+        {
+          "level": "h3",
+          "text": "呼吸總是淺淺的？會議前留一分鐘，讓節奏慢下來"
+        },
+        {
+          "level": "h3",
+          "text": "週末睡到中午還是好累？試試不把休息排成另一份工作"
+        },
+        {
+          "level": "h3",
+          "text": "鞋子買得很漂亮，為什麼走一會兒就想脫掉？"
+        },
+        {
+          "level": "h3",
+          "text": "水杯就在手邊還是忘記喝？讓補水跟著生活習慣走"
+        },
+        {
+          "level": "h3",
+          "text": "開始運動總是三分鐘熱度？把目標縮小到小得不能再小"
+        },
+        {
+          "level": "h3",
+          "text": "散步一定要走一萬步嗎？先從願意每天出門開始"
+        },
+        {
+          "level": "h3",
+          "text": "一整天盯著螢幕，眼睛和肩膀都在求救？試試 20 秒遠眺"
+        },
+        {
+          "level": "h3",
+          "text": "旅行回來比出發前更累？把行程留白，才看得到風景"
+        },
+        {
+          "level": "h3",
+          "text": "坐車坐到腰背僵住？下車後的 3 分鐘重開機"
+        },
+        {
+          "level": "h3",
+          "text": "咖啡喝到第三杯還是累？你可能缺的不是咖啡因"
+        },
+        {
+          "level": "h3",
+          "text": "明明睡滿八小時，為什麼醒來還是像沒充電？"
+        },
+        {
+          "level": "h3",
+          "text": "舒逸的第一個呼吸練習"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "舒逸日常｜身體感受、活動與日常照顧",
+        "og:description": "舒逸日常整理身體感受、久坐、活動、休息與生活習慣相關內容，提供日常閱讀與自我照顧資訊。",
+        "og:url": "https://sy-body.com/journal/",
+        "og:type": "website",
+        "og:image": "https://sy-body.com/素材/淺色系-1K.jpeg"
+      },
+      "images": [
+        {
+          "src": "../素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "../素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1400&q=85",
+          "alt": "日出照亮有樹木的草坡，遠處湖面被晨霧覆蓋。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1400&q=85",
+          "alt": "瑜伽課程中，學員在墊上做伸展動作。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1400&q=85",
+          "alt": "夕陽照亮層疊山巒，遠方天空泛著橘色光。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1400&q=85",
+          "alt": "藍天下盛開的橙黃色鬱金香。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85",
+          "alt": "女子在室內瑜伽墊上盤腿靜坐，窗邊透入陽光。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1400&q=85",
+          "alt": "服飾店內陳列衣物、鞋子與配件的層架。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1400&q=85",
+          "alt": "紅色運動鞋置於紅色背景上。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1400&q=85",
+          "alt": "水流注入透明玻璃杯，杯中可見氣泡。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=85",
+          "alt": "健身房地墊上的槓鈴與運動鞋。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1400&q=85",
+          "alt": "山腳松林與高聳岩壁構成的景色。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=85",
+          "alt": "筆電放在明亮的白色書桌上，螢幕顯示程式碼。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1400&q=85",
+          "alt": "高山湖畔的木屋，四周環繞山峰與森林。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85",
+          "alt": "道路穿過紅色岩石山谷，延伸至遠方。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=85",
+          "alt": "幾雙手舉著咖啡杯，杯面有拉花。"
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=85",
+          "alt": "明亮臥室裡鋪有淺色寢具的雙人床。"
+        }
+      ],
+      "links": [
+        "../",
+        "../booking/",
+        "../services/",
+        "../studio/",
+        "./",
+        "/journal/a-day-without-achievements/",
+        "/journal/first-breath/",
+        "/journal/five-minute-morning-start/",
+        "/journal/listen-after-workout/",
+        "/journal/make-movement-too-small-to-fail/",
+        "/journal/one-minute-before-meeting/",
+        "/journal/remember-water-with-routines/",
+        "/journal/screen-break-twenty-seconds/",
+        "/journal/shoes-comfort-over-looks/",
+        "/journal/sleep-full-still-tired/",
+        "/journal/third-coffee-still-tired/",
+        "/journal/three-minute-after-commute/",
+        "/journal/transition-out-of-workday/",
+        "/journal/travel-with-room-to-breathe/",
+        "/journal/walk-without-step-goal/",
+        "/journal/weekend-rest-without-checklist/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "給生活一點 新的情報",
+          "text": "THE SHU YI JOURNAL 給生活一點 新的情報 關於身體感受、活動日常與舒逸正在發生的事。內容會持續更新，也會是未來後台維護的主要地方。"
+        },
+        {
+          "tag": "section",
+          "heading": "今天什麼都不想做，也算有好好照顧自己嗎？",
+          "text": "全部 文章 影片 情報 BODY NOTE 2026-10-18 今天什麼都不想做，也算有好好照顧自己嗎？ 有些日子不必追求效率。放慢、吃飯、休息，都是生活真實的一部分。 閱讀內容 → BODY NOTE 2026-10-17 運動後隔天不想動，怎麼知道是正常疲勞還是該休息？ 訓練後給身體時間恢復，觀察整體感受；疼痛、惡化或異常狀況要認真看待。 閱讀內容 → BODY NOTE 2026-10-16 壓力大到連休息都不會？從下班的第一個轉場開始 工作結束後，留一個清楚的小動作，幫助自己從工作模式慢慢切換。 閱讀內容 → BODY NOTE 2026-10-15 早上醒來先別急著衝：給自己 5 分鐘的慢速開機 一杯水、一點光線和幾個舒服的小動作，讓早晨不從慌張開始。 閱讀內容 → BODY NOTE 2026-10-14 呼吸總是淺淺的？會議前留一分鐘，讓節奏慢下來 不用特殊技巧，也不用憋氣。找到舒服的坐姿，注意幾次自然的吸氣與吐氣。 閱讀內容 → BODY NOTE 2026-10-13 週末睡到中午還是好累？試試不把休息排成另一份工作 休息不必是一張待完成清單。留一段沒有產出的時間，"
+        },
+        {
+          "tag": "article",
+          "heading": "今天什麼都不想做，也算有好好照顧自己嗎？",
+          "text": "BODY NOTE 2026-10-18 今天什麼都不想做，也算有好好照顧自己嗎？ 有些日子不必追求效率。放慢、吃飯、休息，都是生活真實的一部分。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "運動後隔天不想動，怎麼知道是正常疲勞還是該休息？",
+          "text": "BODY NOTE 2026-10-17 運動後隔天不想動，怎麼知道是正常疲勞還是該休息？ 訓練後給身體時間恢復，觀察整體感受；疼痛、惡化或異常狀況要認真看待。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "壓力大到連休息都不會？從下班的第一個轉場開始",
+          "text": "BODY NOTE 2026-10-16 壓力大到連休息都不會？從下班的第一個轉場開始 工作結束後，留一個清楚的小動作，幫助自己從工作模式慢慢切換。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "早上醒來先別急著衝：給自己 5 分鐘的慢速開機",
+          "text": "BODY NOTE 2026-10-15 早上醒來先別急著衝：給自己 5 分鐘的慢速開機 一杯水、一點光線和幾個舒服的小動作，讓早晨不從慌張開始。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "呼吸總是淺淺的？會議前留一分鐘，讓節奏慢下來",
+          "text": "BODY NOTE 2026-10-14 呼吸總是淺淺的？會議前留一分鐘，讓節奏慢下來 不用特殊技巧，也不用憋氣。找到舒服的坐姿，注意幾次自然的吸氣與吐氣。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "週末睡到中午還是好累？試試不把休息排成另一份工作",
+          "text": "BODY NOTE 2026-10-13 週末睡到中午還是好累？試試不把休息排成另一份工作 休息不必是一張待完成清單。留一段沒有產出的時間，也是一種安排。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "鞋子買得很漂亮，為什麼走一會兒就想脫掉？",
+          "text": "BODY NOTE 2026-10-12 鞋子買得很漂亮，為什麼走一會兒就想脫掉？ 選鞋除了外型，還要留意實際活動、腳趾空間與穿久後的感受。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "水杯就在手邊還是忘記喝？讓補水跟著生活習慣走",
+          "text": "BODY NOTE 2026-10-11 水杯就在手邊還是忘記喝？讓補水跟著生活習慣走 不用追著複雜的喝水數字跑，試著把喝水放在幾個本來就會發生的時刻。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "開始運動總是三分鐘熱度？把目標縮小到小得不能再小",
+          "text": "BODY NOTE 2026-10-10 開始運動總是三分鐘熱度？把目標縮小到小得不能再小 與其發誓每週訓練五天，不如先設計一個忙碌時也做得到的起步版本。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "散步一定要走一萬步嗎？先從願意每天出門開始",
+          "text": "BODY NOTE 2026-10-09 散步一定要走一萬步嗎？先從願意每天出門開始 忘掉完美步數，找到一條你喜歡、明天還願意再走一次的路。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "一整天盯著螢幕，眼睛和肩膀都在求救？試試 20 秒遠眺",
+          "text": "BODY NOTE 2026-10-08 一整天盯著螢幕，眼睛和肩膀都在求救？試試 20 秒遠眺 把視線從近距離拉開，配上一點姿勢變化，為長時間工作安排真正的小休息。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "旅行回來比出發前更累？把行程留白，才看得到風景",
+          "text": "BODY NOTE 2026-10-07 旅行回來比出發前更累？把行程留白，才看得到風景 安排旅行時，每天少塞一個景點，可能會多留下一段真正記得住的旅程。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "坐車坐到腰背僵住？下車後的 3 分鐘重開機",
+          "text": "BODY NOTE 2026-10-06 坐車坐到腰背僵住？下車後的 3 分鐘重開機 通勤或長途移動結束，別急著立刻衝下一件事，讓身體從固定姿勢切換出來。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "咖啡喝到第三杯還是累？你可能缺的不是咖啡因",
+          "text": "BODY NOTE 2026-10-05 咖啡喝到第三杯還是累？你可能缺的不是咖啡因 下午精神往下掉時，先看看午餐、喝水和離開座位的時間，再決定要不要續杯。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "明明睡滿八小時，為什麼醒來還是像沒充電？",
+          "text": "BODY NOTE 2026-10-04 明明睡滿八小時，為什麼醒來還是像沒充電？ 睡眠不是只有時數。從睡前節奏、光線到早晨的第一個動作，找回比較有精神的起床方式。 閱讀內容 →"
+        },
+        {
+          "tag": "article",
+          "heading": "舒逸的第一個呼吸練習",
+          "text": "VIDEO SHU YI FILM 2026-09-24 舒逸的第一個呼吸練習 跟著影片，留一分鐘給自己 閱讀內容 →"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "初始 HTML 有 16 篇已發布；瀏覽器觀察到 fallback 草稿卡，分類可切換，見 P1-01。",
+      "body_review": "",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/studio/",
+      "status": 200,
+      "final_url": "https://sy-body.com/studio/",
+      "title": "舒逸工作室｜預約制空間與到訪資訊",
+      "description": "認識舒逸工作室與目前公開的到訪資訊。工作室採預約制，地址與營業時段將於確認後公布。",
+      "canonical": [
+        "https://sy-body.com/studio/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "舒逸 工作室"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "工作室",
+              "item": "https://sy-body.com/studio/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "舒逸工作室｜預約制空間與到訪資訊",
+        "og:description": "認識舒逸工作室與目前公開的到訪資訊。工作室採預約制，地址與營業時段將於確認後公布。",
+        "og:url": "https://sy-body.com/studio/",
+        "og:type": "website",
+        "og:image": "https://sy-body.com/素材/淺色系-1K.jpeg"
+      },
+      "images": [
+        {
+          "src": "../素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "../素材/深色系-1K.jpeg",
+          "alt": ""
+        }
+      ],
+      "links": [
+        "../",
+        "../booking/",
+        "../journal/",
+        "../services/",
+        "./"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "舒逸 工作室",
+          "text": "YOUR PLACE TO RESET 舒逸 工作室 一個讓你慢下來、感受身體，也帶著輕盈離開的地方。 SHU YI"
+        },
+        {
+          "tag": "section",
+          "heading": "",
+          "text": "LOCATION 地址資訊準備中 OPENING 營業時段準備中 VISIT 採預約制；正式預約方式將在開放時公布。"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "地址、時段未公布；預約敘述過期，見 P1-02 及 P2-03。",
+      "body_review": "",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/booking/",
+      "status": 200,
+      "final_url": "https://sy-body.com/booking/",
+      "title": "舒逸預約｜全身活化調理線上預約入口",
+      "description": "查看舒逸全身活化調理的預約方式，並前往舒逸線上預約平台選擇服務與時段；預約平台另提供 AI 輔助問答。",
+      "canonical": [
+        "https://sy-body.com/booking/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "把時間 留給 自己"
+        },
+        {
+          "level": "h2",
+          "text": "預約方式"
+        },
+        {
+          "level": "h2",
+          "text": "前往預約平台"
+        },
+        {
+          "level": "h2",
+          "text": "查看服務與時段"
+        },
+        {
+          "level": "h2",
+          "text": "完成預約"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "預約",
+              "item": "https://sy-body.com/booking/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "舒逸預約｜全身活化調理線上預約入口",
+        "og:description": "查看舒逸全身活化調理的預約方式，並前往舒逸線上預約平台選擇服務與時段；預約平台另提供 AI 輔助問答。",
+        "og:url": "https://sy-body.com/booking/",
+        "og:type": "website",
+        "og:image": "https://sy-body.com/素材/淺色系-1K.jpeg"
+      },
+      "images": [
+        {
+          "src": "../素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "../素材/深色系-1K.jpeg",
+          "alt": ""
+        }
+      ],
+      "links": [
+        "../",
+        "../booking/",
+        "../journal/",
+        "../services/",
+        "../studio/",
+        "./",
+        "https://booking.sy-body.com/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "把時間 留給 自己",
+          "text": "BOOK YOUR RESET 把時間 留給 自己"
+        },
+        {
+          "tag": "section",
+          "heading": "預約方式",
+          "text": "ONLINE BOOKING 預約方式 舒逸採線上預約。前往舒逸自己的預約平台，依平台目前提供的選項完成預約；如對服務或流程有疑問，也可使用平台上的 AI 輔助問答先詢問常見問題。 01 / OPEN 前往預約平台 開啟舒逸線上預約平台，並依平台畫面登入。 02 / CHOOSE 查看服務與時段 查看目前提供的服務，再依可選項目安排日期與時間。 03 / CONFIRM 完成預約 依平台指示填寫並確認預約資料。 AI 輔助問答可協助了解常見服務與預約問題，不提供醫療診斷或醫療建議。 前往舒逸線上預約 ↗"
+        },
+        {
+          "tag": "article",
+          "heading": "前往預約平台",
+          "text": "01 / OPEN 前往預約平台 開啟舒逸線上預約平台，並依平台畫面登入。"
+        },
+        {
+          "tag": "article",
+          "heading": "查看服務與時段",
+          "text": "02 / CHOOSE 查看服務與時段 查看目前提供的服務，再依可選項目安排日期與時間。"
+        },
+        {
+          "tag": "article",
+          "heading": "完成預約",
+          "text": "03 / CONFIRM 完成預約 依平台指示填寫並確認預約資料。"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "預約流程與 CTA 指向正式平台；實際登入後預約及 AI 答案未驗證。",
+      "body_review": "",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/a-day-without-achievements/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/a-day-without-achievements/",
+      "title": "今天什麼都不想做，也算有好好照顧自己嗎？｜舒逸日常",
+      "description": "有些日子不必追求效率。放慢、吃飯、休息，都是生活真實的一部分。",
+      "canonical": [
+        "https://sy-body.com/journal/a-day-without-achievements/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "今天什麼都不想做，也算有好好照顧自己嗎？"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "今天什麼都不想做，也算有好好照顧自己嗎？",
+          "description": "有些日子不必追求效率。放慢、吃飯、休息，都是生活真實的一部分。",
+          "datePublished": "2026-10-18T05:48:58.219Z",
+          "dateModified": "2026-10-18T05:48:58.219Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/a-day-without-achievements/",
+          "url": "https://sy-body.com/journal/a-day-without-achievements/",
+          "image": "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "今天什麼都不想做，也算有好好照顧自己嗎？",
+              "item": "https://sy-body.com/journal/a-day-without-achievements/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "今天什麼都不想做，也算有好好照顧自己嗎？｜舒逸日常",
+        "og:description": "有些日子不必追求效率。放慢、吃飯、休息，都是生活真實的一部分。",
+        "og:url": "https://sy-body.com/journal/a-day-without-achievements/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1400&q=85",
+          "alt": "日出照亮有樹木的草坡，遠處湖面被晨霧覆蓋。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/low-mood-sadness-depression/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般情緒照顧生活資訊 資料依據： 本文對吃飯、休息、降低當日目標的建議是一般生活支持；關於低落持續並影響生活時尋求協助的提醒，參考 NHS 低落情緒資訊。 醫療界線： 不診斷憂鬱症，也不替代心理或醫療照護。若低落持續、嚴重影響生活或有立即危險，請聯繫當地醫療與緊急支援。 專業審閱： 尚未經心理或醫療專業人員審閱。 參考資料 NHS：Low Mood, Sadness and Depression ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "情緒支持與專業求助界線已有說明，核對 NHS 來源與用詞。",
+      "body_review": "待辦清單沒有清空，運動也取消了，今天看起來像什麼都沒完成。但人不是只有完成任務時才值得被照顧。\n\n先處理最基本的需要：吃點東西、喝水、換上舒服的衣服，讓自己有一個可以休息的地方。若出門散步會讓你舒服，就走一小段；如果更需要安靜，待在家也完全可以。\n\n休息不是獎勵，無須先把所有事情做完才配得到。試著把今天的標準放低一點，留一件明天再處理的事，並允許自己暫時不必解決全部問題。\n\n如果低落或無力感持續很久，並影響日常生活，可以找信任的人或專業人員聊聊。今天先讓自己過得容易一點，就已經是一種很實際的照顧。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/listen-after-workout/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/listen-after-workout/",
+      "title": "運動後隔天不想動，怎麼知道是正常疲勞還是該休息？｜舒逸日常",
+      "description": "訓練後給身體時間恢復，觀察整體感受；疼痛、惡化或異常狀況要認真看待。",
+      "canonical": [
+        "https://sy-body.com/journal/listen-after-workout/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "運動後隔天不想動，怎麼知道是正常疲勞還是該休息？"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "運動後隔天不想動，怎麼知道是正常疲勞還是該休息？",
+          "description": "訓練後給身體時間恢復，觀察整體感受；疼痛、惡化或異常狀況要認真看待。",
+          "datePublished": "2026-10-17T05:48:58.215Z",
+          "dateModified": "2026-10-17T05:48:58.215Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/listen-after-workout/",
+          "url": "https://sy-body.com/journal/listen-after-workout/",
+          "image": "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "運動後隔天不想動，怎麼知道是正常疲勞還是該休息？",
+              "item": "https://sy-body.com/journal/listen-after-workout/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "運動後隔天不想動，怎麼知道是正常疲勞還是該休息？｜舒逸日常",
+        "og:description": "訓練後給身體時間恢復，觀察整體感受；疼痛、惡化或異常狀況要認真看待。",
+        "og:url": "https://sy-body.com/journal/listen-after-workout/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1400&q=85",
+          "alt": "瑜伽課程中，學員在墊上做伸展動作。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/msk-physiotherapy-resources-faqs/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般運動恢復與求助界線資訊 資料依據： 本文提醒觀察疼痛、腫脹、活動受限與惡化情形並停止加劇不適的活動；背景參考 NHS 醫療機構的運動與痠痛指引。 醫療界線： 本文無法區分個人的正常痠痛與受傷。尖銳疼痛、明顯腫脹、活動受限或惡化時，應尋求醫療評估。 專業審閱： 尚未經醫師、物理治療或其他合格運動醫療專業人員審閱。 參考資料 Leicestershire Partnership NHS Trust：Musculoskeletal FAQs — Muscle soreness ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "標題要求分辨正常疲勞與何時休息；正文提醒警訊但未提供可診斷的區分，應維持安全界線並請專業人員確認。",
+      "body_review": "第一次嘗試新訓練，隔天覺得身體和平常不太一樣，常讓人猶豫要不要照原計畫繼續。恢復也是活動的一部分，先觀察感受，再決定今天適合做什麼。\n\n輕鬆散步、補足平常需要的飲食與水分、睡一個安穩的覺，都可以是恢復安排。沒有必要因為休息一天，就認定自己失去進度。\n\n若出現尖銳疼痛、明顯腫脹、活動受限，或症狀持續惡化，請停止讓不舒服加劇的活動，並尋求醫療專業評估。本文不能替代診斷，每個人的情況都不同。\n\n下次訓練可以先從較容易掌握的強度開始，逐步調整。長期來看，懂得聆聽和調整，比每次都硬撐更能讓活動留在生活裡。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/transition-out-of-workday/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/transition-out-of-workday/",
+      "title": "壓力大到連休息都不會？從下班的第一個轉場開始｜舒逸日常",
+      "description": "工作結束後，留一個清楚的小動作，幫助自己從工作模式慢慢切換。",
+      "canonical": [
+        "https://sy-body.com/journal/transition-out-of-workday/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "壓力大到連休息都不會？從下班的第一個轉場開始"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "壓力大到連休息都不會？從下班的第一個轉場開始",
+          "description": "工作結束後，留一個清楚的小動作，幫助自己從工作模式慢慢切換。",
+          "datePublished": "2026-10-16T05:48:58.212Z",
+          "dateModified": "2026-10-16T05:48:58.212Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/transition-out-of-workday/",
+          "url": "https://sy-body.com/journal/transition-out-of-workday/",
+          "image": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "壓力大到連休息都不會？從下班的第一個轉場開始",
+              "item": "https://sy-body.com/journal/transition-out-of-workday/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "壓力大到連休息都不會？從下班的第一個轉場開始｜舒逸日常",
+        "og:description": "工作結束後，留一個清楚的小動作，幫助自己從工作模式慢慢切換。",
+        "og:url": "https://sy-body.com/journal/transition-out-of-workday/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1400&q=85",
+          "alt": "夕陽照亮層疊山巒，遠方天空泛著橘色光。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.who.int/news-room/fact-sheets/detail/mental-health-at-work"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般工作後轉換與壓力照顧建議 資料依據： 本文列舉的寫下待辦、離開工作位置等方法是編輯的生活安排建議；WHO 資料僅提供工作與心理健康的一般背景，不證明特定步驟適用每個人。 醫療界線： 不診斷或治療壓力、焦慮或憂鬱。若狀況持續影響日常，尋求心理或醫療專業支持。 專業審閱： 尚未經心理或醫療專業人員審閱。 參考資料 WHO：Mental Health at Work ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "WHO 支持工作心理健康背景，具體轉場步驟為編輯建議，維持這個區分。",
+      "body_review": "電腦闔上了，腦袋還在回覆明天的訊息；人已經到家，注意力仍留在工作桌前。下班不一定能瞬間切換，但可以安排一個明確的轉場動作。\n\n寫下明天第一件要做的事，合上筆電，再離開工作位置。若在家工作，換件衣服、洗把臉或走到巷口，都能成為「今天先到這裡」的提示。\n\n轉場後安排一件和工作無關、又不需要表現的事：煮一頓簡單的晚餐、聽熟悉的音樂，或和重要的人聊聊今天。小小的固定節奏，能讓下班不只是一個時間點。\n\n若壓力長期讓生活難以維持，找信任的人或合適的專業資源談談也是照顧自己的一部分。你不必等到完全撐不住，才允許自己求助。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/five-minute-morning-start/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/five-minute-morning-start/",
+      "title": "早上醒來先別急著衝：給自己 5 分鐘的慢速開機｜舒逸日常",
+      "description": "一杯水、一點光線和幾個舒服的小動作，讓早晨不從慌張開始。",
+      "canonical": [
+        "https://sy-body.com/journal/five-minute-morning-start/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "早上醒來先別急著衝：給自己 5 分鐘的慢速開機"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "早上醒來先別急著衝：給自己 5 分鐘的慢速開機",
+          "description": "一杯水、一點光線和幾個舒服的小動作，讓早晨不從慌張開始。",
+          "datePublished": "2026-10-15T05:48:58.210Z",
+          "dateModified": "2026-10-15T05:48:58.210Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/five-minute-morning-start/",
+          "url": "https://sy-body.com/journal/five-minute-morning-start/",
+          "image": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "早上醒來先別急著衝：給自己 5 分鐘的慢速開機",
+              "item": "https://sy-body.com/journal/five-minute-morning-start/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "早上醒來先別急著衝：給自己 5 分鐘的慢速開機｜舒逸日常",
+        "og:description": "一杯水、一點光線和幾個舒服的小動作，讓早晨不從慌張開始。",
+        "og:url": "https://sy-body.com/journal/five-minute-morning-start/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1400&q=85",
+          "alt": "藍天下盛開的橙黃色鬱金香。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般晨間生活安排建議 資料依據： 喝水、開窗簾、伸展與預先放好物品是本文提出的個人生活安排例子，不宣稱能治療疲倦或改善特定疾病。 醫療界線： 非醫療或睡眠治療建議。持續疲倦、頭暈或其他症狀應由醫療人員評估。 專業審閱： 尚未經睡眠或醫療專業人員審閱。 本篇沒有引用醫療或科學研究；內容為一般生活建議。 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "屬生活建議且已明示無研究來源；避免顯示看似已有參考文獻的連結檢視日期。",
+      "body_review": "鬧鐘一響就開始追訊息、回工作，身體還沒醒，腦袋已經跑進待辦清單。明天試著先替早晨留五分鐘，不用把它變成更嚴格的晨間儀式。\n\n拉開窗簾，讓自己接觸自然光；喝幾口水；伸展手臂或在房間裡走幾步。只挑一兩個最順手的動作，做到就好。\n\n前一晚把鑰匙、包包放在固定位置，也能減少早晨找東西的慌亂。真正有用的習慣，通常簡單到在睡眼惺忪時也做得來。\n\n如果今天起得晚了，也不必覺得整個計畫失敗。五分鐘可以縮成一分鐘，重點是用比較溫柔的方式開始，而不是多一項責備自己的理由。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/one-minute-before-meeting/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/one-minute-before-meeting/",
+      "title": "呼吸總是淺淺的？會議前留一分鐘，讓節奏慢下來｜舒逸日常",
+      "description": "不用特殊技巧，也不用憋氣。找到舒服的坐姿，注意幾次自然的吸氣與吐氣。",
+      "canonical": [
+        "https://sy-body.com/journal/one-minute-before-meeting/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "呼吸總是淺淺的？會議前留一分鐘，讓節奏慢下來"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "呼吸總是淺淺的？會議前留一分鐘，讓節奏慢下來",
+          "description": "不用特殊技巧，也不用憋氣。找到舒服的坐姿，注意幾次自然的吸氣與吐氣。",
+          "datePublished": "2026-10-14T05:48:58.207Z",
+          "dateModified": "2026-10-14T05:48:58.207Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/one-minute-before-meeting/",
+          "url": "https://sy-body.com/journal/one-minute-before-meeting/",
+          "image": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "呼吸總是淺淺的？會議前留一分鐘，讓節奏慢下來",
+              "item": "https://sy-body.com/journal/one-minute-before-meeting/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "呼吸總是淺淺的？會議前留一分鐘，讓節奏慢下來｜舒逸日常",
+        "og:description": "不用特殊技巧，也不用憋氣。找到舒服的坐姿，注意幾次自然的吸氣與吐氣。",
+        "og:url": "https://sy-body.com/journal/one-minute-before-meeting/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85",
+          "alt": "女子在室內瑜伽墊上盤腿靜坐，窗邊透入陽光。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般呼吸覺察生活建議 資料依據： 本文建議不憋氣、以舒服姿勢留意自然呼吸；NHS 公開的壓力呼吸練習同樣提醒以舒服、不勉強的方式進行。本文不宣稱可治療焦慮。 醫療界線： 若練習造成不適請停止。呼吸困難或持續焦慮等症狀應尋求醫療或心理專業協助。 專業審閱： 尚未經心理或醫療專業人員審閱。 參考資料 NHS：Breathing Exercises for Stress ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "核對呼吸練習與 NHS 來源之對應，持續呼吸困難的界線應清楚。",
+      "body_review": "會議通知跳出來的那一刻，肩膀不自覺聳起，呼吸也變得短促。進會議室前留一分鐘，先讓身體知道自己已經停下來。\n\n坐穩或站穩，雙腳找到支撐，看看周遭三樣物品。接著留意自然的吸氣和吐氣，不需要刻意吸很深，也不要憋氣。\n\n如果注意力一直跑走，沒關係，再把它帶回腳底或呼吸經過的感覺。這不是要清空腦袋，而是在下一件事開始前，給自己一個短暫的停靠點。\n\n若任何呼吸練習讓你不舒服，就停止並回到平常的呼吸。簡單、舒服、隨時能結束，才適合放進忙碌日常。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/weekend-rest-without-checklist/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/weekend-rest-without-checklist/",
+      "title": "週末睡到中午還是好累？試試不把休息排成另一份工作｜舒逸日常",
+      "description": "休息不必是一張待完成清單。留一段沒有產出的時間，也是一種安排。",
+      "canonical": [
+        "https://sy-body.com/journal/weekend-rest-without-checklist/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "週末睡到中午還是好累？試試不把休息排成另一份工作"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "週末睡到中午還是好累？試試不把休息排成另一份工作",
+          "description": "休息不必是一張待完成清單。留一段沒有產出的時間，也是一種安排。",
+          "datePublished": "2026-10-13T05:48:58.204Z",
+          "dateModified": "2026-10-13T05:48:58.204Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/weekend-rest-without-checklist/",
+          "url": "https://sy-body.com/journal/weekend-rest-without-checklist/",
+          "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "週末睡到中午還是好累？試試不把休息排成另一份工作",
+              "item": "https://sy-body.com/journal/weekend-rest-without-checklist/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "週末睡到中午還是好累？試試不把休息排成另一份工作｜舒逸日常",
+        "og:description": "休息不必是一張待完成清單。留一段沒有產出的時間，也是一種安排。",
+        "og:url": "https://sy-body.com/journal/weekend-rest-without-checklist/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1400&q=85",
+          "alt": "服飾店內陳列衣物、鞋子與配件的層架。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般休息與時間安排建議 資料依據： 本文以生活安排與個人偏好為主，不將特定休息方式描述為治療或具有保證效果。 醫療界線： 非心理治療或醫療建議。若情緒或疲倦長期影響生活，尋求專業協助。 專業審閱： 尚未經心理或醫療專業人員審閱。 本篇沒有引用醫療或科學研究；內容為一般生活建議。 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "屬生活建議；標題提及疲倦，正文應避免暗示單一原因，並保留求助界線。",
+      "body_review": "週末一到，待辦事項從洗衣、採買排到運動和整理房間。忙完一天卻沒有休息感，可能是因為所有時間都被「應該做的事」佔滿了。\n\n試著把週末只安排一件必要任務，另外留一段不設成果的時間。可以慢慢吃早餐、聽一張專輯、在家看書，或什麼也不做。\n\n休息方式沒有標準答案。有些人喜歡安靜，有些人需要出門見朋友；關鍵是活動結束後，你是否感到比較有空間，而不是又多了一項要交差的事。\n\n下週行事曆先替自己留一格「自由時間」。不用把它填滿，也不必用照片證明自己過得充實。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/shoes-comfort-over-looks/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/shoes-comfort-over-looks/",
+      "title": "鞋子買得很漂亮，為什麼走一會兒就想脫掉？｜舒逸日常",
+      "description": "選鞋除了外型，還要留意實際活動、腳趾空間與穿久後的感受。",
+      "canonical": [
+        "https://sy-body.com/journal/shoes-comfort-over-looks/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "鞋子買得很漂亮，為什麼走一會兒就想脫掉？"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "鞋子買得很漂亮，為什麼走一會兒就想脫掉？",
+          "description": "選鞋除了外型，還要留意實際活動、腳趾空間與穿久後的感受。",
+          "datePublished": "2026-10-12T05:48:58.200Z",
+          "dateModified": "2026-10-12T05:48:58.200Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/shoes-comfort-over-looks/",
+          "url": "https://sy-body.com/journal/shoes-comfort-over-looks/",
+          "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "鞋子買得很漂亮，為什麼走一會兒就想脫掉？",
+              "item": "https://sy-body.com/journal/shoes-comfort-over-looks/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "鞋子買得很漂亮，為什麼走一會兒就想脫掉？｜舒逸日常",
+        "og:description": "選鞋除了外型，還要留意實際活動、腳趾空間與穿久後的感受。",
+        "og:url": "https://sy-body.com/journal/shoes-comfort-over-looks/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1400&q=85",
+          "alt": "紅色運動鞋置於紅色背景上。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般購鞋與穿著觀察建議 資料依據： 本文列出的試穿步驟是消費者自我觀察清單，未宣稱能預防或治療足部疾病。 醫療界線： 若有足部疼痛、麻木、傷口或持續不適，請尋求適當醫療評估；本文不提供足部疾病建議。 專業審閱： 尚未經足科或醫療專業人員審閱。 本篇沒有引用醫療或科學研究；內容為一般生活建議。 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "自我觀察建議；涉及持續疼痛或麻木時保留就醫界線。",
+      "body_review": "新鞋開箱時很好看，走到下午卻只想找地方坐下。試鞋時不妨模擬真正會做的事：站起來走幾步、轉彎、上下小坡，感受鞋子是否穩當。\n\n留意腳趾有沒有足夠活動空間，鞋跟是否容易滑動，鞋面會不會在某處磨壓。左右腳可能不完全一樣，試穿兩邊並以較合適的那一側為準。\n\n如果鞋子需要「忍幾天就會鬆」，先確認材質和品牌的退換規則。不同活動也可能需要不同鞋款，散步、跑步和正式場合不一定能由同一雙鞋全部包辦。\n\n穿著舒適不是小題大作。把鞋帶調整好、穿上平常會搭配的襪子，再走一小段路測試，常常比只看鏡子更能知道答案。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/remember-water-with-routines/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/remember-water-with-routines/",
+      "title": "水杯就在手邊還是忘記喝？讓補水跟著生活習慣走｜舒逸日常",
+      "description": "不用追著複雜的喝水數字跑，試著把喝水放在幾個本來就會發生的時刻。",
+      "canonical": [
+        "https://sy-body.com/journal/remember-water-with-routines/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "水杯就在手邊還是忘記喝？讓補水跟著生活習慣走"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "水杯就在手邊還是忘記喝？讓補水跟著生活習慣走",
+          "description": "不用追著複雜的喝水數字跑，試著把喝水放在幾個本來就會發生的時刻。",
+          "datePublished": "2026-10-11T05:48:58.197Z",
+          "dateModified": "2026-10-11T05:48:58.197Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/remember-water-with-routines/",
+          "url": "https://sy-body.com/journal/remember-water-with-routines/",
+          "image": "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "水杯就在手邊還是忘記喝？讓補水跟著生活習慣走",
+              "item": "https://sy-body.com/journal/remember-water-with-routines/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "水杯就在手邊還是忘記喝？讓補水跟著生活習慣走｜舒逸日常",
+        "og:description": "不用追著複雜的喝水數字跑，試著把喝水放在幾個本來就會發生的時刻。",
+        "og:url": "https://sy-body.com/journal/remember-water-with-routines/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1400&q=85",
+          "alt": "水流注入透明玻璃杯，杯中可見氣泡。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.cdc.gov/healthy-weight-growth/water-healthy-drinks/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般飲水生活資訊 資料依據： 本文不設定每日飲水量；CDC 指出飲水需求會依年齡、活動及其他個人條件而不同，並提供把水放在方便取得處等一般做法。 醫療界線： 本文不給個人補水處方。若有需限制水分的疾病或醫囑，依照醫療人員指示。 專業審閱： 尚未經營養或醫療專業人員審閱。 參考資料 CDC：About Water and Healthier Drinks ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "確認 CDC 來源可用及個別飲水建議界線。",
+      "body_review": "忙起來時，水杯就在手邊也可能整個上午都沒碰。與其靠意志力記住每一口，不如把喝水連結到日常節點：起床後、開始工作前、吃完午餐後。\n\n把杯子放在看得到又拿得到的位置，選一個自己喜歡的容量。喝完順手補滿，能少一個「等一下再去裝」的理由。\n\n每個人的需求會隨天氣、活動和身體狀況而不同，不必把單一數字當成所有人的標準。留意口渴和日常狀態，必要時遵從醫療專業人員給你的建議。\n\n今天先挑一個固定時刻開始就好。當補水成為生活流程的一部分，它就不再只是手機裡一則被滑掉的提醒。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+      "title": "開始運動總是三分鐘熱度？把目標縮小到小得不能再小｜舒逸日常",
+      "description": "與其發誓每週訓練五天，不如先設計一個忙碌時也做得到的起步版本。",
+      "canonical": [
+        "https://sy-body.com/journal/make-movement-too-small-to-fail/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "開始運動總是三分鐘熱度？把目標縮小到小得不能再小"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "開始運動總是三分鐘熱度？把目標縮小到小得不能再小",
+          "description": "與其發誓每週訓練五天，不如先設計一個忙碌時也做得到的起步版本。",
+          "datePublished": "2026-10-10T05:48:58.193Z",
+          "dateModified": "2026-10-10T05:48:58.193Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+          "url": "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+          "image": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "開始運動總是三分鐘熱度？把目標縮小到小得不能再小",
+              "item": "https://sy-body.com/journal/make-movement-too-small-to-fail/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "開始運動總是三分鐘熱度？把目標縮小到小得不能再小｜舒逸日常",
+        "og:description": "與其發誓每週訓練五天，不如先設計一個忙碌時也做得到的起步版本。",
+        "og:url": "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=85",
+          "alt": "健身房地墊上的槓鈴與運動鞋。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.cdc.gov/healthy-weight-growth/physical-activity/getting-started.html"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般身體活動起步建議 資料依據： 本文以小步驟作為行為安排建議；CDC 的活動入門資訊也建議循序開始、選擇喜歡的活動與時段。本文的具體小目標是編輯例子。 醫療界線： 不構成個人訓練計畫。已有健康疑慮或慢性狀況者，請先確認適合的活動方式。 專業審閱： 尚未經運動或醫療專業人員審閱。 參考資料 CDC：Steps for Getting Started With Physical Activity ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "確認 CDC 來源可用，活動強度與疾病條件須避免普遍化。",
+      "body_review": "新計畫常常從雄心壯志開始，遇到加班、下雨或睡不好就中斷。這未必是缺乏自律，也可能是起步門檻設得太高。\n\n把目標縮小：換上運動鞋、走到樓下，或做一組自己熟悉的輕鬆動作。小版本的工作，是幫你跨過「開始」；狀態好時再自然延長，不需要每次都做滿。\n\n先固定時間與地點，例如晚餐後在住家附近走一圈。完成後簡單記下日期，不評分速度，也不拿昨天的表現責備今天。\n\n如果要嘗試新的訓練或有健康疑慮，按自己的狀況循序調整，必要時先諮詢專業人員。能長久留在生活裡的活動，比短暫衝刺更值得期待。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/walk-without-step-goal/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/walk-without-step-goal/",
+      "title": "散步一定要走一萬步嗎？先從願意每天出門開始｜舒逸日常",
+      "description": "忘掉完美步數，找到一條你喜歡、明天還願意再走一次的路。",
+      "canonical": [
+        "https://sy-body.com/journal/walk-without-step-goal/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "散步一定要走一萬步嗎？先從願意每天出門開始"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "散步一定要走一萬步嗎？先從願意每天出門開始",
+          "description": "忘掉完美步數，找到一條你喜歡、明天還願意再走一次的路。",
+          "datePublished": "2026-10-09T05:48:58.188Z",
+          "dateModified": "2026-10-09T05:48:58.188Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/walk-without-step-goal/",
+          "url": "https://sy-body.com/journal/walk-without-step-goal/",
+          "image": "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "散步一定要走一萬步嗎？先從願意每天出門開始",
+              "item": "https://sy-body.com/journal/walk-without-step-goal/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "散步一定要走一萬步嗎？先從願意每天出門開始｜舒逸日常",
+        "og:description": "忘掉完美步數，找到一條你喜歡、明天還願意再走一次的路。",
+        "og:url": "https://sy-body.com/journal/walk-without-step-goal/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1400&q=85",
+          "alt": "山腳松林與高聳岩壁構成的景色。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.cdc.gov/physical-activity-basics/guidelines/adults.html"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般身體活動生活資訊 資料依據： 本文主張以個人可持續的方式開始活動，不把單一每日步數當成人人適用的健康標準；CDC 指引指出活動量可分段並應按個人狀況開始。 醫療界線： 本文不是個人運動處方。有慢性病、受傷或活動安全疑慮者，先詢問醫療專業人員。 專業審閱： 尚未經運動或醫療專業人員審閱。 參考資料 CDC：Adult Activity — An Overview ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "確認 CDC 活動指引及步數敘述，不把編輯步數判斷當醫療處方。",
+      "body_review": "看到步數目標，有人因此更有動力，也有人還沒出門就覺得今天已經失敗。散步不必先通過數字考核，從一段舒服的路開始就可以。\n\n選一條不用特別準備、出門就能走的路。五到十分鐘也算數；想停下來看樹、買水果或提早回家，都可以。把注意力放在呼吸、步伐和路上的聲音，而不是一直檢查手錶。\n\n如果你平常很少活動，先用可以自在說話的速度走，並依自己的狀況調整距離。天氣、鞋子和周遭環境也會影響感受，安全舒適永遠比追數字重要。\n\n最好的散步計畫，是明天也想再做一次的那種。今天找到喜歡的轉角，就已經替自己留下一個很好的理由。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/screen-break-twenty-seconds/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/screen-break-twenty-seconds/",
+      "title": "一整天盯著螢幕，眼睛和肩膀都在求救？試試 20 秒遠眺｜舒逸日常",
+      "description": "把視線從近距離拉開，配上一點姿勢變化，為長時間工作安排真正的小休息。",
+      "canonical": [
+        "https://sy-body.com/journal/screen-break-twenty-seconds/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "一整天盯著螢幕，眼睛和肩膀都在求救？試試 20 秒遠眺"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "一整天盯著螢幕，眼睛和肩膀都在求救？試試 20 秒遠眺",
+          "description": "把視線從近距離拉開，配上一點姿勢變化，為長時間工作安排真正的小休息。",
+          "datePublished": "2026-10-08T05:48:58.185Z",
+          "dateModified": "2026-10-08T05:48:58.185Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/screen-break-twenty-seconds/",
+          "url": "https://sy-body.com/journal/screen-break-twenty-seconds/",
+          "image": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "一整天盯著螢幕，眼睛和肩膀都在求救？試試 20 秒遠眺",
+              "item": "https://sy-body.com/journal/screen-break-twenty-seconds/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "一整天盯著螢幕，眼睛和肩膀都在求救？試試 20 秒遠眺｜舒逸日常",
+        "og:description": "把視線從近距離拉開，配上一點姿勢變化，為長時間工作安排真正的小休息。",
+        "og:url": "https://sy-body.com/journal/screen-break-twenty-seconds/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=85",
+          "alt": "筆電放在明亮的白色書桌上，螢幕顯示程式碼。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.aoa.org/AOA/Images/Patients/Eye%20Conditions/20-20-20-rule.pdf",
+        "https://www.osha.gov/etools/computer-workstations/work-process"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般螢幕休息與工作姿勢資訊 資料依據： 20-20-20 休息口訣參考美國驗光協會；長時間固定姿勢宜安排休息與姿勢變化的背景參考美國 OSHA。個人症狀不由本文判斷。 醫療界線： 持續眼睛不適、視力改變或疼痛應尋求眼科專業評估；本文不是眼科建議。 專業審閱： 尚未經眼科或驗光專業人員審閱。 參考資料 American Optometric Association：20/20/20 to Prevent Digital Eye Strain ↗ OSHA：Computer Workstations — Work Process and Recognition ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "核對 20-20-20 建議的時間、距離與頻率；目前正文為 20 秒，並未完整說明完整口訣。",
+      "body_review": "訊息、文件、會議視窗接力出現，眨眼次數和起身的機會卻愈來愈少。先讓視線離開近距離螢幕，看向幾公尺外的窗景或牆面二十秒。\n\n接著把腳掌放穩，讓肩膀自然垂下，輕輕轉轉頭部，看看左右兩側。不要用力扳脖子，也不用追求一次把僵硬感消除。\n\n可以把這個休息放在每次完成一個小任務之後：存檔、站起來、看遠處，再回到工作。比起設定一個響不停的提醒，連結既有習慣更容易持續。\n\n若眼睛持續不適，調整螢幕亮度與距離仍沒有改善，記得尋求適合的專業協助。小休息是日常照顧，不是診斷或治療。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/travel-with-room-to-breathe/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/travel-with-room-to-breathe/",
+      "title": "旅行回來比出發前更累？把行程留白，才看得到風景｜舒逸日常",
+      "description": "安排旅行時，每天少塞一個景點，可能會多留下一段真正記得住的旅程。",
+      "canonical": [
+        "https://sy-body.com/journal/travel-with-room-to-breathe/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "旅行回來比出發前更累？把行程留白，才看得到風景"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "旅行回來比出發前更累？把行程留白，才看得到風景",
+          "description": "安排旅行時，每天少塞一個景點，可能會多留下一段真正記得住的旅程。",
+          "datePublished": "2026-10-07T05:48:58.180Z",
+          "dateModified": "2026-10-07T05:48:58.180Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/travel-with-room-to-breathe/",
+          "url": "https://sy-body.com/journal/travel-with-room-to-breathe/",
+          "image": "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "旅行回來比出發前更累？把行程留白，才看得到風景",
+              "item": "https://sy-body.com/journal/travel-with-room-to-breathe/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "旅行回來比出發前更累？把行程留白，才看得到風景｜舒逸日常",
+        "og:description": "安排旅行時，每天少塞一個景點，可能會多留下一段真正記得住的旅程。",
+        "og:url": "https://sy-body.com/journal/travel-with-room-to-breathe/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1400&q=85",
+          "alt": "高山湖畔的木屋，四周環繞山峰與森林。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 個人行程安排建議 資料依據： 本文談行程留白、交通緩衝與同行者溝通，屬編輯提供的旅行安排想法，未宣稱健康或療效結果。 醫療界線： 非醫療資訊；依個人需求、交通與目的地狀況安排。 專業審閱： 不涉及醫療審閱；尚未經旅行服務專業人員審稿。 本篇沒有引用醫療或科學研究；內容為一般生活建議。 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "行程建議屬編輯觀點；無研究來源，避免無來源檢視日期。",
+      "body_review": "有些旅程回來後，手機裡有幾百張照片，記憶裡卻只剩下趕車、排隊和找下一間店。行程排得滿，不代表玩得更深。\n\n挑一天試試「一個主行程」：先選最期待的一件事，再把附近留給散步、吃飯或臨時發現的小店。留白不是浪費時間，而是讓人有餘裕注意當下。\n\n鞋子選熟悉好走的，水和薄外套放在順手的位置，交通轉乘留一點緩衝。若同行者想休息，就把休息也算進計畫，而不是當成行程失敗。\n\n回程前寫下一個最喜歡的片刻，不一定是著名景點，也可能只是傍晚的風或一碗熱湯。旅行的好，不必靠打卡數量證明。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/three-minute-after-commute/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/three-minute-after-commute/",
+      "title": "坐車坐到腰背僵住？下車後的 3 分鐘重開機｜舒逸日常",
+      "description": "通勤或長途移動結束，別急著立刻衝下一件事，讓身體從固定姿勢切換出來。",
+      "canonical": [
+        "https://sy-body.com/journal/three-minute-after-commute/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "坐車坐到腰背僵住？下車後的 3 分鐘重開機"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "坐車坐到腰背僵住？下車後的 3 分鐘重開機",
+          "description": "通勤或長途移動結束，別急著立刻衝下一件事，讓身體從固定姿勢切換出來。",
+          "datePublished": "2026-10-06T05:48:58.176Z",
+          "dateModified": "2026-10-06T05:48:58.176Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/three-minute-after-commute/",
+          "url": "https://sy-body.com/journal/three-minute-after-commute/",
+          "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "坐車坐到腰背僵住？下車後的 3 分鐘重開機",
+              "item": "https://sy-body.com/journal/three-minute-after-commute/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "坐車坐到腰背僵住？下車後的 3 分鐘重開機｜舒逸日常",
+        "og:description": "通勤或長途移動結束，別急著立刻衝下一件事，讓身體從固定姿勢切換出來。",
+        "og:url": "https://sy-body.com/journal/three-minute-after-commute/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85",
+          "alt": "道路穿過紅色岩石山谷，延伸至遠方。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.osha.gov/etools/computer-workstations/positions",
+        "https://www.osha.gov/etools/computer-workstations/work-process"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般活動與工作姿勢資訊 資料依據： 本文關於長時間維持同一姿勢可安排姿勢變化與短暫活動的背景，參考美國 OSHA 電腦工作站指引；三分鐘分段是本文自訂的日常提議，不是臨床處方。 醫療界線： 動作以舒適、安全為限；不適或疼痛加劇時停止。本文不診斷或治療疼痛。 專業審閱： 尚未經職業醫學、物理治療或其他合格專業人員審閱。 參考資料 OSHA：Computer Workstations — Work Process and Recognition ↗ OSHA：Computer Workstations — Good Working Positions ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "OSHA 來源是否直接支持通勤姿勢需核對；三分鐘動作是編輯建議。",
+      "body_review": "通勤路上塞車、轉乘、久站或久坐，身體常常在抵達目的地後才讓你發現它累了。與其一到家就倒在沙發，不妨先留三分鐘做一個溫和的轉場。\n\n第一分鐘，慢慢走一圈，讓步伐從趕路變成散步。第二分鐘，肩膀輕輕向後繞幾次，再把手臂舉高、放下；動作保持舒服，不需要拉到極限。\n\n最後一分鐘，找個穩定的位置站好，感受雙腳踩在地上的重量，做幾次自然呼吸。若某個動作讓你疼痛或不舒服，就跳過它。\n\n這幾分鐘不會抹去漫長通勤，但可以讓「移動」和「回到自己的時間」中間多一個緩衝。下次到站，先不急著看訊息，走一小段路再開始下一件事。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/third-coffee-still-tired/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/third-coffee-still-tired/",
+      "title": "咖啡喝到第三杯還是累？你可能缺的不是咖啡因｜舒逸日常",
+      "description": "下午精神往下掉時，先看看午餐、喝水和離開座位的時間，再決定要不要續杯。",
+      "canonical": [
+        "https://sy-body.com/journal/third-coffee-still-tired/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "咖啡喝到第三杯還是累？你可能缺的不是咖啡因"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "咖啡喝到第三杯還是累？你可能缺的不是咖啡因",
+          "description": "下午精神往下掉時，先看看午餐、喝水和離開座位的時間，再決定要不要續杯。",
+          "datePublished": "2026-10-05T05:48:58.168Z",
+          "dateModified": "2026-10-05T05:48:58.168Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/third-coffee-still-tired/",
+          "url": "https://sy-body.com/journal/third-coffee-still-tired/",
+          "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "咖啡喝到第三杯還是累？你可能缺的不是咖啡因",
+              "item": "https://sy-body.com/journal/third-coffee-still-tired/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "咖啡喝到第三杯還是累？你可能缺的不是咖啡因｜舒逸日常",
+        "og:description": "下午精神往下掉時，先看看午餐、喝水和離開座位的時間，再決定要不要續杯。",
+        "og:url": "https://sy-body.com/journal/third-coffee-still-tired/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=85",
+          "alt": "幾雙手舉著咖啡杯，杯面有拉花。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般咖啡因生活資訊 資料依據： 本文只以 FDA 消費者資訊支持咖啡因敏感度因人而異、攝取可能影響睡眠等一般說明；文中的走動與喝水步驟是生活提議。 醫療界線： 不提供個人咖啡因攝取量或醫療建議。懷孕、用藥或有健康疑慮者應詢問醫療人員。 專業審閱： 尚未經營養或醫療專業人員審閱。 參考資料 FDA：Spilling the Beans: How Much Caffeine is Too Much? ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "核對咖啡因與睡眠的敘述與 FDA 來源；標題「你可能缺的不是咖啡因」需避免推測個人原因。",
+      "body_review": "下午兩點，視窗開了很多，腦袋卻像停在載入畫面。手伸向咖啡之前，可以先問自己：午餐吃了什麼？今天喝水了嗎？從早上到現在有沒有離開座位？\n\n短暫的精神低潮很常見，咖啡能帶來提神感受，但它不會代替休息、飲水或一頓合適的餐點。若太晚喝，也可能讓晚上的入睡變得不順，隔天又更想靠咖啡撐過去。\n\n試試三步驟：站起來走兩分鐘、喝幾口水，再決定是否要喝咖啡。若仍想喝，留意自己對咖啡因的感受，找到不影響夜間休息的時間與份量。\n\n這不是要你戒咖啡，而是讓咖啡回到享受的位置。下一次點單前，先給自己一段走到窗邊的時間，說不定那杯咖啡會更好喝。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/sleep-full-still-tired/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/sleep-full-still-tired/",
+      "title": "明明睡滿八小時，為什麼醒來還是像沒充電？｜舒逸日常",
+      "description": "睡眠不是只有時數。從睡前節奏、光線到早晨的第一個動作，找回比較有精神的起床方式。",
+      "canonical": [
+        "https://sy-body.com/journal/sleep-full-still-tired/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "明明睡滿八小時，為什麼醒來還是像沒充電？"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "明明睡滿八小時，為什麼醒來還是像沒充電？",
+          "description": "睡眠不是只有時數。從睡前節奏、光線到早晨的第一個動作，找回比較有精神的起床方式。",
+          "datePublished": "2026-10-04T05:48:58.160Z",
+          "dateModified": "2026-10-04T05:48:58.160Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/sleep-full-still-tired/",
+          "url": "https://sy-body.com/journal/sleep-full-still-tired/",
+          "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=85"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "明明睡滿八小時，為什麼醒來還是像沒充電？",
+              "item": "https://sy-body.com/journal/sleep-full-still-tired/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "明明睡滿八小時，為什麼醒來還是像沒充電？｜舒逸日常",
+        "og:description": "睡眠不是只有時數。從睡前節奏、光線到早晨的第一個動作，找回比較有精神的起床方式。",
+        "og:url": "https://sy-body.com/journal/sleep-full-still-tired/",
+        "og:type": "article",
+        "og:image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=85"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        },
+        {
+          "src": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=85",
+          "alt": "明亮臥室裡鋪有淺色寢具的雙人床。"
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.cdc.gov/sleep/about/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般睡眠生活資訊 資料依據： 本文關於成人睡眠需求會因年齡與個人狀況而異、持續睡眠困擾應諮詢醫療人員的說明，參考 CDC 睡眠資訊；睡前收拾與晨間安排是編輯提供的生活建議，不代表治療失眠。 醫療界線： 非診斷、非治療建議。長期疲倦或睡眠困擾應由醫療專業人員評估。 專業審閱： 尚未經睡眠或醫療專業人員審閱。 參考資料 CDC：About Sleep ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "確認睡眠時數、疲倦成因的敘述與 CDC 來源；避免暗示單一生活步驟可治療疲倦。",
+      "body_review": "睡滿八小時，鬧鐘響起時卻還是想把自己塞回被窩。先別急著責怪意志力，睡眠感受也和入睡時間是否穩定、睡前環境以及醒來後的節奏有關。\n\n今晚可以先做一個小實驗：把最後一段滑手機的時間縮短十分鐘，讓房間暗下來，並把明早要穿的衣服先放好。少一點臨睡前的選擇，往往比要求自己立刻早睡更容易開始。\n\n早上醒來後，試著拉開窗簾、喝幾口水，再讓身體慢慢坐起來。這不是神奇的提神法，而是一個明確的訊號：新的一天開始了。\n\n如果疲倦長期影響日常，或伴隨明顯不舒服，適合找醫療專業人員聊聊。每個人的睡眠需要不同，先記錄一週的入睡與醒來時間，通常比單看某個夜晚更有線索。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    },
+    {
+      "url": "https://sy-body.com/journal/first-breath/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/first-breath/",
+      "title": "舒逸的第一個呼吸練習｜舒逸日常",
+      "description": "跟著影片，留一分鐘給自己。",
+      "canonical": [
+        "https://sy-body.com/journal/first-breath/"
+      ],
+      "robots": null,
+      "x_robots": null,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "舒逸的第一個呼吸練習"
+        },
+        {
+          "level": "h2",
+          "text": "資料來源與內容界線"
+        },
+        {
+          "level": "h3",
+          "text": "參考資料"
+        },
+        {
+          "level": "h2",
+          "text": "相關內容"
+        }
+      ],
+      "schema": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "舒逸的第一個呼吸練習",
+          "description": "跟著影片，留一分鐘給自己。",
+          "datePublished": "2026-09-24T23:54:53.122Z",
+          "dateModified": "2026-09-24T23:54:53.122Z",
+          "author": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "舒逸",
+            "@id": "https://sy-body.com/#organization"
+          },
+          "mainEntityOfPage": "https://sy-body.com/journal/first-breath/",
+          "url": "https://sy-body.com/journal/first-breath/",
+          "image": "https://sy-body.com/素材/淺色系-1K.jpeg"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首頁",
+              "item": "https://sy-body.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "舒逸日常",
+              "item": "https://sy-body.com/journal/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "舒逸的第一個呼吸練習",
+              "item": "https://sy-body.com/journal/first-breath/"
+            }
+          ]
+        }
+      ],
+      "schema_errors": [],
+      "og": {
+        "og:title": "舒逸的第一個呼吸練習｜舒逸日常",
+        "og:description": "跟著影片，留一分鐘給自己。",
+        "og:url": "https://sy-body.com/journal/first-breath/",
+        "og:type": "article",
+        "og:image": "https://sy-body.com/素材/淺色系-1K.jpeg"
+      },
+      "images": [
+        {
+          "src": "/素材/淺色系-1K.jpeg",
+          "alt": "舒逸 Shu Yi"
+        },
+        {
+          "src": "/素材/深色系-1K.jpeg",
+          "alt": ""
+        }
+      ],
+      "links": [
+        "/",
+        "/booking/",
+        "/journal/",
+        "/journal/#journal-return",
+        "/services/",
+        "/studio/",
+        "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/"
+      ],
+      "sections": [
+        {
+          "tag": "section",
+          "heading": "資料來源與內容界線",
+          "text": "資料來源與內容界線 內容性質： 一般呼吸覺察影片 資料依據： 影片邀請觀眾留意呼吸，屬非醫療的覺察練習；不主張診斷或療效。 醫療界線： 不適時停止；呼吸困難或其他症狀請尋求醫療協助。 專業審閱： 尚未經心理或醫療專業人員審閱。 參考資料 NHS：Breathing Exercises for Stress ↗ 參考資料連結檢視日期：2026-10-27"
+        },
+        {
+          "tag": "section",
+          "heading": "相關內容",
+          "text": "相關內容 深入了解舒逸全身活化調理服務。 了解舒逸全身活化調理 前往預約"
+        }
+      ],
+      "automated_findings": [],
+      "review_note": "影片內容與可存取性、字幕及逐字稿尚待驗證；不應僅依簡短正文宣稱影片完整可索引。",
+      "body_review": "留一分鐘，不必把事情做好，只要把注意力放回呼吸與身體。",
+      "scope_note": "自動規則及內容閱讀；未完成逐張圖片人工比對與第三方專業審稿"
+    }
+  ],
+  "cross_page_findings": [],
+  "limitations": [
+    "無 Search Console、Bing Webmaster、GA4、真實搜尋收錄或 CWV 數據",
+    "未逐張視覺比對圖片與 alt",
+    "無專業醫療審閱、未確認營業地址及政策",
+    "未驗證所有尺寸或所有互動，未登入預約系統",
+    "來源 403 導致部分來源無法確認",
+    "sitemap 及初始頁面連結範圍不等於全部未知網址"
+  ],
+  "link_checks": [
+    {
+      "url": "https://sy-body.com/booking/",
+      "status": 200,
+      "final_url": "https://sy-body.com/booking/",
+      "referenced_by": [
+        "https://sy-body.com/",
+        "https://sy-body.com/booking/",
+        "https://sy-body.com/journal/",
+        "https://sy-body.com/journal/a-day-without-achievements/",
+        "https://sy-body.com/journal/first-breath/",
+        "https://sy-body.com/journal/five-minute-morning-start/",
+        "https://sy-body.com/journal/listen-after-workout/",
+        "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+        "https://sy-body.com/journal/one-minute-before-meeting/",
+        "https://sy-body.com/journal/remember-water-with-routines/",
+        "https://sy-body.com/journal/screen-break-twenty-seconds/",
+        "https://sy-body.com/journal/shoes-comfort-over-looks/",
+        "https://sy-body.com/journal/sleep-full-still-tired/",
+        "https://sy-body.com/journal/third-coffee-still-tired/",
+        "https://sy-body.com/journal/three-minute-after-commute/",
+        "https://sy-body.com/journal/transition-out-of-workday/",
+        "https://sy-body.com/journal/travel-with-room-to-breathe/",
+        "https://sy-body.com/journal/walk-without-step-goal/",
+        "https://sy-body.com/journal/weekend-rest-without-checklist/",
+        "https://sy-body.com/offerings/",
+        "https://sy-body.com/services/",
+        "https://sy-body.com/studio/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/",
+      "referenced_by": [
+        "https://sy-body.com/",
+        "https://sy-body.com/booking/",
+        "https://sy-body.com/journal/",
+        "https://sy-body.com/journal/a-day-without-achievements/",
+        "https://sy-body.com/journal/first-breath/",
+        "https://sy-body.com/journal/five-minute-morning-start/",
+        "https://sy-body.com/journal/listen-after-workout/",
+        "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+        "https://sy-body.com/journal/one-minute-before-meeting/",
+        "https://sy-body.com/journal/remember-water-with-routines/",
+        "https://sy-body.com/journal/screen-break-twenty-seconds/",
+        "https://sy-body.com/journal/shoes-comfort-over-looks/",
+        "https://sy-body.com/journal/sleep-full-still-tired/",
+        "https://sy-body.com/journal/third-coffee-still-tired/",
+        "https://sy-body.com/journal/three-minute-after-commute/",
+        "https://sy-body.com/journal/transition-out-of-workday/",
+        "https://sy-body.com/journal/travel-with-room-to-breathe/",
+        "https://sy-body.com/journal/walk-without-step-goal/",
+        "https://sy-body.com/journal/weekend-rest-without-checklist/",
+        "https://sy-body.com/offerings/",
+        "https://sy-body.com/services/",
+        "https://sy-body.com/studio/"
+      ],
+      "missing_fragments": [
+        {
+          "source": "https://sy-body.com/journal/a-day-without-achievements/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/listen-after-workout/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/transition-out-of-workday/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/five-minute-morning-start/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/one-minute-before-meeting/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/weekend-rest-without-checklist/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/shoes-comfort-over-looks/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/remember-water-with-routines/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/walk-without-step-goal/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/screen-break-twenty-seconds/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/travel-with-room-to-breathe/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/three-minute-after-commute/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/third-coffee-still-tired/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/sleep-full-still-tired/",
+          "fragment": "journal-return"
+        },
+        {
+          "source": "https://sy-body.com/journal/first-breath/",
+          "fragment": "journal-return"
+        }
+      ]
+    },
+    {
+      "url": "https://sy-body.com/services/",
+      "status": 200,
+      "final_url": "https://sy-body.com/services/",
+      "referenced_by": [
+        "https://sy-body.com/",
+        "https://sy-body.com/booking/",
+        "https://sy-body.com/journal/",
+        "https://sy-body.com/journal/a-day-without-achievements/",
+        "https://sy-body.com/journal/first-breath/",
+        "https://sy-body.com/journal/five-minute-morning-start/",
+        "https://sy-body.com/journal/listen-after-workout/",
+        "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+        "https://sy-body.com/journal/one-minute-before-meeting/",
+        "https://sy-body.com/journal/remember-water-with-routines/",
+        "https://sy-body.com/journal/screen-break-twenty-seconds/",
+        "https://sy-body.com/journal/shoes-comfort-over-looks/",
+        "https://sy-body.com/journal/sleep-full-still-tired/",
+        "https://sy-body.com/journal/third-coffee-still-tired/",
+        "https://sy-body.com/journal/three-minute-after-commute/",
+        "https://sy-body.com/journal/transition-out-of-workday/",
+        "https://sy-body.com/journal/travel-with-room-to-breathe/",
+        "https://sy-body.com/journal/walk-without-step-goal/",
+        "https://sy-body.com/journal/weekend-rest-without-checklist/",
+        "https://sy-body.com/offerings/",
+        "https://sy-body.com/services/",
+        "https://sy-body.com/studio/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/studio/",
+      "status": 200,
+      "final_url": "https://sy-body.com/studio/",
+      "referenced_by": [
+        "https://sy-body.com/",
+        "https://sy-body.com/booking/",
+        "https://sy-body.com/journal/",
+        "https://sy-body.com/journal/a-day-without-achievements/",
+        "https://sy-body.com/journal/first-breath/",
+        "https://sy-body.com/journal/five-minute-morning-start/",
+        "https://sy-body.com/journal/listen-after-workout/",
+        "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+        "https://sy-body.com/journal/one-minute-before-meeting/",
+        "https://sy-body.com/journal/remember-water-with-routines/",
+        "https://sy-body.com/journal/screen-break-twenty-seconds/",
+        "https://sy-body.com/journal/shoes-comfort-over-looks/",
+        "https://sy-body.com/journal/sleep-full-still-tired/",
+        "https://sy-body.com/journal/third-coffee-still-tired/",
+        "https://sy-body.com/journal/three-minute-after-commute/",
+        "https://sy-body.com/journal/transition-out-of-workday/",
+        "https://sy-body.com/journal/travel-with-room-to-breathe/",
+        "https://sy-body.com/journal/walk-without-step-goal/",
+        "https://sy-body.com/journal/weekend-rest-without-checklist/",
+        "https://sy-body.com/offerings/",
+        "https://sy-body.com/services/",
+        "https://sy-body.com/studio/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/",
+      "status": 200,
+      "final_url": "https://sy-body.com/",
+      "referenced_by": [
+        "https://sy-body.com/",
+        "https://sy-body.com/booking/",
+        "https://sy-body.com/journal/",
+        "https://sy-body.com/journal/a-day-without-achievements/",
+        "https://sy-body.com/journal/first-breath/",
+        "https://sy-body.com/journal/five-minute-morning-start/",
+        "https://sy-body.com/journal/listen-after-workout/",
+        "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+        "https://sy-body.com/journal/one-minute-before-meeting/",
+        "https://sy-body.com/journal/remember-water-with-routines/",
+        "https://sy-body.com/journal/screen-break-twenty-seconds/",
+        "https://sy-body.com/journal/shoes-comfort-over-looks/",
+        "https://sy-body.com/journal/sleep-full-still-tired/",
+        "https://sy-body.com/journal/third-coffee-still-tired/",
+        "https://sy-body.com/journal/three-minute-after-commute/",
+        "https://sy-body.com/journal/transition-out-of-workday/",
+        "https://sy-body.com/journal/travel-with-room-to-breathe/",
+        "https://sy-body.com/journal/walk-without-step-goal/",
+        "https://sy-body.com/journal/weekend-rest-without-checklist/",
+        "https://sy-body.com/offerings/",
+        "https://sy-body.com/services/",
+        "https://sy-body.com/studio/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/offerings/",
+      "status": 200,
+      "final_url": "https://sy-body.com/offerings/",
+      "referenced_by": [
+        "https://sy-body.com/services/"
+      ]
+    },
+    {
+      "url": "https://booking.sy-body.com/",
+      "status": 200,
+      "final_url": "https://booking.sy-body.com/",
+      "referenced_by": [
+        "https://sy-body.com/booking/",
+        "https://sy-body.com/services/"
+      ]
+    },
+    {
+      "url": "https://www.nhs.uk/conditions/back-pain/",
+      "status": 200,
+      "final_url": "https://www.nhs.uk/conditions/back-pain/",
+      "referenced_by": [
+        "https://sy-body.com/services/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/a-day-without-achievements/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/a-day-without-achievements/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/first-breath/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/first-breath/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/five-minute-morning-start/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/five-minute-morning-start/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/listen-after-workout/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/listen-after-workout/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/make-movement-too-small-to-fail/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/one-minute-before-meeting/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/one-minute-before-meeting/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/remember-water-with-routines/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/remember-water-with-routines/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/screen-break-twenty-seconds/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/screen-break-twenty-seconds/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/shoes-comfort-over-looks/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/shoes-comfort-over-looks/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/sleep-full-still-tired/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/sleep-full-still-tired/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/third-coffee-still-tired/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/third-coffee-still-tired/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/three-minute-after-commute/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/three-minute-after-commute/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/transition-out-of-workday/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/transition-out-of-workday/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/travel-with-room-to-breathe/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/travel-with-room-to-breathe/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/walk-without-step-goal/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/walk-without-step-goal/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://sy-body.com/journal/weekend-rest-without-checklist/",
+      "status": 200,
+      "final_url": "https://sy-body.com/journal/weekend-rest-without-checklist/",
+      "referenced_by": [
+        "https://sy-body.com/journal/"
+      ]
+    },
+    {
+      "url": "https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/low-mood-sadness-depression/",
+      "status": 200,
+      "final_url": "https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/low-mood-sadness-depression/",
+      "referenced_by": [
+        "https://sy-body.com/journal/a-day-without-achievements/"
+      ]
+    },
+    {
+      "url": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/msk-physiotherapy-resources-faqs/",
+      "status": 200,
+      "final_url": "https://www.leicspart.nhs.uk/msk-physiotherapy-resources-getting-started/msk-physiotherapy-resources-faqs/",
+      "referenced_by": [
+        "https://sy-body.com/journal/listen-after-workout/"
+      ]
+    },
+    {
+      "url": "https://www.who.int/news-room/fact-sheets/detail/mental-health-at-work",
+      "status": 200,
+      "final_url": "https://www.who.int/news-room/fact-sheets/detail/mental-health-at-work",
+      "referenced_by": [
+        "https://sy-body.com/journal/transition-out-of-workday/"
+      ]
+    },
+    {
+      "url": "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/",
+      "status": 200,
+      "final_url": "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/",
+      "referenced_by": [
+        "https://sy-body.com/journal/first-breath/",
+        "https://sy-body.com/journal/one-minute-before-meeting/"
+      ]
+    },
+    {
+      "url": "https://www.cdc.gov/healthy-weight-growth/water-healthy-drinks/",
+      "status": 403,
+      "final_url": "https://www.cdc.gov/healthy-weight-growth/water-healthy-drinks/",
+      "referenced_by": [
+        "https://sy-body.com/journal/remember-water-with-routines/"
+      ]
+    },
+    {
+      "url": "https://www.cdc.gov/healthy-weight-growth/physical-activity/getting-started.html",
+      "status": 403,
+      "final_url": "https://www.cdc.gov/healthy-weight-growth/physical-activity/getting-started.html",
+      "referenced_by": [
+        "https://sy-body.com/journal/make-movement-too-small-to-fail/"
+      ]
+    },
+    {
+      "url": "https://www.cdc.gov/physical-activity-basics/guidelines/adults.html",
+      "status": 403,
+      "final_url": "https://www.cdc.gov/physical-activity-basics/guidelines/adults.html",
+      "referenced_by": [
+        "https://sy-body.com/journal/walk-without-step-goal/"
+      ]
+    },
+    {
+      "url": "https://www.aoa.org/AOA/Images/Patients/Eye%20Conditions/20-20-20-rule.pdf",
+      "status": 200,
+      "final_url": "https://www.aoa.org/AOA/Images/Patients/Eye%20Conditions/20-20-20-rule.pdf",
+      "referenced_by": [
+        "https://sy-body.com/journal/screen-break-twenty-seconds/"
+      ]
+    },
+    {
+      "url": "https://www.osha.gov/etools/computer-workstations/work-process",
+      "status": 403,
+      "final_url": "https://www.osha.gov/etools/computer-workstations/work-process",
+      "referenced_by": [
+        "https://sy-body.com/journal/screen-break-twenty-seconds/",
+        "https://sy-body.com/journal/three-minute-after-commute/"
+      ]
+    },
+    {
+      "url": "https://www.osha.gov/etools/computer-workstations/positions",
+      "status": 403,
+      "final_url": "https://www.osha.gov/etools/computer-workstations/positions",
+      "referenced_by": [
+        "https://sy-body.com/journal/three-minute-after-commute/"
+      ]
+    },
+    {
+      "url": "https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much",
+      "status": 200,
+      "final_url": "https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much",
+      "referenced_by": [
+        "https://sy-body.com/journal/third-coffee-still-tired/"
+      ]
+    },
+    {
+      "url": "https://www.cdc.gov/sleep/about/",
+      "status": 403,
+      "final_url": "https://www.cdc.gov/sleep/about/",
+      "referenced_by": [
+        "https://sy-body.com/journal/sleep-full-still-tired/"
+      ]
+    }
+  ],
+  "prioritized_tasks": [
+    {
+      "id": "P0-01",
+      "priority": "P0",
+      "title": "未登入 API 可讀取草稿",
+      "evidence": "GET /api/content 未登入回傳 18 筆，其中 2 筆 draft；status=published 回傳 16 筆。server.js 對 GET /api/content 在 requireAuth 前執行。",
+      "impact": "未發布資料可能被公開，搜尋引擎或其他系統可能讀取。",
+      "action": "公開讀取僅回傳 published；管理後台取得全部內容必須通過現有登入驗證。保留後台正常操作及公開已發布清單。",
+      "acceptance": "未登入無法取得草稿；已登入管理可讀取草稿；published API、Journal SSR、sitemap 行為不退化。"
+    },
+    {
+      "id": "P1-01",
+      "priority": "P1",
+      "title": "文章列表短暫顯示草稿預設卡片",
+      "evidence": "瀏覽器實測初次顯示 DRAFT 卡片，隨後切換為 16 篇 published；content.js 先設定包含草稿的 fallback，app.js 立即 renderContent，API 失敗時 fallback 保持。",
+      "impact": "訪客可能看見未發布內容與失效網址，且初始 SSR 與執行後不一致。",
+      "action": "保留伺服器產生的 published 清單，API 成功才更新，失敗時保留現有清單；移除公開環境草稿 fallback。",
+      "acceptance": "慢網路與 API 失敗下無草稿或 404 卡片，篩選及回到列表位置正常。"
+    },
+    {
+      "id": "P1-02",
+      "priority": "P1",
+      "title": "工作室頁預約訊息已過期",
+      "evidence": "/studio/ 顯示「正式預約方式將在開放時公布」；/booking/ 已提供 booking.sy-body.com 入口。",
+      "impact": "訪客與搜尋系統看到相互衝突的營業資訊。",
+      "action": "以已公開的預約流程更新文字並連往 /booking/；地址、營業時間僅在業主確認後更新。",
+      "acceptance": "工作室、服務與預約頁一致，連結可用，不編造地址。"
+    },
+    {
+      "id": "P1-03",
+      "priority": "P1",
+      "title": "草稿靜態路由 HEAD 與 GET 不一致",
+      "evidence": "/journal/activate-after-sitting/ 與 /journal/studio-in-progress/ GET 404、HEAD 200；不代表所有未知路由相同。",
+      "impact": "透過 HEAD 檢查的工具可能錯誤認定草稿頁可存取。",
+      "action": "追查靜態檔與 Journal 路由對 HEAD 的處理，讓未發布內容 GET 與 HEAD 都是 404；不得導回首頁。",
+      "acceptance": "草稿 GET、HEAD 均 404；已發布文章 GET、HEAD 200；sitemap 不變。"
+    },
+    {
+      "id": "P1-04",
+      "priority": "P1",
+      "title": "產後服務資訊及安全界線待專業確認",
+      "evidence": "/offerings/ 的產後骨盆調理提及 3–6 個月且明示尚待專業確認；/services/ 表示曾手術部位不提供。",
+      "impact": "讀者仍無法判斷產後、剖腹產或手術後是否可預約，時程涉及個人健康。",
+      "action": "請業主確認實際政策，必要時由產後或醫療專業審閱；移除未經確認的時程並明確說明手術限制及詢問方式。",
+      "acceptance": "跨頁政策一致、無復位或療效承諾；專業審閱僅在真實完成時標示。"
+    },
+    {
+      "id": "P2-01",
+      "priority": "P2",
+      "title": "Journal 初始與執行後標題不同",
+      "evidence": "初始 H1「給生活一點新的情報」，執行 app.js 後為「讓舒適的身體習以為常」；導覽內容亦由 JS 插入。",
+      "impact": "不同讀取方式取得的資訊不一致，品牌及主題訊號分散。",
+      "action": "確認最終文案，將主標與關鍵導覽放進初始 HTML，動畫逐字顯示仍保留可讀完整文字。",
+      "acceptance": "關閉 JS 與啟用 JS 均有一致主標和完整文字，畫面設計保留。"
+    },
+    {
+      "id": "P2-02",
+      "priority": "P2",
+      "title": "文章健康內容及來源逐項核對",
+      "evidence": "16 篇均有內容界線及審閱狀態；CDC 4 個及 OSHA 2 個來源在本環境 GET 回 403，無法判斷是否失效；4 篇明示沒有引用研究卻仍顯示參考資料連結檢視日期。",
+      "impact": "來源支持範圍及可用性未完全確認，日期用詞可能誤導。",
+      "action": "逐項核對每個事實與原始來源及其適用範圍；403 使用一般瀏覽器或官方查詢重驗，不能直接判死鏈；無來源文章不要顯示來源連結檢視日期；需要專業審閱的文章等待真實審稿。",
+      "acceptance": "每篇有清楚內容性質和界線，來源能支持相應敘述，審閱資訊真實。"
+    },
+    {
+      "id": "P2-03",
+      "priority": "P2",
+      "title": "位置與聯絡資訊不足",
+      "evidence": "/studio/ 的地址和營業時間均為準備中；頁內缺少明確預約 CTA。",
+      "impact": "使用者難以判斷地點及安排，地方查詢欠缺可確認資訊。",
+      "action": "請業主確認可公開地址、服務地區、營業時段、聯絡方式；只發布已確認資料，並視資料完整度評估 LocalBusiness。",
+      "acceptance": "公開資料與預約平台一致；不得捏造地址或結構化資料。"
+    },
+    {
+      "id": "P2-04",
+      "priority": "P2",
+      "title": "文章結構與站內連結可提升",
+      "evidence": "16 篇內容均有一個 H1，但正文透過 bodyHtml 轉成段落，未以 H2 分出答案、步驟及警訊；相關內容主要統一指向服務與預約。",
+      "impact": "較長文章的可掃讀性、主題導航與相關文章發現可改善。",
+      "action": "依文章真實內容增加具描述性的分段標題、明確直接的回答及相關文章連結；避免大量重複或填充。",
+      "acceptance": "初始 HTML 存在標題及正文，保持原有語意與事實，不強加 FAQ Schema。"
+    },
+    {
+      "id": "P2-05",
+      "priority": "P2",
+      "title": "圖片與分享素材檢查",
+      "evidence": "HTML img 均有 alt 屬性；15 篇使用 Unsplash 圖，頁面共同 OG 圖多為品牌圖片。是否每張圖與 alt 完全相符及圖片授權未完成人工確認。",
+      "impact": "圖片敘述不準可能降低可及性，遠端圖片不可用影響分享與呈現。",
+      "action": "逐張查看圖片與 alt，裝飾圖空 alt；確認來源權利與載入可靠性，測量尺寸與 LCP 後決定處理。",
+      "acceptance": "alt 符合圖像和情境、圖片可載入；不得堆砌關鍵字。"
+    },
+    {
+      "id": "P2-06",
+      "priority": "P2",
+      "title": "搜尋和轉換缺少帳號層驗證",
+      "evidence": "HTML 自動檢查無法證明 Google/Bing 收錄、查詢、排名、AI 引用或 GA4 事件。",
+      "impact": "無法知道實際搜尋與預約成效。",
+      "action": "取得 GSC 與 Bing 已驗證資源及 GA4 資料流後檢查索引、sitemap、查詢、核心網頁指標、預約 CTA；確認網站與預約平台跨網域需求及同意設定。",
+      "acceptance": "保留截圖或報表日期、屬性、指標及驗證結果，未連線時標記未驗證。"
+    }
+  ],
+  "browser_checks": [
+    "服務 FAQ 一次大約多久展開及收合成功",
+    "Journal 影片分類篩選成功",
+    "Journal 首次短暫顯示 DRAFT fallback 後載入 16 篇",
+    "Studio 預約文案過期已目視確認",
+    "Booking 預約 CTA href 指向 booking.sy-body.com，未登入未完成預約"
+  ],
+  "other_checks": {
+    "robots_get_head": [
+      200,
+      200
+    ],
+    "sitemap_get_head": [
+      200,
+      200
+    ],
+    "public_api_all": "18 筆含 2 筆草稿",
+    "public_api_published": "16 筆已發布",
+    "draft_page_get_head": "兩個靜態草稿頁 GET 404 / HEAD 200",
+    "links_checked": 36,
+    "external_403": "CDC 4 個與 OSHA 2 個；不可直接視為失效",
+    "journal_return_fragment": "無靜態 id，app.js 以 hash 和 sessionStorage 還原位置，需以瀏覽器操作驗證"
+  }
+}

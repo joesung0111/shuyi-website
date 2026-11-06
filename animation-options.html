@@ -250,8 +250,8 @@
 </head>
 <style>
   /* Compact comparison set: original + two requested diagnostic directions. */
-  .comparison-grid { max-width:1320px; margin:26px auto 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
-  .comparison-grid .option:first-child { grid-column:1 / -1; }
+  .comparison-grid { max-width:1500px; margin:26px auto 0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; align-items:start; }
+  .comparison-grid .option:first-child { grid-column:auto; }
   .original-stage,.requested-stage { position:relative; display:grid; place-items:center; min-height:340px; overflow:hidden; border:1px solid var(--line); border-radius:16px; background:radial-gradient(circle at 50% 50%,rgba(242,140,113,.14),transparent 58%),#151414; }
   .original-spine,.requested-spine { position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:7px; }
   .original-spine::before,.requested-spine::before { content:""; position:absolute; top:-24px; bottom:-24px; left:50%; width:1px; background:linear-gradient(transparent,var(--accent),transparent); opacity:.6; }
@@ -275,6 +275,135 @@
   .repair-wave--fourth { left:calc(50% - 47px); top:120px; animation:repair-fourth 7s ease-out infinite; }
   .repair-wave--eighth { left:calc(50% - 47px); top:216px; animation:repair-eighth 7s ease-out infinite; }
   .comparison-label { position:absolute; left:16px; bottom:13px; color:var(--muted); font:10px var(--mono); letter-spacing:.06em; }.comparison-label b { color:var(--accent); font-weight:400; }
+  /* Exact service-page animation primitives, reused by the original option. */
+  .comparison-grid .service-hero-art { position:relative; display:grid; place-items:center; min-height:360px; overflow:hidden; border:1px solid var(--line); border-radius:24px; background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--accent) 13%,transparent),transparent 58%),var(--surface); }
+  .comparison-grid .service-hero-art::before,.comparison-grid .service-hero-art::after { content:''; position:absolute; border:1px solid color-mix(in srgb,var(--accent) 45%,transparent); border-radius:50%; animation:service-orbit 9s linear infinite; }
+  .comparison-grid .service-hero-art::before { width:68%; aspect-ratio:1; }.comparison-grid .service-hero-art::after { width:88%; aspect-ratio:1; border-style:dashed; opacity:.45; animation-direction:reverse; animation-duration:15s; }
+  .comparison-grid .service-hero-art__label { position:absolute; top:22px; left:24px; color:var(--muted); font:10px var(--mono); letter-spacing:.08em; }.comparison-grid .service-hero-art__status { position:absolute; right:24px; bottom:22px; display:flex; align-items:center; gap:8px; color:var(--muted); font:10px var(--mono); letter-spacing:.08em; }.comparison-grid .service-hero-art__status span { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 15%,transparent),0 0 16px var(--accent); animation:service-status 1.8s ease-in-out infinite; }
+  .comparison-grid .service-hero-art__status > span:last-child { width:auto; height:auto; box-shadow:none; background:none; line-height:1.5; text-align:right; animation:none!important; transform:none!important; opacity:1!important; }.comparison-grid .service-hero-art__status small { display:block; color:var(--muted); font:10px var(--mono); letter-spacing:.08em; animation:none!important; }
+  .comparison-grid .service-spine { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:7px; width:150px; }
+  .comparison-grid .service-spine::before { content:''; position:absolute; top:-22px; bottom:-22px; left:50%; width:1px; background:linear-gradient(var(--accent),color-mix(in srgb,var(--ink) 18%,transparent),var(--accent)); opacity:.55; }
+  .comparison-grid .service-spine i { position:relative; display:block; width:clamp(68px,8vw,104px); height:27px; border:1px solid color-mix(in srgb,var(--ink) 45%,transparent); border-radius:50% 42% 48% 45%; background:color-mix(in srgb,var(--surface) 82%,var(--bg)); transform:rotate(var(--spine-tilt,0deg)); box-shadow:0 8px 14px color-mix(in srgb,var(--ink) 12%,transparent); animation:service-vertebra 6s ease-in-out infinite; }
+  .comparison-grid .service-spine i:nth-child(odd) { --spine-tilt:-8deg; }.comparison-grid .service-spine i:nth-child(even) { --spine-tilt:8deg; }
+  .comparison-grid .service-spine i:nth-child(2) { width:92px; }.comparison-grid .service-spine i:nth-child(3) { width:78px; }.comparison-grid .service-spine i:nth-child(4) { width:101px; }.comparison-grid .service-spine i:nth-child(5) { width:84px; }.comparison-grid .service-spine i:nth-child(6) { width:98px; }.comparison-grid .service-spine i:nth-child(7) { width:75px; }.comparison-grid .service-spine i:nth-child(8) { width:94px; }.comparison-grid .service-spine i:nth-child(9) { width:82px; }
+  .comparison-grid .service-spine i::before { content:''; position:absolute; top:50%; left:50%; width:13px; height:13px; border:1px solid color-mix(in srgb,var(--ink) 42%,transparent); border-radius:50%; background:var(--bg); transform:translate(-50%,-50%); }
+  .comparison-grid .service-spine i::after { content:''; position:absolute; top:50%; left:50%; width:25px; height:25px; border:2px solid var(--accent); border-radius:50%; opacity:0; transform:translate(-50%,-50%) scale(.2); box-shadow:0 0 16px var(--accent); animation:service-repair 6s ease-in-out infinite; }
+  .comparison-grid .service-spine i:nth-child(1)::after { animation-delay:0s; }.comparison-grid .service-spine i:nth-child(2)::after { animation-delay:.35s; }.comparison-grid .service-spine i:nth-child(3)::after { animation-delay:.7s; }.comparison-grid .service-spine i:nth-child(4)::after { animation-delay:1.05s; }.comparison-grid .service-spine i:nth-child(5)::after { animation-delay:1.4s; }.comparison-grid .service-spine i:nth-child(6)::after { animation-delay:1.75s; }.comparison-grid .service-spine i:nth-child(7)::after { animation-delay:2.1s; }.comparison-grid .service-spine i:nth-child(8)::after { animation-delay:2.45s; }.comparison-grid .service-spine i:nth-child(9)::after { animation-delay:2.8s; }
+  .comparison-grid .service-spine i:nth-child(odd) { animation-delay:.18s; }.comparison-grid .service-spine i:nth-child(even) { animation-delay:.42s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i,
+  .comparison-grid .service-hero-art--repair .service-spine i { animation-name:service-scan-vertebra; animation-duration:7.2s; animation-timing-function:ease-in-out; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(1),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(1) { animation-delay:0s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(2),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(2) { animation-delay:.8s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(3),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(3) { animation-delay:1.6s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(4),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(4) { animation-name:service-scan-error; animation-delay:2.4s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(5),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(5) { animation-delay:3.2s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(6),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(6) { animation-delay:4s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(7),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(7) { animation-delay:4.8s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(8),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(8) { animation-name:service-scan-error; animation-delay:5.6s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(9),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(9) { animation-delay:6.4s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(4)::after,.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(8)::after { border-color:#e85e55; box-shadow:0 0 16px #e85e55; animation-name:service-error-ring; }
+  .comparison-grid .service-hero-art--repair .service-spine i:nth-child(4)::after,.comparison-grid .service-hero-art--repair .service-spine i:nth-child(8)::after { animation-name:service-repair-error-ring; }
+  .comparison-grid .service-hero-art--repair .service-spine i:nth-child(4),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(8) { animation-name:service-repair-error; }
+  /* Temporary 1: keep the original spine and run a scan pass, then a top-to-bottom repair pass. */
+  .comparison-grid .service-hero-art--scan-error .service-spine i { animation-name:service-temp-one-spine; animation-duration:14.4s; animation-delay:0s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(2) { animation-delay:.8s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(3) { animation-delay:1.6s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(4) { animation-name:service-temp-one-error; animation-delay:2.4s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(5) { animation-delay:3.2s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(6) { animation-delay:4s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(7) { animation-delay:4.8s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(8) { animation-name:service-temp-one-error; animation-delay:5.6s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(9) { animation-delay:6.4s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i::after { animation-name:service-temp-one-ring; animation-duration:14.4s; animation-delay:0s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(2)::after { animation-delay:.8s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(3)::after { animation-delay:1.6s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(4)::after { animation-delay:2.4s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(5)::after { animation-delay:3.2s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(6)::after { animation-delay:4s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(7)::after { animation-delay:4.8s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(8)::after { animation-delay:5.6s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(9)::after { animation-delay:6.4s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(4)::before,.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(8)::before { animation:service-temp-one-error-center 14.4s ease-in-out infinite; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(4)::before { animation-delay:2.4s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(8)::before { animation-delay:5.6s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(4)::after,.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(8)::after { border-color:#e85e55; box-shadow:0 0 16px #e85e55; animation-name:service-temp-one-error-ring; }
+  @keyframes service-orbit { to { transform:rotate(360deg); } } @keyframes service-vertebra { 0%,100% { transform:rotate(var(--spine-tilt)) translateX(0); border-color:color-mix(in srgb,var(--ink) 45%,transparent); } 45%,68% { transform:rotate(0) translateX(0); border-color:var(--accent); box-shadow:0 0 22px color-mix(in srgb,var(--accent) 28%,transparent); } } @keyframes service-repair { 0%,12% { opacity:0; transform:translate(-50%,-50%) scale(.2); } 25%,54% { opacity:1; transform:translate(-50%,-50%) scale(1); } 70%,100% { opacity:0; transform:translate(-50%,-50%) scale(1.65); } } @keyframes service-status { 50% { opacity:.42; transform:scale(.72); } }
+  @keyframes service-scan-vertebra { 0%,58%,100% { transform:rotate(var(--spine-tilt)) translateX(0); border-color:color-mix(in srgb,var(--ink) 45%,transparent); } 18%,42% { transform:rotate(0) translateX(0); border-color:var(--accent); box-shadow:0 0 22px color-mix(in srgb,var(--accent) 28%,transparent); } }
+  @keyframes service-scan-error { 0%,18%,58%,100% { transform:rotate(var(--spine-tilt)) translateX(0); border-color:color-mix(in srgb,var(--ink) 45%,transparent); box-shadow:0 8px 14px color-mix(in srgb,var(--ink) 12%,transparent); } 26%,48% { transform:rotate(0) translateX(0); border-color:#e85e55; background:color-mix(in srgb,#e85e55 13%,var(--surface)); box-shadow:0 0 22px color-mix(in srgb,#e85e55 34%,transparent); } }
+  @keyframes service-error-ring { 0%,22%,100% { opacity:0; transform:translate(-50%,-50%) scale(.2); } 28%,42% { opacity:1; transform:translate(-50%,-50%) scale(1); } 50%,58% { opacity:1; transform:translate(-50%,-50%) scale(1.65); } 66%,100% { opacity:0; transform:translate(-50%,-50%) scale(2); } }
+  @keyframes service-repair-error { 0%,18% { transform:rotate(var(--spine-tilt)) translateX(0); border-color:color-mix(in srgb,var(--ink) 45%,transparent); box-shadow:0 8px 14px color-mix(in srgb,var(--ink) 12%,transparent); } 26%,46% { transform:rotate(0) translateX(0); border-color:#e85e55; background:color-mix(in srgb,#e85e55 13%,var(--surface)); box-shadow:0 0 22px color-mix(in srgb,#e85e55 34%,transparent); } 56%,78% { transform:rotate(0) translateX(0); border-color:#7ee39a; background:color-mix(in srgb,#7ee39a 18%,var(--surface)); box-shadow:0 0 22px color-mix(in srgb,#7ee39a 34%,transparent); } 88%,100% { transform:rotate(var(--spine-tilt)) translateX(0); border-color:#7ee39a; background:color-mix(in srgb,#7ee39a 8%,var(--surface)); box-shadow:0 8px 14px color-mix(in srgb,var(--ink) 12%,transparent); } }
+  @keyframes service-repair-error-ring { 0%,22%,100% { opacity:0; transform:translate(-50%,-50%) scale(.2); border-color:#e85e55; } 28%,45% { opacity:1; transform:translate(-50%,-50%) scale(1); border-color:#e85e55; box-shadow:0 0 16px #e85e55; } 56%,78% { opacity:1; transform:translate(-50%,-50%) scale(1.65); border-color:#7ee39a; box-shadow:0 0 18px #7ee39a; } 88%,100% { opacity:0; transform:translate(-50%,-50%) scale(2); border-color:#7ee39a; } }
+  @keyframes service-temp-one-spine { 0%,8%,30%,100% { transform:rotate(var(--spine-tilt)) translateX(0); border-color:color-mix(in srgb,var(--ink) 45%,transparent); box-shadow:0 8px 14px color-mix(in srgb,var(--ink) 12%,transparent); } 10%,24% { transform:rotate(0) translateX(0); border-color:var(--accent); box-shadow:0 0 22px color-mix(in srgb,var(--accent) 28%,transparent); } }
+  @keyframes service-temp-one-error { 0%,8%,30%,100% { transform:rotate(var(--spine-tilt)) translateX(0); border-color:color-mix(in srgb,var(--ink) 45%,transparent); background:color-mix(in srgb,var(--surface) 82%,var(--bg)); box-shadow:0 8px 14px color-mix(in srgb,var(--ink) 12%,transparent); } 10%,30% { transform:rotate(0) translateX(0); border-color:#e85e55; background:color-mix(in srgb,#e85e55 18%,var(--surface)); box-shadow:0 0 22px color-mix(in srgb,#e85e55 34%,transparent); } 50%,68% { transform:rotate(0) translateX(0); border-color:#7ee39a; background:color-mix(in srgb,#7ee39a 20%,var(--surface)); box-shadow:0 0 22px color-mix(in srgb,#7ee39a 34%,transparent); } 76%,92% { transform:rotate(var(--spine-tilt)) translateX(0); border-color:#7ee39a; background:color-mix(in srgb,#7ee39a 8%,var(--surface)); box-shadow:0 8px 14px color-mix(in srgb,var(--ink) 12%,transparent); } }
+  @keyframes service-temp-one-ring { 0%,8% { opacity:0; transform:translate(-50%,-50%) scale(.2); } 10%,28% { opacity:1; transform:translate(-50%,-50%) scale(1); } 34%,48% { opacity:1; transform:translate(-50%,-50%) scale(1.2); } 50%,68% { opacity:0; transform:translate(-50%,-50%) scale(1.65); } 76%,100% { opacity:0; transform:translate(-50%,-50%) scale(2); } }
+  @keyframes service-temp-one-error-ring { 0%,8% { opacity:0; transform:translate(-50%,-50%) scale(.2); border-color:#e85e55; } 10%,30% { opacity:1; transform:translate(-50%,-50%) scale(1); border-color:#e85e55; box-shadow:0 0 16px #e85e55; } 34%,48% { opacity:1; transform:translate(-50%,-50%) scale(1.2); border-color:#e85e55; box-shadow:0 0 18px #e85e55; } 50%,68% { opacity:0; transform:translate(-50%,-50%) scale(1.65); border-color:#7ee39a; box-shadow:0 0 18px #7ee39a; } 76%,100% { opacity:0; transform:translate(-50%,-50%) scale(2); border-color:#7ee39a; } }
+  @keyframes service-temp-one-error-center { 0%,8% { background:var(--bg); border-color:color-mix(in srgb,var(--ink) 42%,transparent); } 10%,48% { background:#e85e55; border-color:#e85e55; box-shadow:0 0 16px #e85e55; } 50%,68% { background:#7ee39a; border-color:#7ee39a; box-shadow:0 0 16px #7ee39a; } 76%,100% { background:#7ee39a; border-color:#7ee39a; box-shadow:0 0 10px #7ee39a; } }
+  /* Keep the original smooth vertebra motion in temporary 1; only the error centers/rings change state. */
+  .comparison-grid .service-hero-art--scan-error .service-spine i { animation-name:service-vertebra; animation-duration:6s; animation-timing-function:ease-in-out; animation-delay:.18s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(odd) { animation-delay:.18s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(even) { animation-delay:.42s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i::after { animation-name:service-repair; animation-duration:6s; animation-timing-function:ease-in-out; animation-delay:0s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(2)::after { animation-delay:.35s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(3)::after { animation-delay:.7s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(4)::after { animation-delay:2.4s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(5)::after { animation-delay:1.4s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(6)::after { animation-delay:1.75s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(7)::after { animation-delay:2.1s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(8)::after { animation-delay:5.6s; }.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(9)::after { animation-delay:2.8s; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(4)::after,.comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(8)::after { animation-name:service-temp-one-error-ring; animation-duration:14.4s; animation-timing-function:ease-in-out; }
+  @keyframes service-continuous-sway { 0% { transform:rotate(var(--spine-tilt)); } 12.5% { transform:rotate(var(--spine-sway-a)); } 25% { transform:rotate(0deg); } 37.5% { transform:rotate(var(--spine-sway-b)); } 50% { transform:rotate(var(--spine-sway-opposite)); } 62.5% { transform:rotate(var(--spine-sway-b)); } 75% { transform:rotate(0deg); } 87.5% { transform:rotate(var(--spine-sway-a)); } 100% { transform:rotate(var(--spine-tilt)); } }
+  .comparison-grid .service-hero-art--scan-error .service-spine i,.comparison-grid .service-hero-art--repair .service-spine i { animation-name:service-continuous-sway!important; animation-duration:6s!important; animation-timing-function:linear!important; animation-iteration-count:infinite!important; animation-play-state:running!important; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(odd),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(odd) { --spine-sway-a:-5.66deg; --spine-sway-b:5.66deg; --spine-sway-opposite:8deg; animation-delay:.18s!important; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(even),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(even) { --spine-sway-a:5.66deg; --spine-sway-b:-5.66deg; --spine-sway-opposite:-8deg; animation-delay:.42s!important; }
+  /* Three explicit phases for temporary 1, using the existing spine nodes only. */
+  .comparison-grid .service-hero-art--scan-error.phase-scan .service-spine i::after,.comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i::after,.comparison-grid .service-hero-art--scan-error.phase-release .service-spine i::after { animation:none; transition:opacity .7s ease,transform .7s ease,border-color .7s ease,box-shadow .7s ease; }
+  .comparison-grid .service-hero-art--scan-error.phase-scan .service-spine i::after { opacity:0; transform:translate(-50%,-50%) scale(.2); }
+  .comparison-grid .service-hero-art--scan-error.phase-scan .service-spine i.is-scanned::after { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  .comparison-grid .service-hero-art--scan-error.phase-scan .service-spine i.is-error::before,.comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i.is-error::before,.comparison-grid .service-hero-art--scan-error.phase-release .service-spine i.is-error::before { animation:none!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-scan .service-spine i.is-error::before { background:#e85e55; border-color:#e85e55; box-shadow:0 0 16px #e85e55; transition:background .45s ease,border-color .45s ease,box-shadow .45s ease; }
+  .comparison-grid .service-hero-art--scan-error.phase-repair .service-hero-art__status span,.comparison-grid .service-hero-art--scan-error.phase-repair::before,.comparison-grid .service-hero-art--scan-error.phase-repair::after,.comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i { animation-play-state:paused!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i::after { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  .comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i.is-error::before { background:#e85e55; border-color:#e85e55; box-shadow:0 0 16px #e85e55; }
+  .comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i.is-repaired::before,.comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i.is-repairing::before { background:#7ee39a; border-color:#7ee39a; box-shadow:0 0 16px #7ee39a; transition:background .9s ease,border-color .9s ease,box-shadow .9s ease; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i::after { opacity:1; transform:translate(-50%,-50%) scale(1); border-color:#7ee39a; box-shadow:0 0 18px #7ee39a; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i:not(.is-scanned)::after { opacity:0; transform:translate(-50%,-50%) scale(1.65); }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i.is-restoring::before { background:#7ee39a; border-color:#7ee39a; box-shadow:0 0 16px #7ee39a; transition:background .9s ease,border-color .9s ease,box-shadow .9s ease; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i.is-normalized::before { background:var(--bg); border-color:color-mix(in srgb,var(--ink) 42%,transparent); box-shadow:none; transition:background .9s ease,border-color .9s ease,box-shadow .9s ease; }
+  /* Canonical temporary-1 state rules: these are the only rules allowed to drive its three phases. */
+  .comparison-grid .service-hero-art--scan-error.phase-scan::before,.comparison-grid .service-hero-art--scan-error.phase-scan::after { animation-play-state:running!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-scan .service-spine i::after { animation:none!important; opacity:0!important; transform:translate(-50%,-50%) scale(.2)!important; border-color:var(--accent)!important; box-shadow:0 0 16px var(--accent)!important; transition:opacity .7s ease,transform .7s ease,border-color .7s ease,box-shadow .7s ease; }
+  .comparison-grid .service-hero-art--scan-error.phase-scan .service-spine i.is-scanned::after { opacity:1!important; transform:translate(-50%,-50%) scale(1)!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-scan .service-spine i.is-error::before { animation:none!important; background:#e85e55!important; border-color:#e85e55!important; box-shadow:0 0 16px #e85e55!important; transition:background .55s ease,border-color .55s ease,box-shadow .55s ease; }
+  .comparison-grid .service-hero-art--scan-error.phase-repair::before,.comparison-grid .service-hero-art--scan-error.phase-repair::after,.comparison-grid .service-hero-art--scan-error.phase-repair .service-hero-art__status span { animation-play-state:paused!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i::after { animation:none!important; opacity:1!important; transform:translate(-50%,-50%) scale(1)!important; border-color:var(--accent)!important; box-shadow:0 0 16px var(--accent)!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i::before { animation:none!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i.is-error::before { background:#e85e55!important; border-color:#e85e55!important; box-shadow:0 0 16px #e85e55!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i.is-repairing::before,.comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i.is-repaired::before { background:#7ee39a!important; border-color:#7ee39a!important; box-shadow:0 0 16px #7ee39a!important; transition:background .9s ease,border-color .9s ease,box-shadow .9s ease; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i::after { animation:none!important; opacity:1!important; transform:translate(-50%,-50%) scale(1)!important; border-color:#7ee39a!important; box-shadow:0 0 18px #7ee39a!important; transition:opacity .7s ease,transform .7s ease; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i:not(.is-scanned)::after { opacity:0!important; transform:translate(-50%,-50%) scale(1.65)!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i::before { animation:none!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i.is-error::before,.comparison-grid .service-hero-art--scan-error.phase-release .service-spine i.is-restoring::before { background:#7ee39a!important; border-color:#7ee39a!important; box-shadow:0 0 16px #7ee39a!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i.is-normalized::before { background:var(--bg)!important; border-color:color-mix(in srgb,var(--ink) 42%,transparent)!important; box-shadow:none!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i.is-repairing::after,.comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i.is-repaired::after { border-color:#7ee39a!important; box-shadow:0 0 18px #7ee39a!important; transition:border-color .9s ease,box-shadow .9s ease; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i::after { border-color:var(--accent)!important; box-shadow:0 0 16px var(--accent)!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-release .service-spine i.is-repaired::after,.comparison-grid .service-hero-art--scan-error.phase-release .service-spine i.is-restoring::after { border-color:#7ee39a!important; box-shadow:0 0 18px #7ee39a!important; }
+  /* Final override: phase rules may only change colors/rings, never the sway timeline. */
+  .comparison-grid .service-hero-art--scan-error .service-spine i,.comparison-grid .service-hero-art--repair .service-spine i { animation-name:service-continuous-sway!important; animation-duration:6s!important; animation-timing-function:linear!important; animation-iteration-count:infinite!important; animation-play-state:running!important; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(odd),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(odd) { --spine-sway-a:-5.66deg; --spine-sway-b:5.66deg; --spine-sway-opposite:8deg; animation-delay:.18s!important; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(even),.comparison-grid .service-hero-art--repair .service-spine i:nth-child(even) { --spine-sway-a:5.66deg; --spine-sway-b:-5.66deg; --spine-sway-opposite:-8deg; animation-delay:.42s!important; }
+  /* The nine vertebrae keep one uninterrupted motion timeline across all phases. */
+  .comparison-grid .service-hero-art--scan-error .service-spine i { animation-name:service-continuous-sway!important; animation-duration:6s!important; animation-timing-function:linear!important; animation-iteration-count:infinite!important; animation-play-state:running!important; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(odd) { --spine-sway-a:-5.66deg; --spine-sway-b:5.66deg; --spine-sway-opposite:8deg; animation-delay:.18s!important; }
+  .comparison-grid .service-hero-art--scan-error .service-spine i:nth-child(even) { --spine-sway-a:5.66deg; --spine-sway-b:-5.66deg; --spine-sway-opposite:-8deg; animation-delay:.42s!important; }
+  .comparison-grid .service-hero-art--scan-error.phase-scan .service-spine i,.comparison-grid .service-hero-art--scan-error.phase-repair .service-spine i,.comparison-grid .service-hero-art--scan-error.phase-release .service-spine i { animation-name:service-continuous-sway!important; animation-duration:6s!important; animation-timing-function:linear!important; animation-iteration-count:infinite!important; animation-play-state:running!important; }
+  /* Five repair variants: the phase timing is shared; only the green-transition cue changes. */
+  [class*="service-hero-art--repair-v"].phase-scan .service-spine i::after,[class*="service-hero-art--repair-v"].phase-repair .service-spine i::after,[class*="service-hero-art--repair-v"].phase-release .service-spine i::after { animation:none!important; opacity:1!important; transform:translate(-50%,-50%) scale(1)!important; transition:opacity .7s ease,transform .7s ease,border-color .7s ease,box-shadow .7s ease; }
+  [class*="service-hero-art--repair-v"].phase-scan .service-spine i::after { opacity:0!important; transform:translate(-50%,-50%) scale(.2)!important; border-color:var(--accent)!important; box-shadow:0 0 16px var(--accent)!important; }
+  [class*="service-hero-art--repair-v"].phase-scan .service-spine i.is-scanned::after { opacity:1!important; transform:translate(-50%,-50%) scale(1)!important; }
+  [class*="service-hero-art--repair-v"].phase-scan .service-spine i.is-error::before { background:#e85e55!important; border-color:#e85e55!important; box-shadow:0 0 16px #e85e55!important; }
+  [class*="service-hero-art--repair-v"].phase-repair .service-spine i::after,[class*="service-hero-art--repair-v"].phase-release .service-spine i::after { border-color:var(--accent); box-shadow:0 0 16px var(--accent); }
+  [class*="service-hero-art--repair-v"].phase-repair .service-spine i.is-repairing::before,[class*="service-hero-art--repair-v"].phase-repair .service-spine i.is-repaired::before { background:#7ee39a!important; border-color:#7ee39a!important; box-shadow:0 0 16px #7ee39a!important; }
+  [class*="service-hero-art--repair-v"].phase-repair .service-spine i.is-repairing::after,[class*="service-hero-art--repair-v"].phase-repair .service-spine i.is-repaired::after { border-color:#7ee39a!important; box-shadow:0 0 18px #7ee39a!important; }
+  [class*="service-hero-art--repair-v"].phase-release .service-spine i:not(.is-scanned)::after { opacity:0!important; transform:translate(-50%,-50%) scale(1.65)!important; }
+  [class*="service-hero-art--repair-v"].phase-release .service-spine i.is-error::before,[class*="service-hero-art--repair-v"].phase-release .service-spine i.is-restoring::before { background:#7ee39a!important; border-color:#7ee39a!important; box-shadow:0 0 16px #7ee39a!important; }
+  [class*="service-hero-art--repair-v"].phase-release .service-spine i.is-normalized::before { background:var(--bg)!important; border-color:color-mix(in srgb,var(--ink) 42%,transparent)!important; box-shadow:none!important; }
+  [class*="service-hero-art--repair-v"].service-hero-art .service-spine i { animation-name:service-continuous-sway!important; animation-duration:6s!important; animation-timing-function:linear!important; animation-iteration-count:infinite!important; animation-play-state:running!important; }
+  [class*="service-hero-art--repair-v"].service-hero-art .service-spine i:nth-child(odd) { --spine-sway-a:-5.66deg; --spine-sway-b:5.66deg; --spine-sway-opposite:8deg; animation-delay:.18s!important; }
+  [class*="service-hero-art--repair-v"].service-hero-art .service-spine i:nth-child(even) { --spine-sway-a:5.66deg; --spine-sway-b:-5.66deg; --spine-sway-opposite:-8deg; animation-delay:.42s!important; }
+  .service-hero-art--repair-v1.phase-repair .service-spine i.is-repairing::before { animation:repair-flash 900ms ease-out both; }
+  .service-hero-art--repair-v2.phase-repair .service-spine i.is-repairing::after { animation:repair-ray 900ms ease-out both!important; }
+  .service-hero-art--repair-v3.phase-repair .service-spine i.is-repairing::after { animation:repair-ripple 900ms ease-out both!important; }
+  .service-hero-art--repair-v4.phase-repair .service-spine i.is-repairing::before { animation:repair-glint 900ms ease-out both; }
+  .service-hero-art--repair-v5.phase-repair .service-spine i.is-repairing::after { animation:repair-pulse 900ms ease-out both!important; }
+  .service-hero-art--repair-v1.phase-repair .service-spine i.is-repaired::before { background:#7ee39a!important; border-color:#d8ffe4!important; box-shadow:0 0 0 13px rgba(126,227,154,.2),0 0 42px #7ee39a!important; }
+  .service-hero-art--repair-v2.phase-repair .service-spine i.is-repaired::after { opacity:1!important; width:76px!important; height:4px!important; border:0!important; border-radius:4px!important; background:linear-gradient(90deg,transparent,#fff 18%,#baffcf 50%,#fff 82%,transparent)!important; box-shadow:0 0 22px #fff,0 0 48px #7ee39a!important; transform:translate(-50%,-50%) rotate(-28deg)!important; }
+  .service-hero-art--repair-v3.phase-repair .service-spine i.is-repaired::after { opacity:.8!important; width:70px!important; height:70px!important; border:2px solid #7ee39a!important; border-radius:50%!important; box-shadow:0 0 22px #7ee39a!important; transform:translate(-50%,-50%)!important; }
+  .service-hero-art--repair-v4.phase-repair .service-spine i.is-repaired::before { width:62px!important; height:13px!important; border:0!important; border-radius:8px!important; background:linear-gradient(105deg,transparent,#7ee39a 28%,#fff 48%,#7ee39a 68%,transparent)!important; box-shadow:0 0 24px #fff,0 0 46px #7ee39a!important; transform:translate(-50%,-50%)!important; }
+  .service-hero-art--repair-v5.phase-repair .service-spine i.is-repaired::after { opacity:.9!important; width:48px!important; height:48px!important; border:3px solid #baffcf!important; border-radius:50%!important; box-shadow:0 0 0 12px rgba(126,227,154,.16),0 0 36px #7ee39a!important; transform:translate(-50%,-50%)!important; }
+  @keyframes repair-flash { 0% { background:#e85e55; box-shadow:0 0 14px #e85e55; } 18% { background:#fff; box-shadow:0 0 28px #fff,0 0 72px #7ee39a; } 48% { background:#7ee39a; box-shadow:0 0 0 18px rgba(126,227,154,.22),0 0 54px #7ee39a; } 100% { background:#7ee39a; box-shadow:0 0 16px #7ee39a; } }
+  @keyframes repair-ray { 0% { opacity:0; width:12px; height:3px; border:0; background:#fff; transform:translate(-50%,-50%) scaleX(.2) rotate(-28deg); } 20% { opacity:1; width:74px; height:5px; border:0; background:linear-gradient(90deg,transparent,#fff 18%,#baffcf 50%,#fff 82%,transparent); box-shadow:0 0 24px #fff,0 0 48px #7ee39a; transform:translate(-50%,-50%) scaleX(1) rotate(-28deg); } 100% { opacity:0; width:74px; height:3px; border:0; background:#7ee39a; box-shadow:0 0 18px #7ee39a; transform:translate(-50%,-50%) scaleX(1) rotate(-28deg); } }
+  @keyframes repair-ripple { 0% { opacity:.2; width:18px; height:18px; border:2px solid #fff; transform:translate(-50%,-50%) scale(.2); box-shadow:0 0 0 0 rgba(126,227,154,.8); } 32% { opacity:1; width:72px; height:72px; border:3px solid #fff; transform:translate(-50%,-50%) scale(1); box-shadow:0 0 0 16px rgba(126,227,154,0),0 0 34px #7ee39a; } 100% { opacity:0; width:72px; height:72px; border:2px solid #7ee39a; transform:translate(-50%,-50%) scale(1.12); box-shadow:0 0 18px #7ee39a; } }
+  @keyframes repair-glint { 0% { background:#e85e55; box-shadow:0 0 14px #e85e55; } 24% { background:linear-gradient(105deg,#7ee39a 0 25%,#fff 42% 58%,#7ee39a 75%); box-shadow:0 0 26px #fff,0 0 68px #7ee39a; } 52% { background:#7ee39a; box-shadow:0 0 0 12px rgba(126,227,154,.24),0 0 44px #7ee39a; } 100% { background:#7ee39a; box-shadow:0 0 16px #7ee39a; } }
+  @keyframes repair-pulse { 0% { opacity:.15; width:16px; height:16px; transform:translate(-50%,-50%) scale(.3); border:2px solid #e85e55; } 25% { opacity:1; width:64px; height:64px; transform:translate(-50%,-50%) scale(1); border:3px solid #fff; box-shadow:0 0 30px #fff,0 0 70px #7ee39a; } 58% { opacity:1; width:42px; height:42px; border-color:#7ee39a; box-shadow:0 0 0 14px rgba(126,227,154,0),0 0 34px #7ee39a; } 100% { opacity:0; width:42px; height:42px; border-color:#7ee39a; box-shadow:0 0 18px #7ee39a; } }
   @keyframes original-orbit { to { transform:rotate(360deg); } } @keyframes original-repair { 0%,12% { opacity:0; transform:translate(-50%,-50%) scale(.2); } 28%,55% { opacity:1; transform:translate(-50%,-50%) scale(1); } 72%,100% { opacity:0; transform:translate(-50%,-50%) scale(1.65); } }
   @keyframes scan-orb-spin { to { transform:rotate(360deg); } } @keyframes requested-orb { 0%,100% { transform:translate(-54px,-86px) scale(.82); } 18% { transform:translate(52px,-30px) scale(1.05); } 38% { transform:translate(22px,78px) scale(.76); } 61% { transform:translate(-56px,38px) scale(1.15); } 82% { transform:translate(36px,7px) scale(.88); } }
   @keyframes requested-red { 0%,34% { border-color:#e85e55; background:rgba(232,94,85,.13); } 42%,62% { border-color:#fff; background:rgba(232,94,85,.48); box-shadow:0 0 25px #e85e55; } 70%,100% { border-color:rgba(248,238,232,.5); background:rgba(248,238,232,.06); box-shadow:none; } }
@@ -283,7 +412,7 @@
   @keyframes requested-heal-dot { 0%,45% { background:#e85e55; box-shadow:0 0 14px #e85e55; } 53%,100% { background:#7ee39a; box-shadow:0 0 14px #7ee39a; } }
   @keyframes repair-fourth { 0%,46% { opacity:0; transform:scale(.2); } 50%,63% { opacity:1; transform:scale(2.9); } 70%,100% { opacity:0; transform:scale(4.4); } }
   @keyframes repair-eighth { 0%,61% { opacity:0; transform:scale(.2); } 65%,78% { opacity:1; transform:scale(2.9); } 85%,100% { opacity:0; transform:scale(4.4); } }
-  @media (max-width:760px) { .comparison-grid { grid-template-columns:1fr; }.comparison-grid .option:first-child { grid-column:auto; } }
+  @media (max-width:980px) { .comparison-grid { grid-template-columns:1fr; }.comparison-grid .option:first-child { grid-column:auto; } }
 </style>
 <body>
   <header><div class="eyebrow">SHU YI / MOTION STUDY</div><h1>脊椎修復動畫風格</h1><p>先比較 10 種不同的動態語言。選定編號後，我再把該風格移植到「活化調理」頁首右側。</p></header>
@@ -329,7 +458,92 @@
     (() => {
       const spine = (count = 9, className = '') => `<div class="${className}">${'<i></i>'.repeat(count)}</div>`;
       document.body.replaceChildren();
-      document.body.innerHTML = `<header><div class="eyebrow">SHU YI / MOTION STUDY</div><h1>脊椎掃描與修復</h1><p>先放目前正式網站的原始動畫，再比較兩個指定方向：異常檢測，以及掃描後的分段修復。</p></header><main class="comparison-grid"><article class="option"><h2>原始網站版本 / 目前正式頁面</h2><p>保留現在活化調理頁右側的脊椎、軌道與逐節亮起效果。</p><div class="original-stage"><div class="original-orbit"></div>${spine(9, 'original-spine')}<span class="comparison-label">ORIGINAL / <b>ALIGNMENT</b></span></div></article><article class="option"><h2>暫作一 / 掃描異常</h2><p>掃描圓不規則移動；第 4、8 節被掃到時變紅，紅圈外溢約 0.5 秒，再繼續掃描。</p><div class="requested-stage requested-stage--red"><div class="scan-orb"></div>${spine(9, 'requested-spine')}<span class="comparison-label">SCAN / <b>ABNORMAL</b></span></div></article><article class="option"><h2>暫作二 / 掃描後修復</h2><p>完成一輪掃描後，先修復第 4 節變綠，再換第 8 節；兩節完成後重新循環。</p><div class="requested-stage requested-stage--repair"><div class="scan-orb"></div>${spine(9, 'requested-spine')}<div class="repair-wave repair-wave--fourth"></div><div class="repair-wave repair-wave--eighth"></div><span class="comparison-label">SCAN → <b>REPAIR 04 / 08</b></span></div></article></main>`;
+      document.body.innerHTML = `<header><div class="eyebrow">SHU YI / MOTION STUDY</div><h1>脊椎掃描與修復</h1><p>最上方完全重用正式網站的脊椎動畫，再比較第 4、8 節由紅轉綠的五種瞬間效果。</p></header><main class="comparison-grid"><article class="option"><h2>原始網站版本 / 完全相同動畫</h2><p>使用正式活化調理頁相同的 service-hero-art、service-spine 與動畫節奏。</p><div class="service-hero-art"><div class="service-hero-art__label">ALIGNMENT / REPAIR</div>${spine(9, 'service-spine')}<div class="service-hero-art__status"><span></span>身體訊號</div></div></article><article class="option"><h2>掃描參考 / 紅色異常</h2><p>三階段流程的掃描基準：第 4、8 節變紅並短暫停留，再進入修復。</p><div class="requested-stage requested-stage--red"><div class="scan-orb"></div>${spine(9, 'requested-spine')}<span class="comparison-label">SCAN / <b>ABNORMAL</b></span></div></article></main>`;
+    })();
+  </script>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll('.comparison-grid .option')];
+      const makeOriginalArt = (modifier = '') => {
+        const art = document.createElement('div');
+        art.className = `service-hero-art${modifier ? ` service-hero-art--${modifier}` : ''}`;
+        art.innerHTML = `<div class="service-spine" aria-hidden="true">${'<i></i>'.repeat(9)}</div><div class="service-hero-art__status"><span></span><span>身體訊號</span></div>`;
+        return art;
+      };
+      cards[2]?.remove();
+      document.querySelectorAll('.service-hero-art__label').forEach((label) => label.remove());
+      document.querySelectorAll('.service-hero-art__status').forEach((status) => { status.innerHTML = '<span></span><span>身體訊號</span>'; });
+      cards[1]?.querySelector('.requested-stage')?.replaceWith(makeOriginalArt('scan-error'));
+      if (cards[1]) cards[1].querySelector('p').textContent = '三階段：向下掃描並標記第 4、8 節 → 同步讓紅色與外圈轉綠 → 外圈以原色由上往下解除。';
+      const repairVariants = [
+        ['01 / 瞬間光暈', '變綠瞬間先閃白，再快速收成綠色光暈。'],
+        ['02 / 斜向光束', '一道斜向光束穿過節點，通過後完成變綠。'],
+        ['03 / 擴散震波', '中心先亮起，再向外擴散一圈綠色震波。'],
+        ['04 / 掃描掠光', '白色掠光掃過中心，留下穩定的綠色修復光。'],
+        ['05 / 綠色脈衝', '節點快速放大脈衝後回穩，強調修復完成。']
+      ];
+      repairVariants.forEach(([title, description], index) => {
+        const card = document.createElement('article');
+        card.className = 'option';
+        card.innerHTML = `<h2>${title}</h2><p>${description}</p>`;
+        card.append(makeOriginalArt(`repair-v${index + 1}`));
+        document.querySelector('.comparison-grid').append(card);
+      });
+      const runFlow = (scanArt) => {
+        if (!scanArt) return;
+        const nodes = [...scanArt.querySelectorAll('.service-spine i')];
+        const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+        const clearNodes = () => nodes.forEach((node) => node.classList.remove('is-scanned','is-error','is-repaired','is-repairing','is-restoring','is-normalized'));
+        const scanDown = async () => {
+          scanArt.classList.remove('phase-repair','phase-release');
+          scanArt.classList.add('phase-scan');
+          clearNodes();
+          for (let index = 0; index < nodes.length; index += 1) {
+            const node = nodes[index];
+            node.classList.add('is-scanned');
+            if (index === 3 || index === 7) {
+              await wait(220);
+              node.classList.add('is-error');
+              await wait(630);
+            } else await wait(430);
+          }
+          await wait(260);
+          repairDown();
+        };
+        const repairDown = async () => {
+          scanArt.classList.remove('phase-scan');
+          scanArt.classList.add('phase-repair');
+          await wait(350);
+          for (const index of [3, 7]) {
+            nodes[index].classList.add('is-repairing');
+            await wait(900);
+            nodes[index].classList.remove('is-repairing');
+            nodes[index].classList.add('is-repaired');
+            await wait(300);
+          }
+          releaseDown();
+        };
+        const releaseDown = async () => {
+          scanArt.classList.remove('phase-repair');
+          scanArt.classList.add('phase-release');
+          await wait(300);
+          for (let index = 0; index < nodes.length; index += 1) {
+            const node = nodes[index];
+            node.classList.remove('is-scanned');
+            if (index === 3 || index === 7) {
+              node.classList.add('is-restoring');
+              await wait(430);
+              node.classList.remove('is-restoring','is-repaired','is-error');
+              node.classList.add('is-normalized');
+            } else await wait(430);
+          }
+          await wait(900);
+          scanDown();
+        };
+        scanDown();
+      };
+      runFlow(cards[1]?.querySelector('.service-hero-art--scan-error'));
+      document.querySelectorAll('[class*="service-hero-art--repair-v"]').forEach(runFlow);
     })();
   </script>
 </body>

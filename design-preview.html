@@ -1,0 +1,499 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="舒逸｜美式活化槍全身調理。讓身體回到自在的節奏。"><title>舒逸 Shu Yi｜回到自在的節奏</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet"><style>
+:root { --bg:#f4eeeb; --surface:#e7dbd6; --ink:#302326; --muted:#78696a; --line:rgba(48,35,38,.17); --accent:#a45f63; --contrast:#302326; --white:#fffaf6; --display:'Noto Sans TC',sans-serif; --mono:'DM Mono',monospace; color-scheme:light; }
+:root[data-theme='dark'] { --bg:#291e24; --surface:#3a2932; --ink:#f1e5e7; --muted:#c3a2aa; --line:rgba(240,238,232,.17); --accent:#d78390; --contrast:#f1e5e7; --white:#3a2932; color-scheme:dark; }
+* { box-sizing:border-box; } html { scroll-behavior:smooth; } body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--display); transition:background .35s,color .35s; visibility:hidden; animation:site-preload-fallback 1.8s step-end forwards; } a { color:inherit; text-decoration:none; } button { font:inherit; color:inherit; cursor:pointer; } .site-shell { overflow:hidden; } .site-header { height:88px; padding:0 clamp(20px,4vw,64px); display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); position:relative; z-index:5; } .brand { display:flex; align-items:center; gap:9px; font:600 13px var(--mono); letter-spacing:.13em; } .brand-logo { width:29px; height:29px; object-fit:cover; border-radius:50%; } .brand-logo--dark,.hero-logo--dark { display:none; } [data-theme='dark'] .brand-logo--light,[data-theme='dark'] .hero-logo--light { display:none; } [data-theme='dark'] .brand-logo--dark,[data-theme='dark'] .hero-logo--dark { display:block; } .site-nav { display:flex; gap:clamp(18px,2.5vw,42px); font-size:13px; } .site-nav a { opacity:.8; transition:opacity .2s; } .site-nav a:hover { opacity:1; } .nav-future i { font:10px var(--mono); color:var(--accent); } .header-actions { display:flex; align-items:center; gap:18px; } .theme-switch { border:0; background:transparent; display:flex; align-items:center; gap:7px; font:11px var(--mono); letter-spacing:.08em; } .theme-switch__dot { display:block; width:13px; height:13px; border:1.5px solid var(--ink); border-radius:50%; position:relative; } .theme-switch__dot:after { content:''; position:absolute; background:var(--bg); width:8px; height:8px; border-radius:50%; top:-3px; right:-3px; } [data-theme='dark'] .theme-switch__dot:after { display:none; } .menu-button { display:none; border:0; background:none; width:28px; padding:4px 0; } .menu-button span { display:block; height:1px; background:var(--ink); margin:5px 0; }
+.hero { min-height:calc(100vh - 88px); padding:clamp(56px,9vw,142px) clamp(20px,8vw,128px) 32px; position:relative; display:grid; grid-template-columns:minmax(300px,1fr) minmax(300px,.8fr); align-items:center; gap:40px; } .hero-copy { position:relative; z-index:1; } .eyebrow,.section-label { margin:0; color:var(--muted); font:11px var(--mono); letter-spacing:.1em; } h1,h2,h3,p { margin-top:0; } h1 { font-size:clamp(52px,7.3vw,118px); line-height:1.05; letter-spacing:-.075em; margin:22px 0 30px; font-weight:600; } h1 em,h2 em { color:var(--accent); font-style:normal; } .hero-lead { max-width:405px; font-size:16px; line-height:1.85; color:var(--muted); } .hero-actions { display:flex; align-items:center; gap:28px; margin-top:38px; } .button { display:inline-flex; align-items:center; gap:28px; padding:16px 20px; border:1px solid var(--ink); font-size:13px; transition:transform .2s,background .2s,color .2s; } .button:hover { transform:translateY(-3px); } .button--primary { background:var(--contrast); color:var(--bg); } .button--line:hover { background:var(--ink); color:var(--bg); } .text-link { display:inline-flex; align-items:center; gap:10px; font-size:13px; text-decoration:underline; text-underline-offset:5px; }.text-link span { font-size:17px; text-decoration:none; }.hero-stage { width:min(37vw,540px); aspect-ratio:1; justify-self:center; position:relative; display:grid; place-items:center; }.hero-logo { position:relative; z-index:2; width:83%; height:83%; border-radius:50%; object-fit:cover; mix-blend-mode:multiply; } [data-theme='dark'] .hero-logo { mix-blend-mode:screen; }.orb { position:absolute; border:1px solid var(--line); border-radius:50%; }.orb--one { width:105%;height:105%; border-style:dashed; animation:spin 27s linear infinite; }.orb--two { width:74%;height:74%; border-color:var(--accent); opacity:.5; }.hero-stamp { position:absolute; z-index:3; left:0; bottom:7%; font:10px/1.4 var(--mono); letter-spacing:.15em; }.scroll-cue { position:absolute; bottom:29px; right:clamp(20px,4vw,64px); font:10px var(--mono); letter-spacing:.1em; display:flex; gap:14px; align-items:center; }.scroll-cue b { font-size:18px; font-weight:400; animation:bob 1.8s infinite; }
+.section { padding:clamp(72px,11vw,166px) clamp(20px,8vw,128px); }.intro { border-top:1px solid var(--line); }.section-label { display:flex; gap:14px; }.section-label span { color:var(--accent); }.intro-grid { display:grid; grid-template-columns:1.3fr .7fr; gap:60px; margin-top:68px; }.intro h2,.motion-copy h2,.journal h2,.studio h2,.cta h2 { font-size:clamp(38px,5.2vw,76px); line-height:1.15; letter-spacing:-.06em; font-weight:600; margin-bottom:0; }.intro-body { padding-top:10px; max-width:400px; color:var(--muted); line-height:1.9; }.intro-body .text-link { color:var(--ink); margin-top:15px; }.principles { margin-top:100px; display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line); }.principles article { padding:23px 24px 0; min-height:170px; border-right:1px solid var(--line); }.principles article:first-child { padding-left:0; }.principles article:last-child { border:0; }.principles span { font:11px var(--mono); color:var(--accent); }.principles h3 { font-size:19px; margin:25px 0 7px; }.principles p { color:var(--muted); font-size:13px; line-height:1.7; }
+.motion-feature { background:var(--surface); display:grid; grid-template-columns:1.12fr .88fr; align-items:center; gap:clamp(35px,8vw,130px); }.motion-video { aspect-ratio:4/3; position:relative; overflow:hidden; background:#111; }.motion-video video { height:100%;width:100%;object-fit:cover; opacity:.82; }.play-button,.card-play { border:1px solid rgba(255,255,255,.7); background:transparent; color:white; border-radius:50%; width:95px; height:95px; position:absolute; left:50%;top:50%;transform:translate(-50%,-50%); font:11px var(--mono); }.play-button span { display:block; margin-top:5px; font-size:17px; }.motion-copy > p:not(.eyebrow) { color:var(--muted); line-height:1.9; max-width:360px; margin:26px 0; }.section-heading { display:flex; justify-content:space-between; align-items:end; gap:20px; }.content-tabs { display:flex; gap:8px; margin:70px 0 25px; }.content-tabs button { border:1px solid var(--line); border-radius:99px; padding:9px 15px; background:transparent; font-size:12px; }.content-tabs .is-active { background:var(--ink); color:var(--bg); border-color:var(--ink); }.content-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }.content-card { padding:12px; border:1px solid var(--line); min-height:420px; display:flex; flex-direction:column; }.card-art { height:190px; position:relative; display:grid; place-items:center; overflow:hidden; }.card-art:before,.card-art:after { content:''; position:absolute; border:1px solid currentColor; border-radius:50%; }.card-art:before { width:160px; height:160px; }.card-art:after { width:80px; height:220px; border-radius:50%; transform:rotate(35deg); }.content-card--peach .card-art { background:color-mix(in srgb,var(--accent) 17%,var(--surface));color:var(--accent); }.content-card--violet .card-art { background:var(--surface);color:var(--ink); }.content-card--lime .card-art { background:color-mix(in srgb,var(--bg) 55%,var(--surface));color:var(--accent); }.card-art > * { z-index:1; }.card-art span { font:10px var(--mono); letter-spacing:.1em; }.card-play { position:relative; left:auto; top:auto; transform:none; color:currentColor; border-color:currentColor; width:56px;height:56px; padding-left:4px; }.card-meta { display:flex; justify-content:space-between; color:var(--muted); font:10px var(--mono); margin:20px 1px; }.content-card h3 { font-size:21px; line-height:1.45; margin-bottom:10px; }.content-card p { color:var(--muted); font-size:13px; line-height:1.65; }.content-card a { font:11px var(--mono); margin-top:auto; padding-top:12px; }.studio { display:grid; grid-template-columns:1fr 1fr; padding-top:0; }.studio-panel { padding:clamp(44px,6vw,96px); background:var(--ink); color:var(--bg); }.studio-panel .eyebrow,.studio-panel > p:not(.eyebrow) { color:color-mix(in srgb,var(--bg) 70%,transparent); }.studio-panel h2 { margin:25px 0; }.studio-panel > p:not(.eyebrow) { line-height:1.8; max-width:330px; }.studio-meta { border-top:1px solid color-mix(in srgb,var(--bg) 25%,transparent); margin:58px 0 22px; padding-top:15px; display:flex; justify-content:space-between; font:10px var(--mono); letter-spacing:.1em; }.studio-art { background:var(--accent); position:relative; overflow:hidden; min-height:390px; display:grid; place-items:center; }.studio-art p { position:relative; z-index:1; font:600 clamp(80px,11vw,170px)/.75 var(--mono); letter-spacing:-.1em; color:#fff1e9; }.art-ring { position:absolute; width:92%; aspect-ratio:1; border:1px solid #fff1e9; border-radius:50%; box-shadow:0 0 0 50px rgba(255,241,233,.15),0 0 0 105px rgba(255,241,233,.1); }.cta { text-align:center; padding-bottom:clamp(95px,14vw,200px); }.cta h2 { margin:20px 0; }.cta > p:not(.eyebrow) { color:var(--muted); }.cta .button { margin-top:20px; }.site-footer { border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; gap:20px; padding:28px clamp(20px,4vw,64px); font-size:10px; color:var(--muted); }.site-footer .brand { color:var(--ink); }.site-footer .brand span { font-size:16px; }.site-footer .brand small { font:9px var(--mono); }.site-footer p { margin:0; }.site-footer div { display:flex; gap:18px; font:10px var(--mono); }
+dialog { border:0; background:var(--surface); color:var(--ink); padding:20px; width:min(900px,92vw); box-shadow:0 18px 80px rgba(0,0,0,.45); }.video-dialog { background:#080808; }.video-dialog video { display:block; width:100%; max-height:78vh; }.dialog-close { border:0; background:transparent; font-size:30px; line-height:1; position:absolute; right:10px; top:7px; z-index:1; }.video-dialog .dialog-close { color:white; }.future-dialog { max-width:440px; padding:54px; }.future-dialog h2 { margin:18px 0 10px; font-size:32px; }.future-dialog p:not(.eyebrow) { color:var(--muted); line-height:1.8; }dialog::backdrop { background:rgba(12,10,10,.65); backdrop-filter:blur(5px); }
+@keyframes site-preload-fallback { to { visibility:visible; } }
+@keyframes spin { to { transform:rotate(360deg); } } @keyframes bob { 50% { transform:translateY(5px); } }
+@media (max-width:720px) { .site-header { height:68px; }.site-nav { position:absolute; display:none; top:68px;left:0;right:0; padding:25px 20px; background:var(--bg); border-bottom:1px solid var(--line); flex-direction:column; }.menu-open .site-nav { display:flex; }.menu-button { display:block; }.hero { min-height:auto; padding-top:68px; display:block; }.hero-stage { margin:50px auto 25px; width:min(78vw,430px); }.scroll-cue { display:none; }.hero-actions { flex-wrap:wrap; }.intro-grid,.motion-feature,.studio { grid-template-columns:1fr; }.intro-grid { margin-top:45px; gap:32px; }.principles { margin-top:65px; grid-template-columns:1fr; }.principles article,.principles article:first-child { padding:22px 0; min-height:0; border-right:0; border-bottom:1px solid var(--line); }.motion-feature { padding:20px; }.motion-copy { padding:40px 0 25px; }.section-heading { align-items:start; flex-direction:column; }.content-tabs { margin-top:42px; overflow:auto; }.content-grid { grid-template-columns:1fr; }.content-card { min-height:380px; }.studio { padding-left:20px; padding-right:20px; }.studio-panel { padding:45px 27px; }.studio-art { min-height:300px; }.site-footer { align-items:flex-start; flex-direction:column; }.site-footer p { order:3; }.future-dialog { padding:45px 28px; } }
+@media (max-width:720px) { .site-nav { background:color-mix(in srgb,var(--surface) 94%,var(--accent) 6%); box-shadow:0 18px 35px color-mix(in srgb,var(--ink) 20%,transparent); backdrop-filter:blur(14px); } }
+
+/* Multi-page templates */
+.page-hero { padding:clamp(75px,13vw,180px) clamp(20px,8vw,128px) clamp(65px,10vw,130px); border-bottom:1px solid var(--line); }.page-hero h1 { max-width:850px; margin-bottom:0; }.page-hero__lead { max-width:500px; color:var(--muted); line-height:1.9; margin:30px 0 0 auto; }.page-hero--compact { padding-bottom:70px; }.page-hero--compact h1 { font-size:clamp(48px,6vw,86px); }.breadcrumb { display:flex; gap:8px; color:var(--muted); font:11px var(--mono); margin-bottom:36px; }.breadcrumb a:hover { color:var(--ink); }.home-links { padding-top:0; }.home-link { display:grid; grid-template-columns:70px 1fr 35px; align-items:center; gap:20px; padding:34px 0; border-bottom:1px solid var(--line); transition:padding .25s,color .25s; }.home-link:first-child { border-top:1px solid var(--line); }.home-link:hover { padding-left:18px; color:var(--accent); }.home-link > span,.home-link p { color:var(--muted); font:11px var(--mono); letter-spacing:.1em; }.home-link p { margin-bottom:12px; }.home-link h2 { margin:0; font-size:clamp(25px,3.8vw,52px); letter-spacing:-.06em; }.home-link b { font-size:28px; font-weight:400; }.service-list { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line); }.service-list article { min-height:270px; padding:28px; border-right:1px solid var(--line); }.service-list article:first-child { padding-left:0; }.service-list article:last-child { border-right:0; }.service-list span { font:11px var(--mono); color:var(--accent); }.service-list h2 { font-size:27px; letter-spacing:-.05em; margin:44px 0 14px; }.service-list p { color:var(--muted); font-size:14px; line-height:1.8; }.callout { background:var(--surface); padding:clamp(50px,8vw,115px) clamp(20px,8vw,128px); display:grid; grid-template-columns:1fr 1fr; gap:50px; }.callout h2 { margin:0; font-size:clamp(34px,4.5vw,66px); letter-spacing:-.06em; }.callout p { color:var(--muted); line-height:1.9; max-width:420px; }.journal-page .content-grid { margin-top:32px; }.journal-page .content-card { min-height:440px; }.studio-page { display:grid; grid-template-columns:1fr 1fr; min-height:650px; }.studio-page__copy { padding:clamp(60px,10vw,145px) clamp(20px,8vw,128px); }.studio-page__copy h1 { font-size:clamp(48px,6vw,92px); }.studio-page__copy p:not(.eyebrow) { max-width:410px; color:var(--muted); line-height:1.9; }.studio-page__art { background:var(--accent); display:grid; place-items:center; position:relative; overflow:hidden; }.studio-page__art:before { content:''; position:absolute; width:76%; aspect-ratio:1; border:1px solid #fff1e9; border-radius:50%; box-shadow:0 0 0 55px rgba(255,241,233,.13),0 0 0 115px rgba(255,241,233,.09); }.studio-page__art span { position:relative; color:#fff1e9; font:600 clamp(75px,10vw,155px)/.75 var(--mono); letter-spacing:-.14em; }.info-rows { padding:0 clamp(20px,8vw,128px) clamp(80px,10vw,140px); }.info-row { display:grid; grid-template-columns:1fr 2fr; padding:24px 0; border-bottom:1px solid var(--line); font-size:15px; }.info-row span { color:var(--muted); font:11px var(--mono); letter-spacing:.08em; }.booking-card { max-width:700px; margin:0 auto; text-align:center; padding:clamp(80px,13vw,180px) 20px; }.booking-card h1 { font-size:clamp(52px,7vw,102px); }.booking-card p:not(.eyebrow) { color:var(--muted); line-height:1.9; max-width:440px; margin:28px auto; }.booking-notice { border:1px solid var(--line); padding:20px; margin-top:45px; text-align:left; color:var(--muted); font-size:13px; line-height:1.7; }.article { max-width:760px; margin:0 auto; padding:clamp(65px,10vw,140px) 20px; }.article .article-meta { font:11px var(--mono); color:var(--muted); display:flex; gap:14px; }.article h1 { font-size:clamp(42px,6vw,76px); margin:24px 0 45px; }.article .article-body { color:var(--muted); font-size:17px; line-height:2; }.article .article-body strong { color:var(--ink); font-weight:500; }.article .article-video { width:100%; margin:42px 0; background:#111; }.article .article-video video { display:block; width:100%; max-height:520px; }.back-link { font:12px var(--mono); text-decoration:underline; text-underline-offset:5px; }.article-placeholder { min-height:250px; display:grid; place-items:center; background:var(--surface); color:var(--muted); margin:35px 0; font:12px var(--mono); }
+.page-hero--service { display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,.9fr); align-items:center; gap:clamp(45px,8vw,125px); }.page-hero--service .page-hero__copy { max-width:620px; }.page-hero--service .page-hero__lead { margin:30px 0 0; }.service-hero-art { position:relative; display:grid; place-items:center; min-height:470px; overflow:hidden; border:1px solid var(--line); border-radius:24px; background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--accent) 13%,transparent),transparent 58%),var(--surface); }.service-hero-art::before,.service-hero-art::after { content:''; position:absolute; border:1px solid color-mix(in srgb,var(--accent) 45%,transparent); border-radius:50%; animation:service-orbit 9s linear infinite; }.service-hero-art::before { width:68%; aspect-ratio:1; }.service-hero-art::after { width:88%; aspect-ratio:1; border-style:dashed; opacity:.45; animation-direction:reverse; animation-duration:15s; }.service-hero-art__label { position:absolute; top:22px; left:24px; color:var(--muted); font:10px var(--mono); letter-spacing:.08em; }.service-hero-art__status { position:absolute; right:24px; bottom:22px; display:flex; align-items:center; gap:8px; color:var(--muted); font:10px var(--mono); letter-spacing:.08em; }.service-hero-art__status span { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 15%,transparent),0 0 16px var(--accent); animation:service-status 1.8s ease-in-out infinite; }.service-spine { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:7px; width:150px; }.service-spine::before { content:''; position:absolute; top:-22px; bottom:-22px; left:50%; width:1px; background:linear-gradient(var(--accent),color-mix(in srgb,var(--ink) 18%,transparent),var(--accent)); opacity:.55; }.service-spine i { position:relative; display:block; width:clamp(68px,8vw,104px); height:27px; border:1px solid color-mix(in srgb,var(--ink) 45%,transparent); border-radius:50% 42% 48% 45%; background:color-mix(in srgb,var(--surface) 82%,var(--bg)); transform:rotate(var(--spine-tilt,0deg)); box-shadow:0 8px 14px color-mix(in srgb,var(--ink) 12%,transparent); animation:service-vertebra 6s ease-in-out infinite; }.service-spine i:nth-child(odd) { --spine-tilt:-8deg; }.service-spine i:nth-child(even) { --spine-tilt:8deg; }.service-spine i:nth-child(2) { width:92px; }.service-spine i:nth-child(3) { width:78px; }.service-spine i:nth-child(4) { width:101px; }.service-spine i:nth-child(5) { width:84px; }.service-spine i:nth-child(6) { width:98px; }.service-spine i:nth-child(7) { width:75px; }.service-spine i:nth-child(8) { width:94px; }.service-spine i:nth-child(9) { width:82px; }.service-spine i::before { content:''; position:absolute; top:50%; left:50%; width:13px; height:13px; border:1px solid color-mix(in srgb,var(--ink) 42%,transparent); border-radius:50%; background:var(--bg); transform:translate(-50%,-50%); }.service-spine i::after { content:''; position:absolute; top:50%; left:50%; width:25px; height:25px; border:2px solid var(--accent); border-radius:50%; opacity:0; transform:translate(-50%,-50%) scale(.2); box-shadow:0 0 16px var(--accent); animation:service-repair 6s ease-in-out infinite; }.service-spine i:nth-child(1)::after { animation-delay:0s; }.service-spine i:nth-child(2)::after { animation-delay:.35s; }.service-spine i:nth-child(3)::after { animation-delay:.7s; }.service-spine i:nth-child(4)::after { animation-delay:1.05s; }.service-spine i:nth-child(5)::after { animation-delay:1.4s; }.service-spine i:nth-child(6)::after { animation-delay:1.75s; }.service-spine i:nth-child(7)::after { animation-delay:2.1s; }.service-spine i:nth-child(8)::after { animation-delay:2.45s; }.service-spine i:nth-child(9)::after { animation-delay:2.8s; }
+@keyframes service-vertebra { 0%,100% { transform:rotate(var(--spine-tilt)) translateX(0); border-color:color-mix(in srgb,var(--ink) 45%,transparent); } 45%,68% { transform:rotate(0) translateX(0); border-color:var(--accent); box-shadow:0 0 22px color-mix(in srgb,var(--accent) 28%,transparent); } }.service-spine i:nth-child(odd) { animation-delay:.18s; }.service-spine i:nth-child(even) { animation-delay:.42s; }
+@keyframes service-repair { 0%,12% { opacity:0; transform:translate(-50%,-50%) scale(.2); } 25%,54% { opacity:1; transform:translate(-50%,-50%) scale(1); } 70%,100% { opacity:0; transform:translate(-50%,-50%) scale(1.65); } }.service-spine i:nth-child(1)::after { animation-delay:0s; }.service-spine i:nth-child(2)::after { animation-delay:.35s; }.service-spine i:nth-child(3)::after { animation-delay:.7s; }.service-spine i:nth-child(4)::after { animation-delay:1.05s; }.service-spine i:nth-child(5)::after { animation-delay:1.4s; }.service-spine i:nth-child(6)::after { animation-delay:1.75s; }.service-spine i:nth-child(7)::after { animation-delay:2.1s; }.service-spine i:nth-child(8)::after { animation-delay:2.45s; }.service-spine i:nth-child(9)::after { animation-delay:2.8s; }
+@keyframes service-continuous-sway { 0% { transform:rotate(var(--spine-tilt)); } 12.5% { transform:rotate(var(--spine-sway-a)); } 25% { transform:rotate(0deg); } 37.5% { transform:rotate(var(--spine-sway-b)); } 50% { transform:rotate(var(--spine-sway-opposite)); } 62.5% { transform:rotate(var(--spine-sway-b)); } 75% { transform:rotate(0deg); } 87.5% { transform:rotate(var(--spine-sway-a)); } 100% { transform:rotate(var(--spine-tilt)); } }
+.service-hero-art__status > span:last-child { width:auto; height:auto; box-shadow:none; background:none; line-height:1.5; text-align:right; animation:none!important; transform:none!important; opacity:1!important; }
+.service-hero-art--scan-error .service-spine i { animation-name:service-continuous-sway!important; animation-duration:6s!important; animation-timing-function:linear!important; animation-iteration-count:infinite!important; animation-play-state:running!important; }
+.service-hero-art--scan-error .service-spine i:nth-child(odd) { --spine-sway-a:-5.66deg; --spine-sway-b:5.66deg; --spine-sway-opposite:8deg; animation-delay:.18s!important; }.service-hero-art--scan-error .service-spine i:nth-child(even) { --spine-sway-a:5.66deg; --spine-sway-b:-5.66deg; --spine-sway-opposite:-8deg; animation-delay:.42s!important; }
+.service-hero-art--scan-error.phase-scan .service-spine i::after,.service-hero-art--scan-error.phase-repair .service-spine i::after,.service-hero-art--scan-error.phase-release .service-spine i::after { animation:none!important; transition:opacity .7s ease,transform .7s ease,border-color .7s ease,box-shadow .7s ease; }
+.service-hero-art--scan-error.phase-scan .service-spine i::after { opacity:0!important; transform:translate(-50%,-50%) scale(.2)!important; border-color:var(--accent)!important; box-shadow:0 0 16px var(--accent)!important; }.service-hero-art--scan-error.phase-scan .service-spine i.is-scanned::after { opacity:1!important; transform:translate(-50%,-50%) scale(1)!important; }
+.service-hero-art--scan-error.phase-scan .service-spine i.is-error::before { background:#e85e55!important; border-color:#e85e55!important; box-shadow:0 0 16px #e85e55!important; transition:background .55s ease,border-color .55s ease,box-shadow .55s ease; }
+.service-hero-art--scan-error.phase-repair .service-spine i::after { opacity:1!important; transform:translate(-50%,-50%) scale(1)!important; border-color:var(--accent)!important; box-shadow:0 0 16px var(--accent)!important; }.service-hero-art--scan-error.phase-repair .service-spine i.is-error::before { background:#e85e55!important; border-color:#e85e55!important; box-shadow:0 0 16px #e85e55!important; }.service-hero-art--scan-error.phase-repair .service-spine i.is-repairing::before,.service-hero-art--scan-error.phase-repair .service-spine i.is-repaired::before { background:#7ee39a!important; border-color:#7ee39a!important; box-shadow:0 0 16px #7ee39a!important; }.service-hero-art--scan-error.phase-repair .service-spine i.is-repairing::after,.service-hero-art--scan-error.phase-repair .service-spine i.is-repaired::after { border-color:#7ee39a!important; box-shadow:0 0 18px #7ee39a!important; }
+.service-hero-art--scan-error.phase-release .service-spine i::after { opacity:1!important; transform:translate(-50%,-50%) scale(1)!important; border-color:var(--accent)!important; box-shadow:0 0 16px var(--accent)!important; }.service-hero-art--scan-error.phase-release .service-spine i:not(.is-scanned)::after { opacity:0!important; transform:translate(-50%,-50%) scale(1.65)!important; }.service-hero-art--scan-error.phase-release .service-spine i.is-error::before,.service-hero-art--scan-error.phase-release .service-spine i.is-restoring::before { background:#7ee39a!important; border-color:#7ee39a!important; box-shadow:0 0 16px #7ee39a!important; }.service-hero-art--scan-error.phase-release .service-spine i.is-repaired::after,.service-hero-art--scan-error.phase-release .service-spine i.is-restoring::after { border-color:#7ee39a!important; box-shadow:0 0 18px #7ee39a!important; }.service-hero-art--scan-error.phase-release .service-spine i.is-normalized::before { background:var(--bg)!important; border-color:color-mix(in srgb,var(--ink) 42%,transparent)!important; box-shadow:none!important; }
+@media (max-width:720px) { .page-hero__lead { margin-left:0; }.home-link { grid-template-columns:35px 1fr 25px; gap:10px; }.service-list,.callout,.studio-page { grid-template-columns:1fr; }.service-list article,.service-list article:first-child { padding:27px 0; min-height:0; border-right:0; border-bottom:1px solid var(--line); }.service-list h2 { margin-top:25px; }.studio-page__art { min-height:360px; }.info-row { grid-template-columns:1fr; gap:10px; }.page-hero { padding-top:70px; } }
+
+/* Shared fixed navigation and CMS-provided media. */
+body { padding-top:88px; }
+.site-header { position:fixed; inset:0 0 auto; background:color-mix(in srgb,var(--bg) 92%,transparent); backdrop-filter:blur(14px); }
+.card-cover { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
+.article-cover { display:block; width:100%; max-height:520px; object-fit:cover; margin:0 0 42px; background:var(--surface); }
+.article .article-video iframe,.video-dialog iframe { display:block; width:100%; aspect-ratio:16/9; border:0; }
+@media (max-width:720px) { body { padding-top:68px; } }
+
+/* Quiet motion system: current-page navigation, brand rhythm, and scroll entry. */
+.site-nav a { position:relative; padding:10px 1px; transition:color .3s ease,opacity .3s ease,transform .3s cubic-bezier(.2,.8,.2,1); }
+.site-nav a::after { content:''; position:absolute; right:0; bottom:3px; left:0; height:2px; border-radius:99px; background:var(--accent); transform:scaleX(0); transform-origin:right; transition:transform .35s cubic-bezier(.2,.9,.2,1); }
+.site-nav a::before { content:''; position:absolute; top:5px; left:50%; width:4px; height:4px; border-radius:50%; background:var(--accent); transform:translate(-50%,-5px) scale(0); transition:transform .35s cubic-bezier(.2,.9,.2,1); }
+.site-nav a.is-current { color:var(--ink); opacity:1; transform:translateY(-1px); }
+.site-nav a.is-current::after { transform:scaleX(1); transform-origin:left; }
+.site-nav a.is-current::before { transform:translate(-50%,0) scale(1); animation:nav-pulse 2.5s ease-in-out infinite; }
+.site-nav a:hover { color:var(--ink); transform:translateY(-2px); }
+.hero-stage::after { content:''; position:absolute; z-index:1; width:87%; aspect-ratio:1; border:1px solid color-mix(in srgb,var(--accent) 76%,transparent); border-radius:50%; box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 0%,transparent),0 0 13px color-mix(in srgb,var(--accent) 28%,transparent); animation:ring-breathe 4.8s ease-in-out infinite; }
+.hero-stamp { display:grid; gap:3px; text-shadow:0 1px var(--bg); }
+.hero-stamp span { display:block; opacity:0; animation:stamp-arrive .65s cubic-bezier(.2,.85,.2,1) forwards; animation-delay:calc(.3s + var(--word-index) * .12s); }
+.hero-stamp span:nth-child(2),.hero-stamp span:nth-child(4) { color:var(--accent); }
+.content-card { transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .35s ease; }
+.content-card:hover { transform:translateY(-7px); border-color:color-mix(in srgb,var(--accent) 55%,var(--line)); box-shadow:0 18px 36px color-mix(in srgb,var(--ink) 11%,transparent); }
+.content-card .card-art img { transition:transform .6s cubic-bezier(.2,.8,.2,1); }
+.content-card:hover .card-art img { transform:scale(1.055); }
+.reveal-on-scroll { opacity:0; transform:translateY(22px); transition:opacity .7s ease var(--reveal-delay,0ms),transform .7s cubic-bezier(.2,.8,.2,1) var(--reveal-delay,0ms); }
+.reveal-on-scroll.is-revealed { opacity:1; transform:none; }
+@keyframes nav-pulse { 50% { box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 0%,transparent); } }
+@keyframes ring-breathe { 50% { transform:scale(1.045); border-color:color-mix(in srgb,var(--accent) 100%,transparent); box-shadow:0 0 0 8px color-mix(in srgb,var(--accent) 0%,transparent),0 0 23px color-mix(in srgb,var(--accent) 48%,transparent); } }
+@keyframes stamp-arrive { from { opacity:0; transform:translateX(-12px); } to { opacity:1; transform:none; } }
+.hero-actions .text-link { text-decoration:none; border-bottom:1px solid transparent; transition:border-color .25s ease,transform .25s ease; }
+.hero-actions .text-link:hover { border-color:var(--accent); transform:translateX(3px); }
+@view-transition { navigation:auto; }
+::view-transition-group(root) { animation-duration:1.1s; animation-timing-function:cubic-bezier(.22,.8,.2,1); }
+::view-transition-old(root) { z-index:1; animation:shuyi-wave-lift 1.1s cubic-bezier(.22,.8,.2,1) both; }
+::view-transition-new(root) { z-index:2; animation:shuyi-soft-arrival 1.1s cubic-bezier(.22,.8,.2,1) both; }
+@keyframes shuyi-wave-lift { from { opacity:1; filter:blur(0) saturate(1); clip-path:polygon(0 0,100% 0,100% 100%,0 100%); } to { opacity:.08; filter:blur(6px) saturate(.82); clip-path:polygon(0 0,100% 0,100% 0,84% 5%,70% 0,54% 6%,38% 0,21% 5%,0 0); } }
+@keyframes shuyi-soft-arrival { from { opacity:0; filter:blur(12px) saturate(.88); transform:scale(1.018); } 42% { opacity:.36; filter:blur(7px) saturate(.94); } to { opacity:1; filter:blur(0) saturate(1); transform:scale(1); } }
+.hero-stage { transform:translateY(var(--hero-scroll-shift,0)); transition:transform .12s linear; }
+.hero-stage--intro { animation:hero-stage-intro 3000ms cubic-bezier(.25,.85,.25,1) 500ms both; }
+.hero-stage--intro .hero-logo { animation:hero-logo-focus 1s cubic-bezier(.2,.85,.2,1) 500ms both; }
+.hero.home-intro h1.home-title-fade { animation:hero-title-fade 1500ms cubic-bezier(.2,.75,.25,1) 500ms both; }
+.hero.home-intro .hero-lead { opacity:0; }
+.hero.home-intro .hero-lead.is-typing { opacity:1; }
+@keyframes hero-stage-intro { from { transform:translate(var(--intro-x),var(--intro-y)); } to { transform:translateY(var(--hero-scroll-shift,0)); } }
+@keyframes hero-logo-focus { from { opacity:0; filter:blur(18px); } to { opacity:1; filter:blur(0); } }
+@keyframes hero-title-fade { from { opacity:1; filter:blur(0); transform:translateY(0); } to { opacity:0; filter:blur(16px); transform:translateY(-10px); } }
+.hero::before { content:''; position:absolute; z-index:0; inset:0; pointer-events:none; opacity:0; background:radial-gradient(320px circle at var(--pointer-x,66%) var(--pointer-y,46%),color-mix(in srgb,var(--accent) 18%,transparent),transparent 68%); transition:opacity .35s ease; }.hero:hover::before { opacity:1; }.hero > * { position:relative; z-index:1; }.text-mask-reveal { clip-path:inset(0 100% 0 0); opacity:.15; transition:clip-path 1.4s cubic-bezier(.2,.85,.2,1),opacity .85s ease; }.text-mask-reveal.is-motion-visible { clip-path:inset(0 0 0 0); opacity:1; }.clip-reveal--right { clip-path:inset(0 0 0 100%); opacity:.2; transition:clip-path 1.25s cubic-bezier(.2,.85,.2,1),opacity .85s ease; }.clip-reveal--right.is-motion-visible { clip-path:inset(0 0 0 0); opacity:1; }.home-links .text-mask-reveal,.home-links .clip-reveal--right { transition-duration:1.25s; }.motion-copy h2.text-mask-reveal,.motion-copy h2.clip-reveal--right { transition-duration:1.35s; }.home-links .home-link b { transition:transform .45s cubic-bezier(.2,.85,.2,1),color .3s ease; }.home-links .home-link:hover b { transform:translate(8px,-5px) rotate(-12deg); }
+@media (prefers-reduced-motion:reduce) { .site-nav a,.content-card,.content-card .card-art img,.reveal-on-scroll,.hero-actions .text-link,.text-mask-reveal,.clip-reveal--right { transition:none; } .hero-stage::after,.hero-stamp span,.site-nav a.is-current::before,.hero-stage--intro,.hero-stage--intro .hero-logo { animation:none; } .hero-stage--intro .hero-logo { opacity:1; filter:none; } .hero-stamp span,.reveal-on-scroll,.text-mask-reveal,.clip-reveal--right { opacity:1; clip-path:none; transform:none; } ::view-transition-group(root),::view-transition-old(root),::view-transition-new(root) { animation:none; } }
+@keyframes hero-mobile-copy-arrive { to { opacity:1; transform:none; pointer-events:auto; } }
+@media (max-width:720px) { .hero.home-intro .hero-lead { transform:none; pointer-events:auto; animation:none; } }
+@media (prefers-reduced-motion:reduce) { .hero.home-intro h1.home-title-fade,.hero-stage--intro { animation:none; } .hero.home-intro .hero-lead { opacity:1; } }
+
+/* Service journey: a restrained scroll-guided explanation of the treatment flow. */
+.service-list article { transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .35s ease; }
+.service-list article:hover { transform:translateY(-6px); border-color:color-mix(in srgb,var(--accent) 55%,var(--line)); box-shadow:0 16px 32px color-mix(in srgb,var(--ink) 9%,transparent); }
+.service-flow { display:grid; grid-template-columns:minmax(260px,.78fr) minmax(0,1.22fr); gap:clamp(45px,8vw,120px); background:var(--surface); }
+.service-flow__intro { position:sticky; top:120px; align-self:start; }
+.service-flow__intro h2 { margin:24px 0; font-size:clamp(40px,5.2vw,76px); line-height:1.12; letter-spacing:-.06em; }
+.service-flow__intro > p:last-child { max-width:360px; color:var(--muted); line-height:1.9; }
+.service-flow__track { position:relative; padding-left:58px; }
+.service-flow__line { position:absolute; top:12px; bottom:12px; left:12px; width:2px; background:color-mix(in srgb,var(--ink) 16%,transparent); transform-origin:top; }
+.service-flow__line i { display:block; width:100%; height:100%; background:var(--accent); transform:scaleY(0); transform-origin:top; }
+.service-flow__steps { display:grid; gap:0; margin:0; padding:0; list-style:none; }
+.service-flow__step { position:relative; display:grid; grid-template-columns:52px 1fr; gap:22px; min-height:190px; padding:0 0 58px; transition:opacity .35s ease,transform .35s ease; }
+.service-flow__step > span { position:relative; z-index:1; display:grid; place-items:center; width:52px; height:52px; border:1px solid var(--line); border-radius:50%; background:var(--surface); color:var(--muted); font:11px var(--mono); transition:background .35s ease,border-color .35s ease,color .35s ease,transform .35s ease; }
+.service-flow__step.is-active > span { background:var(--accent); border-color:var(--accent); color:var(--white); transform:scale(1.08); }
+.service-flow__step h3 { margin:5px 0 12px; font-size:clamp(22px,2.2vw,30px); letter-spacing:-.04em; }
+.service-flow__step p { max-width:390px; margin:0; color:var(--muted); font-size:14px; line-height:1.85; }
+@media (max-width:720px) { .service-flow { display:block; }.service-flow__intro { position:static; }.service-flow__track { margin-top:55px; padding-left:45px; }.service-flow__step { grid-template-columns:42px 1fr; gap:16px; min-height:165px; padding-bottom:42px; }.service-flow__step > span { width:42px; height:42px; }.service-flow__line { left:11px; }.service-flow__intro h2 { font-size:clamp(38px,11vw,58px); } }
+@media (prefers-reduced-motion:reduce) { .service-list article,.service-flow__step > span { transition:none; }.service-list article:hover { transform:none; }.service-flow__line i { transform:scaleY(1)!important; } }
+
+/* Booking entry: browser-like QR presentation inspired by the reference interaction. */
+.booking-card--ready { max-width:1120px; text-align:center; }
+.booking-card--ready > .eyebrow,.booking-card--ready > h1,.booking-card--ready > p,.booking-card--ready > .booking-notice { max-width:760px; margin-left:auto; margin-right:auto; }
+.booking-card--ready > h1 { max-height:none; margin-bottom:16px; font-size:clamp(26px,3.5vw,51px); }
+.booking-card--ready > p:not(.eyebrow) { margin:0 0 22px; }
+.booking-card--ready .booking-notice { margin:0; }
+.booking-entry { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(240px,.85fr); align-items:center; gap:clamp(30px,5vw,70px); margin-top:30px; }
+.booking-browser { overflow:hidden; border:1px solid var(--line); border-radius:16px; background:var(--surface); box-shadow:0 24px 60px color-mix(in srgb,var(--ink) 14%,transparent); }
+.booking-browser__bar { display:flex; align-items:center; gap:7px; height:48px; padding:0 16px; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--bg) 76%,transparent); }
+.booking-browser__bar i { display:block; width:8px; height:8px; border-radius:50%; background:var(--line); }
+.booking-browser__bar i:first-child { background:var(--accent); }
+.booking-browser__bar span { overflow:hidden; flex:1; margin-left:9px; padding:6px 10px; border-radius:7px; background:var(--bg); color:var(--muted); font:11px var(--mono); white-space:nowrap; text-overflow:ellipsis; }
+.booking-browser__bar .booking-browser__steps { position:relative; display:block; height:28px; margin-left:9px; padding:0; }
+.booking-browser__step { position:absolute; inset:0; display:flex; align-items:center; margin:0; padding:0 10px; color:var(--muted); font:11px var(--mono); font-weight:400; white-space:nowrap; opacity:0; transform:translateY(5px); transition:opacity .25s ease,transform .25s ease; }
+.booking-browser__step--scan { color:#df7456; }
+.booking-browser__step--login { color:#4c9a82; }
+.booking-browser__step--time { color:#896bb0; }
+.booking-browser__step--service { color:#c38a45; }
+.booking-browser__step--confirm { color:#5b83b6; }
+.booking-browser__step.is-active { animation:booking-step-fly-in .42s cubic-bezier(.2,.9,.2,1) both; }
+.booking-browser__body { position:relative; display:grid; place-items:center; min-height:320px; padding:20px; background:radial-gradient(circle at 50% 44%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 48%),var(--surface); }
+.booking-qr-card { position:relative; z-index:1; width:min(68%,300px); padding:18px; border:1px solid color-mix(in srgb,var(--ink) 12%,transparent); border-radius:12px; background:var(--white); box-shadow:0 18px 35px color-mix(in srgb,var(--ink) 16%,transparent); }
+.booking-qr-card img { display:block; width:100%; height:auto; }
+.booking-browser__pulse { position:absolute; width:62%; aspect-ratio:1; border:1px solid color-mix(in srgb,var(--accent) 58%,transparent); border-radius:50%; animation:booking-pulse 3.8s ease-in-out infinite; }
+.booking-browser__shot { position:absolute; right:22px; bottom:20px; padding:7px 10px; border:1px dashed color-mix(in srgb,var(--accent) 65%,transparent); border-radius:6px; color:var(--accent); background:color-mix(in srgb,var(--surface) 88%,transparent); font:10px var(--mono); animation:booking-shot 3.8s ease-in-out infinite; }
+.booking-entry__copy { text-align:center; }
+.booking-entry__copy h2 { margin:22px 0; font-size:clamp(36px,4.5vw,64px); line-height:1.15; letter-spacing:-.06em; }
+.booking-entry__copy > p:not(.eyebrow) { max-width:360px; margin:0 0 28px; color:var(--muted); line-height:1.9; }
+.booking-entry__copy .button { position:relative; z-index:1; overflow:hidden; isolation:isolate; margin:0 auto 18px; }
+.booking-entry__copy .button::after { content:''; position:absolute; inset:-55% -90%; z-index:0; pointer-events:none; background:linear-gradient(105deg,transparent 0 27%,rgba(255,255,255,.08) 32%,rgba(255,255,255,.78) 37%,rgba(255,255,255,.12) 42%,transparent 47% 56%,rgba(255,255,255,.1) 61%,rgba(255,255,255,.62) 66%,rgba(255,255,255,.08) 71%,transparent 76%); mix-blend-mode:screen; transform:translateX(-55%) rotate(10deg); animation:booking-metal-sweep 4.8s ease-in-out infinite; }
+@keyframes booking-pulse { 0%,100% { transform:scale(.92); opacity:.42; } 50% { transform:scale(1.04); opacity:1; } }
+@keyframes booking-shot { 0%,50% { opacity:0; transform:translateY(8px); } 66%,100% { opacity:1; transform:none; } }
+@keyframes booking-metal-sweep { 0%,15% { opacity:0; transform:translateX(-55%) rotate(10deg); } 28% { opacity:1; } 62%,100% { opacity:0; transform:translateX(55%) rotate(10deg); } }
+@media (max-width:720px) { .booking-card--ready { padding-top:clamp(60px,13vw,100px); }.booking-entry { grid-template-columns:1fr; gap:42px; margin-top:58px; }.booking-browser__body { min-height:330px; padding:28px; }.booking-qr-card { width:min(68%,240px); }.booking-entry__copy h2 { font-size:clamp(36px,11vw,56px); }.booking-entry__copy .button { width:100%; justify-content:space-between; } }
+@media (max-width:900px) { .booking-entry { grid-template-columns:1fr; gap:42px; }.booking-browser { width:100%; }.booking-demo { margin:0 auto; }.booking-entry__copy { width:min(100%,420px); margin:0 auto; } }
+@media (max-width:900px) {
+  .booking-demo { width:100%; max-width:520px; margin-inline:auto; padding:16px; transform:none; }
+  .booking-demo__scan-target { left:clamp(14px,5vw,20px); }
+  .booking-demo__scan-line { left:clamp(14px,5vw,20px); }
+}
+@media (max-width:480px) {
+  .booking-demo { padding:12px; }
+  .booking-demo__phone { width:148px; height:268px; }
+  .booking-demo__scan-target { left:14px; width:112px; }
+  .booking-demo__scan-line { left:14px; width:108px; }
+}
+@media (prefers-reduced-motion:reduce) { .booking-browser__pulse,.booking-browser__shot,.booking-entry__copy .button::after { animation:none; }.booking-browser__pulse { opacity:.7; transform:none; }.booking-browser__shot { opacity:1; transform:none; }.booking-entry__copy .button::after { opacity:.22; transform:translateX(0) rotate(10deg); } }
+
+/* Booking flow simulation: the browser body demonstrates the actual interaction sequence. */
+.booking-demo { position:relative; width:100%; max-width:430px; padding:20px; border:1px solid var(--line); border-radius:10px; background:var(--white); box-shadow:0 14px 30px color-mix(in srgb,var(--ink) 10%,transparent); container-type:inline-size; }
+.booking-demo__head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding-bottom:16px; border-bottom:1px solid var(--line); color:var(--ink); font:12px var(--mono); }
+.booking-demo__head b { color:var(--muted); font-size:10px; font-weight:400; }
+.booking-demo__steps { display:flex; align-items:center; gap:7px; margin:18px 0; color:var(--muted); font:10px var(--mono); }
+.booking-demo__steps i { height:1px; flex:1; background:var(--line); }
+.booking-demo__steps span { transition:color .2s ease; }
+.booking-demo__steps span:nth-of-type(1) { animation:booking-step-label 12s ease-in-out infinite; }
+.booking-demo__steps span:nth-of-type(2) { animation:booking-step-label 12s 4s ease-in-out infinite; }
+.booking-demo__steps span:nth-of-type(3) { animation:booking-step-label 12s 8s ease-in-out infinite; }
+.booking-demo__screen { position:relative; min-height:154px; overflow:hidden; padding:18px; border-radius:7px; background:var(--bg); }
+.booking-demo__screen-step { position:absolute; inset:18px; display:flex; flex-direction:column; justify-content:center; gap:9px; opacity:0; transform:translateY(10px); animation:booking-screen-step 12s ease-in-out infinite; }
+.booking-demo__screen-step small { color:var(--accent); font:10px var(--mono); letter-spacing:.06em; }
+.booking-demo__screen-step strong { color:var(--ink); font-size:22px; letter-spacing:-.05em; }
+.booking-demo__screen-step span { width:max-content; padding:9px 12px; border:1px solid color-mix(in srgb,var(--accent) 50%,var(--line)); border-radius:6px; color:var(--ink); background:var(--white); font-size:12px; }
+.booking-demo__screen-step--time { animation-delay:4s; }
+.booking-demo__screen-step--confirm { animation-delay:8s; }
+.booking-demo__status { display:flex; align-items:center; gap:8px; margin-top:16px; color:var(--muted); font:10px var(--mono); }
+.booking-demo__status > span { width:7px; height:7px; border-radius:50%; background:var(--accent); animation:booking-status 12s ease-in-out infinite; }
+.booking-demo__status em { margin-left:auto; font-style:normal; }
+.booking-demo__pointer { position:absolute; z-index:2; left:102px; top:224px; width:15px; height:15px; border:2px solid var(--accent); border-radius:50%; background:color-mix(in srgb,var(--accent) 22%,transparent); animation:booking-pointer 12s cubic-bezier(.2,.8,.2,1) infinite; }
+.booking-demo__pointer::after { content:''; position:absolute; inset:-8px; border:1px solid color-mix(in srgb,var(--accent) 45%,transparent); border-radius:50%; opacity:0; animation:booking-click 12s ease-in-out infinite; }
+.booking-entry__copy .booking-qr-card { width:min(100%,220px); margin:0 auto 22px; padding:10px; }
+.booking-entry__copy .booking-qr-card span { display:block; padding-top:8px; color:var(--muted); text-align:center; font:10px var(--mono); }
+@keyframes booking-screen-step { 0%,27% { opacity:1; transform:none; } 33%,100% { opacity:0; transform:translateY(-8px); } }
+@keyframes booking-step-fly-in { from { opacity:0; transform:translateX(34px); } 60% { opacity:1; transform:translateX(-4px); } to { opacity:1; transform:none; } }
+@keyframes booking-step-label { 0%,27% { color:var(--accent); } 33%,100% { color:var(--muted); } }
+@keyframes booking-status { 0%,27% { transform:scale(1); } 33%,100% { transform:scale(.7); opacity:.45; } }
+@keyframes booking-pointer { 0%,27% { transform:translate(0,0); } 33%,60% { transform:translate(72px,26px); } 66%,93% { transform:translate(145px,50px); } 100% { transform:translate(0,0); } }
+@keyframes booking-click { 0%,22% { opacity:0; transform:scale(.4); } 25%,29% { opacity:1; transform:scale(1); } 32%,100% { opacity:0; transform:scale(1.5); } }
+@media (prefers-reduced-motion:reduce) { .booking-demo__steps span,.booking-demo__screen-step,.booking-demo__status > span,.booking-demo__pointer,.booking-demo__pointer::after { animation:none; }.booking-demo__steps span:first-of-type { color:var(--accent); }.booking-demo__screen-step { opacity:0; transform:none; }.booking-demo__screen-step:first-child { opacity:1; }.booking-demo__pointer { transform:none; }.booking-browser__step { transition:none; }.booking-browser__step.is-active { opacity:1; transform:none; } }
+
+/* QR scan to LINE login to booking flow, using the supplied phone-screen assets. */
+.booking-demo { max-width:520px; padding:16px; }
+.booking-demo__scene { position:relative; min-height:320px; overflow:hidden; border-radius:7px; background:linear-gradient(135deg,color-mix(in srgb,var(--surface) 85%,var(--bg)),var(--bg)); animation:booking-demo-cycle 29s ease-in-out infinite; }
+.booking-demo__scan-target { position:absolute; top:84px; left:20px; z-index:1; width:122px; padding:8px; border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line)); border-radius:8px; background:var(--white); box-shadow:0 12px 25px color-mix(in srgb,var(--ink) 12%,transparent); animation:booking-target 29s ease-in-out infinite; }
+.booking-demo__scan-target small { display:block; margin-bottom:7px; color:var(--accent); font:9px var(--mono); letter-spacing:.05em; }
+.booking-demo__scan-target img { display:block; width:100%; height:auto; }
+.booking-demo__phone { position:absolute; top:10px; right:54px; z-index:3; width:158px; height:286px; padding:7px; border:3px solid #211e1d; border-radius:22px; background:#151313; box-shadow:0 18px 28px color-mix(in srgb,var(--ink) 28%,transparent); transform-origin:center center; transform:translate(18px,4px) rotate(6deg); animation:booking-phone-scan 29s cubic-bezier(.2,.8,.2,1) infinite; }
+.booking-demo__phone::before { content:''; position:absolute; top:5px; left:50%; z-index:2; width:42px; height:5px; border-radius:99px; background:#080808; transform:translateX(-50%); }
+.booking-demo__phone-screen { position:relative; width:100%; height:100%; overflow:hidden; border-radius:15px; background:#000; }
+.booking-demo__video { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1s ease; }
+.booking-demo__video.is-active { opacity:1; }
+.booking-demo__hand { position:absolute; right:-18px; bottom:-58px; z-index:2; width:142px; height:192px; border-radius:62% 48% 22% 26%; background:linear-gradient(135deg,#f2c1a5,#c98670); box-shadow:-8px -4px 18px color-mix(in srgb,var(--ink) 18%,transparent); transform-origin:center center; transform:rotate(-17deg); animation:booking-hand-scan 29s cubic-bezier(.2,.8,.2,1) infinite; }
+.booking-demo__hand::before { content:''; position:absolute; top:-18px; left:20px; width:43px; height:92px; border-radius:60% 60% 45% 45%; background:#e7ad91; transform:rotate(16deg); box-shadow:22px 9px 0 -5px #e7ad91,42px 21px 0 -8px #e7ad91; }
+.booking-demo__scan-line { position:absolute; top:104px; left:20px; z-index:4; width:118px; height:2px; background:linear-gradient(90deg,transparent 0%,color-mix(in srgb,var(--accent) 72%,white) 18%,#fff 50%,color-mix(in srgb,var(--accent) 72%,white) 82%,transparent 100%); box-shadow:0 0 4px #fff,0 0 10px var(--accent),0 0 22px color-mix(in srgb,var(--accent) 72%,transparent); filter:drop-shadow(0 0 4px var(--accent)); animation:booking-scan-line 29s ease-in-out infinite; }
+@media (max-width:720px) { .booking-demo__scan-line { z-index:2!important; } }
+.booking-demo__caption { position:absolute; z-index:5; left:16px; bottom:14px; color:var(--muted); font:9px var(--mono); letter-spacing:.04em; opacity:0; }
+.booking-demo__caption--scan { animation:booking-caption-scan 29s ease-in-out infinite; }
+.booking-demo__caption--login { animation:booking-caption-login 29s ease-in-out infinite; }
+.booking-demo__caption--flow { animation:booking-caption-flow 29s ease-in-out infinite; }
+.booking-demo__status { position:relative; z-index:6; }
+@keyframes booking-target { 0%,22% { opacity:1; } 30%,100% { opacity:.3; } }
+@keyframes booking-demo-cycle { 0%,8% { opacity:1; } 84% { opacity:1; } 96%,100% { opacity:0; } }
+@keyframes booking-phone-scan { 0%,5% { transform:translate(18px,4px) rotate(6deg) scale(1); } 12%,22% { transform:translate(-64px,45px) rotate(-5deg) scale(1); } 32% { transform:translate(-30px,28px) rotate(-2deg) scale(1.08); } 60% { transform:translate(-8px,2px) rotate(0) scale(1.28); } 84%,100% { transform:translate(-4px,-8px) rotate(0) scale(1.46); } }
+@keyframes booking-hand-scan { 0%,5% { transform:translate(14px,18px) rotate(-17deg) scale(1); } 12%,22% { transform:translate(-56px,42px) rotate(-11deg) scale(1); } 32% { transform:translate(-36px,30px) rotate(-7deg) scale(1.08); } 60% { transform:translate(-18px,12px) rotate(-2deg) scale(1.2); } 84%,100% { transform:translate(-8px,2px) rotate(0) scale(1.35); } }
+@keyframes booking-scan-line { 0%,2% { opacity:0; transform:translateY(0); } 3%,5% { opacity:1; transform:translateY(0); } 11%,14% { opacity:1; transform:translateY(112px); } 15%,100% { opacity:0; transform:translateY(112px); } }
+@keyframes booking-caption-scan { 0%,14% { opacity:1; } 17%,100% { opacity:0; } }
+@keyframes booking-caption-login { 0%,14% { opacity:0; } 16%,29% { opacity:1; } 32%,100% { opacity:0; } }
+@keyframes booking-caption-flow { 0%,27% { opacity:0; } 30%,95% { opacity:1; } 98%,100% { opacity:0; } }
+@media (prefers-reduced-motion:reduce) { .booking-demo__scene,.booking-demo__scan-target,.booking-demo__phone,.booking-demo__hand,.booking-demo__scan-line,.booking-demo__caption { animation:none; }.booking-demo__scene { opacity:1; }.booking-demo__phone { transform:none; }.booking-demo__hand { transform:rotate(-17deg); }.booking-demo__scan-line,.booking-demo__caption--scan { opacity:1; }.booking-demo__caption--login,.booking-demo__caption--flow { opacity:0; } }
+
+/* Only very narrow screens need a small phone correction; desktop/tablet stay unchanged. */
+@media (max-width:600px) { .booking-demo__phone { right:calc(18px - clamp(16px,7vw,28px)); } }
+@keyframes booking-phone-scan-mobile {
+  0%,5% { transform:translate(18px,4px) rotate(6deg) scale(1); }
+  12%,22% { transform:translate(-64px,45px) rotate(-5deg) scale(1); }
+  56% { transform:translate(-64px,8px) rotate(0) scale(1.04); }
+  72% { transform:translate(-64px,-3px) rotate(0) scale(1.05); }
+  84%,100% { transform:translate(-64px,-12px) rotate(0) scale(1.05); }
+}
+@media (max-width:600px) { .booking-demo__phone { animation-name:booking-phone-scan-mobile; } }
+
+/* Final booking layout overrides: compact first view with no intro transition. */
+.booking-card--ready { max-width:1180px; padding:clamp(34px,4vw,52px) 20px 44px; }
+.booking-card--ready > .eyebrow { display:none; }
+.booking-card--ready > h1 { max-height:none; margin-bottom:16px; font-size:clamp(26px,3.5vw,51px); }
+.booking-card--ready .booking-entry { margin-top:30px; }
+
+/* Keep every page H1 at the same scale as the booking page title. */
+h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { font-size:clamp(26px,3.5vw,51px); }
+.page-hero--compact h1 { font-size:clamp(26px,3.5vw,51px); }
+.home-link h2,.intro h2,.motion-copy h2,.journal h2,.studio h2,.cta h2,.callout h2,.service-flow__intro h2,.booking-entry__copy h2 { font-size:clamp(26px,3.5vw,51px); }
+@media (max-width:720px) { .page-hero--service { display:block; }.page-hero--service .page-hero__copy { max-width:none; }.service-hero-art { min-height:390px; margin-top:48px; }.service-hero-art__label { top:18px; left:18px; }.service-hero-art__status { right:18px; bottom:18px; }.service-hero-art--scan-error .service-spine { transform:scale(.82); }.service-hero-art--scan-error::before { width:calc(100% - 70px); max-width:calc(100% - 24px); }.service-hero-art--scan-error::after { width:calc(100% - 24px); max-width:calc(100% - 24px); } }
+.callout__signal { position:relative; grid-column:1 / -1; display:flex; align-items:flex-end; gap:8px; height:58px; margin-top:8px; overflow:hidden; opacity:.9; }
+.callout__signal::before { content:''; position:absolute; right:0; bottom:7px; left:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:.45; }
+.callout__signal span { position:relative; display:block; width:7px; height:18px; border-radius:99px; background:var(--accent); box-shadow:0 0 14px var(--accent); transform-origin:bottom; animation:callout-signal 2.8s ease-in-out infinite; }
+.callout__signal span:nth-child(2) { height:32px; animation-delay:.18s; }.callout__signal span:nth-child(3) { height:23px; animation-delay:.34s; }.callout__signal span:nth-child(4) { height:46px; animation-delay:.52s; }.callout__signal span:nth-child(5) { height:28px; animation-delay:.7s; }.callout__signal span:nth-child(6) { height:38px; animation-delay:.88s; }.callout__signal span:nth-child(7) { height:20px; animation-delay:1.06s; }
+@keyframes callout-signal { 0%,100% { opacity:.35; transform:scaleY(.45); } 42%,58% { opacity:1; transform:scaleY(1); } }
+.journal-typewriter { position:relative; max-width:560px; }
+.journal-typewriter::after { content:'▋'; display:inline-block; margin-left:3px; color:var(--accent); animation:typewriter-caret .9s steps(1,end) infinite; }
+@keyframes typewriter-caret { 0%,45% { opacity:1; } 46%,100% { opacity:0; } }
+@media (prefers-reduced-motion:reduce) { .service-hero-art::before,.service-hero-art::after,.service-hero-art__status span,.service-spine i,.service-spine i::after,.callout__signal span,.journal-typewriter::after { animation:none; }.service-spine i { transform:rotate(0); border-color:var(--accent); }.service-spine i::after { opacity:1; transform:translate(-50%,-50%) scale(1); }.journal-typewriter::after { display:none; } }
+
+</style></head><body><div class="site-shell"><header class="site-header"><a class="brand" href="/" aria-label="舒逸首頁"><img class="brand-logo brand-logo--light" src="./素材/淺色系-1K.jpeg" alt="舒逸 Shu Yi"><img class="brand-logo brand-logo--dark" src="./素材/深色系-1K.jpeg" alt="" aria-hidden="true"><span>SHU YI</span></a><nav class="site-nav" aria-label="主要導覽"><a href="./services/">活化調理</a><a href="./journal/">舒逸日常</a><a href="./studio/">工作室</a><a href="./booking/">預約</a></nav><div class="header-actions"><button class="theme-switch" type="button" aria-label="切換深淺色主題" aria-pressed="false"><span class="theme-switch__dot"></span><span class="theme-switch__label">LIGHT</span></button><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false"><span></span><span></span></button></div></header><main><section class="hero" aria-labelledby="hero-title"><div class="hero-copy"><h1 id="hero-title">把身體<br><em>調回</em>舒適的樣子</h1><p class="hero-lead">美式活化槍全身調理，搭配舒緩與個人化附加服務。不是按摩，是重新認識身體的節奏。</p><div class="hero-actions"><a class="button button--primary" href="./services/">認識活化調理</a></div></div><div class="hero-stage" aria-label="舒逸品牌識別"><div class="orb orb--one"></div><div class="orb orb--two"></div><img class="hero-logo hero-logo--light" src="./素材/淺色系-1K.jpeg" alt=""><img class="hero-logo hero-logo--dark" src="./素材/深色系-1K.jpeg" alt=""><p class="hero-stamp">MOVE<br>WELL<br>LIVE<br>LIGHT</p></div></section><section class="home-links section"><a class="home-link" href="./services/"><span>01</span><div><p>THE SHU YI WAY</p><h2>不只放鬆，<em>重新動起來。</em></h2></div><b>→</b></a><a class="home-link" href="./journal/"><span>02</span><div><p>THE SHU YI JOURNAL</p><h2>給生活一點<em>新的情報。</em></h2></div><b>→</b></a><a class="home-link" href="./studio/"><span>03</span><div><p>YOUR PLACE TO RESET</p><h2>一個留給身體的<em>自在空間。</em></h2></div><b>→</b></a></section><section class="motion-feature section"><div class="motion-video"><video autoplay muted loop playsinline poster="./素材/深色系-1K.jpeg"><source src="./素材/單純動畫-01.mp4" type="video/mp4"></video><button class="play-button" type="button" data-video="./素材/單純動畫-01.mp4" aria-label="播放舒逸影片">PLAY <span>↗</span></button></div><div class="motion-copy"><p class="eyebrow">MADE FOR YOUR EVERYDAY</p><h2>留給身體<br>一些<em>餘裕。</em></h2><p>久坐、訓練後、想讓自己輕一點的那天，都可以從這裡開始。</p><a class="button button--line" href="./booking/">前往預約 <span>→</span></a></div></section></main><footer class="site-footer"><a class="brand" href="/"><span>舒逸</span><small>SHU YI</small></a><p>© 2026 SHU YI. MOVE WELL, LIVE LIGHT.</p><div><a href="./journal/">JOURNAL</a><a href="./booking/">BOOKING</a></div></footer></div><dialog class="video-dialog" id="video-dialog"><button class="dialog-close" type="button" aria-label="關閉影片">×</button><video controls playsinline id="dialog-video"></video></dialog><script>
+(() => {
+  if (!document.querySelector('link[rel="icon"]')) { const favicon = document.createElement('link'); favicon.rel = 'icon'; favicon.type = 'image/jpeg'; favicon.href = '/素材/淺色系-1K.jpeg'; document.head.append(favicon); }
+  const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  const root = document.documentElement;
+  const switcher = document.querySelector('.theme-switch');
+  if (switcher) {
+    const label = switcher.querySelector('.theme-switch__label');
+    const setTheme = (theme) => { root.dataset.theme = theme; localStorage.setItem('shuyi-theme', theme); switcher.setAttribute('aria-pressed', String(theme === 'dark')); label.textContent = theme === 'dark' ? 'DARK' : 'LIGHT'; };
+    setTheme(localStorage.getItem('shuyi-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+    switcher.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+  }
+  const menuButton = document.querySelector('.menu-button');
+  if (menuButton) menuButton.addEventListener('click', () => { const open = document.body.classList.toggle('menu-open'); menuButton.setAttribute('aria-expanded', String(open)); });
+  const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
+  const currentPath = normalizePath(window.location.pathname);
+  const typewrite = (element, text) => {
+    element.classList.add('journal-typewriter');
+    element.setAttribute('aria-label', text);
+    element.textContent = '';
+    let textIndex = 0;
+    const typeNext = () => {
+      if (textIndex >= text.length) return;
+      const character = text[textIndex++];
+      element.textContent += character;
+      window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30);
+    };
+    typeNext();
+  };
+  document.querySelectorAll('.site-nav a').forEach((link) => { if (normalizePath(new URL(link.href, window.location.href).pathname) === '/journal') link.textContent = '更懂自己'; });
+  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=scan-smooth-20261018`; }
+  if (currentPath === '/services') { const callout = document.querySelector('.callout'); const formula = callout?.querySelector('h2 em'); if (formula) formula.textContent = '一套固定公式'; if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
+  if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) typewrite(journalLead, journalText); }
+  if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; }
+  document.querySelectorAll('.site-nav a').forEach((link) => { const isCurrent = normalizePath(new URL(link.href, window.location.href).pathname) === currentPath; link.classList.toggle('is-current', isCurrent); if (isCurrent) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); link.addEventListener('click', () => document.body.classList.remove('menu-open')); });
+  const serviceHero = document.querySelector('.page-hero');
+  if (serviceHero && currentPath === '/services' && !serviceHero.classList.contains('page-hero--service')) {
+    const copy = document.createElement('div');
+    copy.className = 'page-hero__copy';
+    while (serviceHero.firstChild) copy.append(serviceHero.firstChild);
+    const art = document.createElement('div');
+    art.className = 'service-hero-art service-hero-art--scan-error';
+    art.setAttribute('aria-label', '脊椎逐節修復的示意動畫');
+    art.innerHTML = '<div class="service-spine" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="service-hero-art__status"><span></span><span>身體訊號</span></div>';
+    serviceHero.classList.add('page-hero--service');
+    serviceHero.append(copy, art);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const nodes = [...art.querySelectorAll('.service-spine i')];
+      const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+      const clearNodes = () => nodes.forEach((node) => node.classList.remove('is-scanned', 'is-error', 'is-repaired', 'is-repairing', 'is-restoring', 'is-normalized'));
+      const scanDown = async () => {
+        art.classList.remove('phase-repair', 'phase-release');
+        art.classList.add('phase-scan');
+        clearNodes();
+        for (let index = 0; index < nodes.length; index += 1) {
+          const node = nodes[index];
+          node.classList.add('is-scanned');
+          if (index === 3 || index === 7) {
+            await wait(220);
+            node.classList.add('is-error');
+            await wait(630);
+          } else await wait(430);
+        }
+        await wait(260);
+        repairDown();
+      };
+      const repairDown = async () => {
+        art.classList.remove('phase-scan');
+        art.classList.add('phase-repair');
+        await wait(350);
+        for (const index of [3, 7]) {
+          nodes[index].classList.add('is-repairing');
+          await wait(900);
+          nodes[index].classList.remove('is-repairing');
+          nodes[index].classList.add('is-repaired');
+          await wait(300);
+        }
+        releaseDown();
+      };
+      const releaseDown = async () => {
+        art.classList.remove('phase-repair');
+        art.classList.add('phase-release');
+        await wait(300);
+        for (let index = 0; index < nodes.length; index += 1) {
+          const node = nodes[index];
+          node.classList.remove('is-scanned');
+          if (index === 3 || index === 7) {
+            node.classList.add('is-restoring');
+            await wait(430);
+            node.classList.remove('is-restoring', 'is-repaired', 'is-error');
+            node.classList.add('is-normalized');
+          } else await wait(430);
+        }
+        await wait(900);
+        scanDown();
+      };
+      scanDown();
+    }
+  }
+  document.querySelectorAll('.hero h1, .page-hero h1, .booking-card h1, .studio-page__copy h1').forEach((heading) => { heading.innerHTML = heading.innerHTML.replaceAll('。', ''); });
+  const heroStamp = document.querySelector('.hero-stamp');
+  if (heroStamp) { const words = ['MOVE', 'WELL', 'LIVE', 'LIGHT']; heroStamp.setAttribute('aria-label', words.join(' ')); heroStamp.innerHTML = words.map((word, index) => `<span style="--word-index:${index}">${word}</span>`).join(''); }
+  const homeHero = document.querySelector('.hero');
+  if (homeHero) {
+    const heroStage = homeHero.querySelector('.hero-stage');
+    const heroTitle = homeHero.querySelector('h1');
+    const heroLead = homeHero.querySelector('.hero-lead');
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduceMotion) {
+      homeHero.classList.add('home-intro');
+      if (heroTitle) heroTitle.classList.add('home-title-fade');
+      const heroText = '美式活化槍全身調理，搭配舒緩與個人化附加服務。不是按摩，是重新認識身體的節奏。';
+      if (heroLead) {
+        heroLead.textContent = '';
+        window.setTimeout(() => typewrite(heroLead, heroText), 2000);
+      }
+      if (heroStage) {
+        const stageBounds = heroStage.getBoundingClientRect();
+        const heroBounds = homeHero.getBoundingClientRect();
+        const targetX = window.innerWidth / 2;
+        const targetY = heroBounds.top + heroBounds.height / 2;
+        heroStage.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`);
+        heroStage.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`);
+        heroStage.classList.add('hero-stage--intro');
+        window.setTimeout(() => heroStage.classList.remove('hero-stage--intro'), 3550);
+      }
+      homeHero.addEventListener('pointermove', (event) => {
+        const bounds = homeHero.getBoundingClientRect();
+        homeHero.style.setProperty('--pointer-x', `${((event.clientX - bounds.left) / bounds.width * 100).toFixed(1)}%`);
+        homeHero.style.setProperty('--pointer-y', `${((event.clientY - bounds.top) / bounds.height * 100).toFixed(1)}%`);
+      });
+      homeHero.addEventListener('pointerleave', () => {
+        homeHero.style.removeProperty('--pointer-x');
+        homeHero.style.removeProperty('--pointer-y');
+      });
+      const homeMotionTargets = [...document.querySelectorAll('.home-links .home-link, .motion-copy h2')];
+      homeMotionTargets.forEach((element, index) => element.classList.add(index % 2 ? 'clip-reveal--right' : 'text-mask-reveal'));
+      const revealHomeMotion = () => {
+        homeMotionTargets.forEach((element) => {
+          const bounds = element.getBoundingClientRect();
+          if (bounds.top < window.innerHeight * .92 && bounds.bottom > 0) element.classList.add('is-motion-visible');
+        });
+        if (heroStage) heroStage.style.setProperty('--hero-scroll-shift', `${Math.min(window.scrollY, 600) * -.075}px`);
+      };
+      requestAnimationFrame(revealHomeMotion);
+      window.addEventListener('scroll', revealHomeMotion, { passive:true });
+    }
+  }
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
+  const serviceList = document.querySelector('.service-list');
+  if (serviceList && !document.querySelector('[data-flow-progress]')) {
+    serviceList.closest('section').insertAdjacentHTML('afterend', '<section class="service-flow section" data-flow-progress><div class="service-flow__intro"><p class="eyebrow">THE SHU YI WAY / 02</p><h2>從理解開始<br><em>慢慢找回活動</em></h2><p>每一次調理都從當下狀態出發，在過程裡感受身體，再把合適的照顧帶回日常。</p></div><div class="service-flow__track"><div class="service-flow__line" aria-hidden="true"><i></i></div><ol class="service-flow__steps"><li class="service-flow__step is-active"><span>01</span><div><h3>先理解狀態</h3><p>從今天的身體感受與日常活動開始，找到舒服的起點。</p></div></li><li class="service-flow__step"><span>02</span><div><h3>安排活化節奏</h3><p>依當下狀態安排調理，不套用每個人都一樣的固定流程。</p></div></li><li class="service-flow__step"><span>03</span><div><h3>留意身體變化</h3><p>在過程中保持感受，讓活動與舒適度成為調整的方向。</p></div></li><li class="service-flow__step"><span>04</span><div><h3>帶回日常裡</h3><p>留下能延續到生活中的身體照顧空間，慢慢找回自在。</p></div></li></ol></div></section>');
+  }
+  const serviceFlow = document.querySelector('[data-flow-progress]');
+  if (serviceFlow) {
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const flowSteps = [...serviceFlow.querySelectorAll('.service-flow__step')]; let flowRevealIndex = 0; let flowRevealTarget = -1; let flowRevealTimer = 0; const revealFlowThrough = (targetIndex) => { flowRevealTarget = Math.max(flowRevealTarget, Math.min(targetIndex, flowSteps.length - 1)); if (flowRevealTimer) return; const revealNext = () => { flowRevealTimer = 0; if (flowRevealIndex > flowRevealTarget) return; flowSteps[flowRevealIndex].classList.add('is-revealed'); flowRevealIndex += 1; if (flowRevealIndex <= flowRevealTarget) flowRevealTimer = window.setTimeout(revealNext, 240); }; revealNext(); }; const flowObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) revealFlowThrough(flowSteps.indexOf(entry.target)); }), { threshold: .12 }); flowSteps.forEach((step) => { step.classList.add('reveal-on-scroll'); flowObserver.observe(step); }); }
+    const steps = [...serviceFlow.querySelectorAll('.service-flow__step')]; const progress = serviceFlow.querySelector('.service-flow__line i'); let progressFrame = 0;
+    const updateFlow = () => { progressFrame = 0; const bounds = serviceFlow.getBoundingClientRect(); const travel = Math.max(bounds.height - window.innerHeight * .35, 1); const amount = Math.min(1, Math.max(0, (window.innerHeight * .32 - bounds.top) / travel)); if (progress) progress.style.transform = `scaleY(${amount})`; };
+    window.addEventListener('scroll', () => { if (!progressFrame) progressFrame = requestAnimationFrame(updateFlow); }, { passive: true }); window.addEventListener('resize', updateFlow, { passive: true }); updateFlow();
+    if ('IntersectionObserver' in window) { let activeStepIndex = 0; let activeStepTarget = 0; let activeStepTimer = 0; let previousScrollY = window.scrollY; const moveActiveStep = (targetIndex) => { activeStepTarget = Math.max(0, Math.min(targetIndex, steps.length - 1)); if (activeStepTimer) return; const advance = () => { activeStepTimer = 0; if (activeStepIndex === activeStepTarget) return; activeStepIndex += activeStepIndex < activeStepTarget ? 1 : -1; steps.forEach((step) => step.classList.remove('is-active')); steps[activeStepIndex].classList.add('is-active'); if (activeStepIndex !== activeStepTarget) activeStepTimer = window.setTimeout(advance, 180); }; advance(); }; const stepObserver = new IntersectionObserver((entries) => { const visible = entries.filter((entry) => entry.isIntersecting).map((entry) => steps.indexOf(entry.target)).filter((index) => index >= 0); if (!visible.length) return; const scrollingDown = window.scrollY >= previousScrollY; previousScrollY = window.scrollY; moveActiveStep(scrollingDown ? Math.max(...visible) : Math.min(...visible)); }, { rootMargin: '-35% 0px -45% 0px', threshold: 0 }); steps.forEach((step) => stepObserver.observe(step)); }
+  }
+  const bookingCard = document.querySelector('.booking-card');
+  if (bookingCard && !bookingCard.querySelector('[data-booking-entry]')) {
+    bookingCard.classList.add('booking-card--ready');
+    const intro = bookingCard.querySelector('p:not(.eyebrow)');
+    const notice = bookingCard.querySelector('.booking-notice');
+    if (intro) intro.remove();
+    if (notice) notice.remove();
+    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-browser" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__bar"><i></i><i></i><i></i><span>line.me → sy.up.railway.app</span></div><div class="booking-browser__body"><div class="booking-demo"><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt=""></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted autoplay playsinline webkit-playsinline preload="auto" poster="../素材/預約流程登入介面.jpg"><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div></div></div><div class="booking-entry__copy"><div class="booking-qr-card"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描加入舒逸 LINE 官方帳號"><span>掃描加入 LINE@</span></div><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" href="https://sy.up.railway.app" target="_blank" rel="noopener">開啟預約平台 <span>↗</span></a></div></div>');
+    const bookingSteps = bookingCard.querySelector('.booking-browser__bar span');
+    if (bookingSteps) bookingSteps.className = 'booking-browser__steps';
+    if (bookingSteps) bookingSteps.innerHTML = '<b class="booking-browser__step booking-browser__step--scan">01 / 掃 QR Code 或點連結</b><b class="booking-browser__step booking-browser__step--login">02 / 登入 LINE</b><b class="booking-browser__step booking-browser__step--time">03 / 選日期與時間</b><b class="booking-browser__step booking-browser__step--service">04 / 選服務項目</b><b class="booking-browser__step booking-browser__step--confirm">05 / 確認預約</b>';
+    const bookingVideo = bookingCard.querySelector('.booking-demo__video');
+    if (bookingVideo) { bookingVideo.loop = false; bookingVideo.muted = true; bookingVideo.playsInline = true; bookingVideo.preload = 'auto'; }
+    const bookingStepItems = [...bookingCard.querySelectorAll('.booking-browser__step')];
+    const bookingCycleMs = 29000;
+    const bookingScanMs = 4500;
+    const bookingLoginMs = 10500;
+    const bookingTimeMs = 14500;
+    const bookingServiceMs = 18000;
+    const bookingVideoMaxTime = 19;
+    const bookingVideoFadeStart = 18.5;
+    let bookingVideoStopped = false;
+    let bookingVideoReady = false;
+    let bookingPreviousPhase = 0;
+    const bookingCycleStarted = performance.now();
+    const stopBookingVideoAtLimit = () => {
+      if (bookingVideo && bookingVideo.currentTime >= bookingVideoFadeStart) {
+        bookingVideo.classList.remove('is-active');
+      }
+      if (bookingVideo && bookingVideo.currentTime >= bookingVideoMaxTime) {
+        bookingVideoStopped = true;
+        bookingVideo.pause();
+        bookingVideo.currentTime = bookingVideoMaxTime;
+        bookingVideo.classList.remove('is-active');
+      }
+    };
+    if (bookingVideo) {
+      const tryStartBookingVideo = () => {
+        bookingVideoReady = bookingVideo.readyState >= 2;
+        if (bookingVideoReady && !bookingVideoStopped && performance.now() - bookingCycleStarted >= bookingScanMs) bookingVideo.play().catch(() => {});
+      };
+      bookingVideo.addEventListener('loadeddata', tryStartBookingVideo, { once:false });
+      bookingVideo.addEventListener('canplay', tryStartBookingVideo, { once:false });
+      bookingVideo.addEventListener('timeupdate', stopBookingVideoAtLimit);
+      bookingVideo.addEventListener('ended', () => {
+        bookingVideoStopped = true;
+        bookingVideo.classList.remove('is-active');
+      });
+      bookingVideo.load();
+    }
+    const syncBookingDemo = () => {
+      const phase = (performance.now() - bookingCycleStarted) % bookingCycleMs;
+      if (phase < bookingPreviousPhase) bookingVideoStopped = false;
+      bookingPreviousPhase = phase;
+      const activeStep = phase < bookingScanMs ? 0 : phase < bookingLoginMs ? 1 : phase < bookingTimeMs ? 2 : phase < bookingServiceMs ? 3 : 4;
+      bookingStepItems.forEach((step, index) => step.classList.toggle('is-active', index === activeStep));
+      if (!bookingVideo) return;
+      bookingVideo.classList.toggle('is-active', phase >= bookingScanMs && !bookingVideoStopped && bookingVideo.currentTime < bookingVideoFadeStart);
+      if (phase < bookingScanMs) {
+        if (!bookingVideo.paused) bookingVideo.pause();
+        if (bookingVideo.currentTime !== 0) bookingVideo.currentTime = 0;
+        bookingVideoStopped = false;
+      } else if (bookingVideoStopped) {
+        if (!bookingVideo.paused) bookingVideo.pause();
+      } else if (bookingVideo.currentTime >= bookingVideoMaxTime) {
+        bookingVideoStopped = true;
+        if (!bookingVideo.paused) bookingVideo.pause();
+        if (bookingVideo.currentTime > bookingVideoMaxTime) bookingVideo.currentTime = bookingVideoMaxTime;
+        bookingVideo.classList.remove('is-active');
+      } else if (bookingVideo.paused && !bookingVideo.ended && (bookingVideoReady || bookingVideo.readyState >= 2)) {
+        bookingVideo.currentTime = 0;
+        bookingVideo.play().catch(() => {});
+      }
+    };
+    syncBookingDemo();
+    window.setInterval(syncBookingDemo, 120);
+    const bookingCopy = bookingCard.querySelector('.booking-entry__copy > p');
+    if (bookingCopy) bookingCopy.remove();
+    const bookingButton = bookingCard.querySelector('.booking-entry__copy .button');
+    const bookingQrCard = bookingCard.querySelector('.booking-entry__copy .booking-qr-card');
+    if (bookingButton && bookingQrCard) bookingQrCard.before(bookingButton);
+  }
+  const grid = document.querySelector('#content-grid');
+  if (grid && window.SHU_YI_CONTENT) {
+    const renderContent = (filter = 'all') => { const items = window.SHU_YI_CONTENT.filter((item) => filter === 'all' || item.type === filter); grid.innerHTML = items.map((item) => { const title = escapeHtml(item.title); const cover = item.cover ? `<img class="card-cover" src="${escapeHtml(item.cover)}" alt="${title}">` : ''; const visual = cover || (item.type === 'video' ? `<button class="card-play" ${item.embed_url ? `data-youtube="${escapeHtml(item.embed_url)}"` : `data-video="${escapeHtml(item.video)}"`} aria-label="播放 ${title}">▶</button>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`); return `<article class="content-card content-card--${escapeHtml(item.accent)}"><div class="card-art">${visual}</div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p><a href="${escapeHtml(item.href)}">閱讀內容 <span>→</span></a></article>`; }).join(''); };
+    renderContent();
+    document.addEventListener('shuyi-content-ready', () => renderContent());
+    document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => { document.querySelectorAll('[data-filter]').forEach((item) => { item.classList.remove('is-active'); item.setAttribute('aria-selected', 'false'); }); button.classList.add('is-active'); button.setAttribute('aria-selected', 'true'); renderContent(button.dataset.filter); }));
+  }
+  const videoDialog = document.querySelector('#video-dialog'); const dialogVideo = document.querySelector('#dialog-video');
+  if (videoDialog && dialogVideo) { const dialogYoutube = document.createElement('iframe'); dialogYoutube.id = 'dialog-youtube'; dialogYoutube.title = 'YouTube 影片'; dialogYoutube.hidden = true; dialogYoutube.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; dialogYoutube.allowFullscreen = true; dialogVideo.after(dialogYoutube); document.addEventListener('click', (event) => { const play = event.target.closest('[data-video],[data-youtube]'); if (!play) return; event.preventDefault(); if (play.dataset.youtube) { dialogVideo.pause(); dialogVideo.removeAttribute('src'); dialogVideo.hidden = true; dialogYoutube.src = play.dataset.youtube; dialogYoutube.hidden = false; } else { dialogYoutube.removeAttribute('src'); dialogYoutube.hidden = true; dialogVideo.hidden = false; dialogVideo.src = play.dataset.video; dialogVideo.play(); } videoDialog.showModal(); }); videoDialog.querySelector('.dialog-close').addEventListener('click', () => { dialogVideo.pause(); dialogVideo.removeAttribute('src'); dialogYoutube.removeAttribute('src'); videoDialog.close(); }); }
+  document.body.style.visibility = 'visible';
+  document.body.style.animation = 'none';
+})();
+
+</script></body></html>
