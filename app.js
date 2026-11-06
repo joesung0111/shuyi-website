@@ -27,7 +27,7 @@
     typeNext();
   });
   document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '更懂自己'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
-  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-v2-20261029`; }
+  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=warm-editorial-redesign-20261106`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
   if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) { journalLead.classList.add('journal-typewriter'); journalLead.setAttribute('aria-label', journalText); journalLead.textContent = ''; let textIndex = 0; const typeNext = () => { if (textIndex >= journalText.length) return; const character = journalText[textIndex]; journalLead.textContent += character; textIndex += 1; window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30); }; typeNext(); } }
   if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; }
@@ -297,11 +297,11 @@
   document.body.style.visibility = 'visible';
   document.body.style.animation = 'none';
 
-  // Character art is decorative only. It never changes page copy, controls, or links.
+  // Persona art is presented as part of each page's visual composition.
   const mascots = {
-    cat: { src: '/素材/人物/06_逸貓_酷臉貓.png' },
-    stone: { src: '/素材/人物/12_逸石_稜角石.png' },
-    sun: { src: '/素材/人物/17_舒光球_光球.png' }
+    cat: { src: '/素材/人物/06_逸貓_酷臉貓.png', alt: '逸貓角色圖：自由獨立、療癒又有個性。' },
+    stone: { src: '/素材/人物/12_逸石_稜角石.png', alt: '逸石角色圖：穩定、耐心、紮實的支持。' },
+    sun: { src: '/素材/人物/17_舒光球_光球.png', alt: '舒光球角色圖：活力與暖心，像一顆小太陽。' }
   };
   const mascotForPath = currentPath === '/services' ? 'stone'
     : currentPath === '/studio' || currentPath === '/booking' ? 'sun'
@@ -309,36 +309,63 @@
     : currentPath.startsWith('/journal') ? 'cat'
     : 'sun';
   document.body.dataset.mascot = mascotForPath;
-  const addEmblem = (parent, mascotKey, className = 'character-emblem') => {
-    if (!parent || parent.querySelector(`.${className}`)) return;
-    const emblem = document.createElement('span');
-    emblem.className = className;
-    emblem.setAttribute('aria-hidden', 'true');
+  const makePersonaFigure = (key, className, decorative = false) => {
+    const figure = document.createElement('figure');
+    figure.className = className;
+    if (decorative) figure.setAttribute('aria-hidden', 'true');
     const image = document.createElement('img');
-    image.src = mascots[mascotKey].src;
-    image.alt = '';
-    image.loading = 'lazy';
+    image.src = mascots[key].src;
+    image.alt = decorative ? '' : mascots[key].alt;
     image.decoding = 'async';
-    emblem.append(image);
-    parent.append(emblem);
+    image.loading = 'eager';
+    figure.append(image);
+    return figure;
   };
   if (currentPath === '/') {
-    document.body.classList.add('has-character-trio');
+    const heroStage = document.querySelector('.hero-stage');
+    if (heroStage) {
+      const orbit = document.createElement('div');
+      orbit.className = 'hero-character-orbit';
+      ['cat', 'stone', 'sun'].forEach((key) => {
+        const figure = makePersonaFigure(key, `hero-orbit-persona hero-orbit-persona--${key}`, true);
+        orbit.append(figure);
+      });
+      heroStage.append(orbit);
+    }
     const homeLinks = [...document.querySelectorAll('.home-links .home-link')];
     homeLinks.forEach((link) => {
       const path = new URL(link.href, window.location.href).pathname;
-      const mascotKey = path.startsWith('/services') ? 'stone' : path.startsWith('/journal') ? 'cat' : 'sun';
-      addEmblem(link, mascotKey);
+      const key = path.startsWith('/services') ? 'stone' : path.startsWith('/journal') ? 'cat' : 'sun';
+      link.append(makePersonaFigure(key, 'home-character'));
     });
-    document.body.dataset.mascot = 'sun';
   }
-  const mascotFigure = document.createElement('span');
-  mascotFigure.className = 'site-mascot';
-  mascotFigure.setAttribute('aria-hidden', 'true');
-  addEmblem(mascotFigure, mascotForPath);
-  document.body.append(mascotFigure);
-  const footer = document.querySelector('.site-footer');
-  if (footer && 'IntersectionObserver' in window) {
-    new IntersectionObserver((entries) => mascotFigure.classList.toggle('is-footer-visible', entries.some((entry) => entry.isIntersecting))).observe(footer);
+  const pageHero = document.querySelector('.page-hero:not(.page-hero--service)');
+  if (pageHero) {
+    let copy = pageHero.querySelector('.page-hero__copy');
+    if (!copy) {
+      copy = document.createElement('div');
+      copy.className = 'page-hero__copy';
+      while (pageHero.firstChild) copy.append(pageHero.firstChild);
+    }
+    const key = currentPath === '/offerings' ? 'stone' : 'cat';
+    pageHero.classList.add('page-hero--persona', `page-hero--persona-${key}`);
+    pageHero.append(copy, makePersonaFigure(key, 'page-character'));
   }
+  const serviceArt = document.querySelector('.service-hero-art');
+  if (currentPath === '/services' && serviceArt) serviceArt.append(makePersonaFigure('stone', 'service-persona-art'));
+  const article = document.querySelector('main.article');
+  if (article) {
+    const meta = article.querySelector('.article-meta');
+    const title = article.querySelector('h1');
+    if (meta && title) {
+      const feature = document.createElement('div');
+      feature.className = 'article-hero';
+      article.insertBefore(feature, meta);
+      feature.append(meta, title, makePersonaFigure('cat', 'page-character article-character'));
+    }
+  }
+  const studioArt = document.querySelector('.studio-page__art');
+  if (studioArt) studioArt.append(makePersonaFigure('sun', 'studio-character'));
+  const bookingCardReady = document.querySelector('.booking-card--ready');
+  if (bookingCardReady) bookingCardReady.append(makePersonaFigure('sun', 'booking-character'));
 })();
