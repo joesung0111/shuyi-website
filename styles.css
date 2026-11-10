@@ -471,3 +471,14 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 #booking-guide-title,#booking-action{scroll-margin-top:110px}
 
 .offerings-page .page-hero{border-bottom:0}
+
+/* Booking policy */
+.booking-policy{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(28px,7vw,88px);align-items:start;margin-top:58px;padding:clamp(28px,4vw,48px);border:1px solid color-mix(in srgb,var(--accent) 36%,var(--line));border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,var(--surface)),var(--surface));text-align:left}
+.booking-policy__heading h2{margin:18px 0 0;font-size:clamp(26px,3.5vw,42px);line-height:1.35;letter-spacing:-.05em}
+.booking-policy__heading h2 em{color:var(--accent);font-style:normal}
+.booking-policy__list{display:grid;gap:0;margin:0;padding:0;list-style:none}
+.booking-policy__list li{display:grid;grid-template-columns:26px 1fr;gap:13px;align-items:start;padding:15px 0;border-bottom:1px solid var(--line)}
+.booking-policy__list li:first-child{padding-top:0}.booking-policy__list li:last-child{padding-bottom:0;border-bottom:0}
+.booking-policy__list li>span{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font:700 12px var(--mono)}
+.booking-policy__list p{margin:0;color:var(--muted);font-size:14px;line-height:1.85}
+@media(max-width:680px){.booking-policy{grid-template-columns:1fr;gap:25px;margin-top:38px;padding:24px 19px;border-radius:18px}.booking-policy__heading h2{font-size:27px}.booking-policy__list li{grid-template-columns:24px 1fr;gap:10px}.booking-policy__list p{font-size:13px;line-height:1.8}}
