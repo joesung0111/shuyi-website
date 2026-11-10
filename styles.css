@@ -855,3 +855,15 @@ body {
   .services-facts dd { font-size:13px; }
   .home-link-art { height:98px; }
 }
+/* Booking policy note */
+.booking-policy { padding-top:0; }
+.booking-policy__inner { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:clamp(36px,8vw,120px); align-items:start; padding:clamp(30px,4vw,56px); border:1px solid color-mix(in srgb,var(--accent) 38%,var(--line)); border-radius:22px; background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 9%,var(--surface)),var(--surface)); }
+.booking-policy__heading h2 { margin:18px 0 0; font-size:clamp(28px,4vw,52px); line-height:1.2; letter-spacing:-.06em; }
+.booking-policy__heading h2 em { color:var(--accent); font-style:normal; }
+.booking-policy__list { display:grid; gap:0; margin:0; padding:0; list-style:none; }
+.booking-policy__list li { display:grid; grid-template-columns:28px 1fr; gap:14px; align-items:start; padding:17px 0; border-bottom:1px solid var(--line); }
+.booking-policy__list li:first-child { padding-top:0; }
+.booking-policy__list li:last-child { padding-bottom:0; border-bottom:0; }
+.booking-policy__list li > span { display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:color-mix(in srgb,var(--accent) 16%,transparent); color:var(--accent); font:700 13px var(--mono); }
+.booking-policy__list p { margin:1px 0 0; color:var(--muted); font-size:14px; line-height:1.85; }
+@media (max-width:720px) { .booking-policy__inner { grid-template-columns:1fr; gap:28px; padding:27px 21px; border-radius:18px; }.booking-policy__heading h2 { font-size:30px; }.booking-policy__list li { grid-template-columns:25px 1fr; gap:11px; }.booking-policy__list p { font-size:13px; line-height:1.75; } }
