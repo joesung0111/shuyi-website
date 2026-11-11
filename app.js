@@ -230,6 +230,7 @@
   const setupHeroOrbit = (hero, reduceMotion) => {
     const orbit = hero?.querySelector('.hero-orbit');
     const interaction = orbit?.querySelector('.hero-orbit__interaction');
+    const visual = orbit?.querySelector('.hero-orbit__visual');
     const items = [...(orbit?.querySelectorAll('.hero-orbit__item') || [])];
     const hoverLabel = orbit?.querySelector('.hero-orbit__hover-label');
     const hoverLabelText = hoverLabel?.querySelector('span');
@@ -246,8 +247,99 @@
     const drag = { x:0, y:0, start:0, time:0, moved:false, down:false };
     let frame = 0;
     let introAnimations = [];
+    const sparks = { canvas:null, ctx:null, width:0, height:0, dpr:0, particles:[], remainder:0, energy:0 };
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     const nearest = (angle) => ((Math.round(-angle / step) % items.length) + items.length) % items.length;
+    if (!reduceMotion && visual) {
+      sparks.canvas = document.createElement('canvas');
+      sparks.canvas.className = 'hero-orbit__sparks';
+      sparks.canvas.setAttribute('aria-hidden', 'true');
+      visual.append(sparks.canvas);
+      sparks.ctx = sparks.canvas.getContext('2d');
+    }
+    const drawOrbitSparks = (rotationSpeed, dt) => {
+      const canvas = sparks.canvas;
+      const ctx = sparks.ctx;
+      if (!canvas || !ctx) return;
+      const width = canvas.offsetWidth;
+      const height = canvas.offsetHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (width < 1 || height < 1) return;
+      if (width !== sparks.width || height !== sparks.height || dpr !== sparks.dpr) {
+        sparks.width = width;
+        sparks.height = height;
+        sparks.dpr = dpr;
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      ctx.clearRect(0, 0, width, height);
+      const speed = Math.abs(rotationSpeed);
+      const impulse = clamp(speed / 2.3, 0, 1);
+      sparks.energy = Math.max(impulse, sparks.energy * Math.exp(-dt * 3.2));
+      const strength = sparks.energy;
+      const rate = speed > .035 || strength > .04 ? .55 + strength * 62 : 0;
+      sparks.remainder += rate * dt;
+      const color = ['#9ceeff', '#b4a4ff', '#ff9bc9', '#ffd68c', '#9df2cf'];
+      const radius = Math.min(width, height) / 2 - 13.5;
+      while (sparks.remainder >= 1 && sparks.particles.length < 150) {
+        sparks.remainder -= 1;
+        const angle = Math.random() * Math.PI * 2;
+        const nx = Math.cos(angle);
+        const ny = Math.sin(angle);
+        const tangent = Math.sign(rotationSpeed) || 1;
+        const burst = 38 + strength * 180;
+        const drift = 14 + strength * 52;
+        const lifetime = .38 + Math.random() * .42 + strength * .25;
+        sparks.particles.push({
+          x: width / 2 + nx * radius,
+          y: height / 2 + ny * radius,
+          vx: nx * burst - ny * drift * tangent,
+          vy: ny * burst + nx * drift * tangent,
+          life:lifetime,
+          maxLife:lifetime,
+          size:1.1 + Math.random() * (1.4 + strength * 3.1),
+          length:5 + Math.random() * (7 + strength * 25),
+          color:color[Math.floor(Math.random() * color.length)],
+          glow:4 + strength * 17
+        });
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      for (let index = sparks.particles.length - 1; index >= 0; index--) {
+        const particle = sparks.particles[index];
+        const stepTime = Math.min(dt, .05);
+        particle.x += particle.vx * stepTime;
+        particle.y += particle.vy * stepTime;
+        particle.vx *= Math.exp(-stepTime * 2.4);
+        particle.vy *= Math.exp(-stepTime * 2.4);
+        particle.life -= stepTime;
+        if (particle.life <= 0) {
+          sparks.particles.splice(index, 1);
+          continue;
+        }
+        const alpha = particle.life / particle.maxLife;
+        const velocityLength = Math.hypot(particle.vx, particle.vy) || 1;
+        const tailX = particle.x - particle.vx / velocityLength * particle.length;
+        const tailY = particle.y - particle.vy / velocityLength * particle.length;
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = particle.color;
+        ctx.lineWidth = particle.size;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = particle.color;
+        ctx.shadowBlur = particle.glow;
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(particle.x, particle.y);
+        ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, Math.max(.6, particle.size * .48), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.shadowBlur = 0;
+    };
     let labelItem = -1;
     const hideHoverLabel = () => {
       hoverLabel?.classList.remove('is-visible');
@@ -259,13 +351,14 @@
       introAnimations.forEach((animation) => animation.cancel());
       introAnimations = [];
     };
-    const render = (time = performance.now()) => {
+    const render = (time = performance.now(), rotationSpeed = 0, frameDelta = 0) => {
       const width = Math.max(1, orbit.clientWidth);
       const height = Math.max(1, orbit.clientHeight);
       const mobile = matchMedia('(max-width:720px)').matches;
       const radius = Math.min(width * (mobile ? .31 : .39), mobile ? 160 : 280);
       const planeY = Math.cos(72 * Math.PI / 180);
       const speedBlur = clamp(Math.abs(state.velocity) * .09, 0, .9);
+      drawOrbitSparks(rotationSpeed, frameDelta);
       const active = nearest(state.angle + state.lean);
       items.forEach((item, index) => {
         const angle = index * step + state.angle + state.lean;
@@ -351,6 +444,7 @@
       frame = requestAnimationFrame(update);
       const dt = clamp((time - state.lastFrame) / 1000, 0, .08);
       state.lastFrame = time;
+      const previousRotation = state.angle + state.lean;
       if (!reduceMotion) {
         const idle = time - state.lastInput;
         if (state.dragging || idle < 60) state.velocity *= Math.exp(-dt * 4);
@@ -363,7 +457,7 @@
         if (Math.abs(state.angle - state.target) < .0001) state.angle = state.target;
         state.lean += (state.leanTarget - state.lean) * (1 - Math.exp(-4 * dt));
       } else state.angle = state.target;
-      render(time);
+      render(time, dt > 0 ? (state.angle + state.lean - previousRotation) / dt : 0, dt);
     };
     orbitTurns.forEach((button) => button.addEventListener('click', () => {
       cancelIntro();
