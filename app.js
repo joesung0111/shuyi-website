@@ -321,27 +321,40 @@
         hideHoverLabel();
         return;
       }
-      const selectedAngle = state.hover * step + state.angle + state.lean;
-      const selectedCosine = Math.cos(selectedAngle);
-      const selectedScale = .56 + (selectedCosine + 1) * .27;
-      const labelX = width / 2 + Math.sin(selectedAngle) * radius;
-      const labelY = height / 2 + selectedCosine * radius * planeY + height * .04;
-      const itemHeight = selectedItem.offsetHeight * selectedScale;
       if (labelItem !== state.hover) {
         hoverLabelText.textContent = selectedItem.querySelector('.hero-orbit__label')?.textContent.trim() || selectedItem.getAttribute('aria-label') || '';
         labelItem = state.hover;
       }
       hoverLabel.classList.add('is-visible');
-      const bubbleWidth = hoverLabel.offsetWidth || 124;
-      const bubbleHeight = hoverLabel.offsetHeight || 42;
-      const safeX = clamp(labelX, bubbleWidth / 2 + 10, width - bubbleWidth / 2 - 10);
-      const tailX = clamp(bubbleWidth / 2 + labelX - safeX, 14, bubbleWidth - 14);
-      const aboveTop = labelY - itemHeight / 2 - bubbleHeight - 20;
-      const below = aboveTop < 8;
-      hoverLabel.style.left = `${safeX.toFixed(2)}px`;
-      hoverLabel.style.top = `${(below ? labelY + itemHeight / 2 + 18 : labelY - itemHeight / 2 - 4).toFixed(2)}px`;
+      const orbitRect = orbit.getBoundingClientRect();
+      const itemRect = selectedItem.getBoundingClientRect();
+      const itemLeft = itemRect.left - orbitRect.left;
+      const itemTop = itemRect.top - orbitRect.top;
+      const itemRight = itemLeft + itemRect.width;
+      const bubbleWidth = hoverLabel.offsetWidth || 186;
+      const bubbleHeight = hoverLabel.offsetHeight || 62;
+      const gap = 38;
+      let side = 'right';
+      let left = itemRight + gap;
+      if (left + bubbleWidth > width - 10) {
+        const leftSide = itemLeft - gap - bubbleWidth;
+        if (leftSide >= 10) {
+          side = 'left';
+          left = leftSide;
+        } else left = clamp(left, 10, Math.max(10, width - bubbleWidth - 10));
+      }
+      const topAbove = itemTop - bubbleHeight + 12;
+      const below = topAbove < 10;
+      const top = below ? itemTop + itemRect.height + 12 : topAbove;
+      const tailX = side === 'right'
+        ? clamp(itemRight - left + 10, 18, bubbleWidth - 18)
+        : clamp(itemLeft - left - 10, 18, bubbleWidth - 18);
+      hoverLabel.style.left = `${left.toFixed(2)}px`;
+      hoverLabel.style.top = `${top.toFixed(2)}px`;
       hoverLabel.style.setProperty('--bubble-tail-x', `${tailX.toFixed(1)}px`);
       hoverLabel.classList.toggle('is-below', below);
+      hoverLabel.classList.toggle('is-left-side', side === 'left');
+      const selectedCosine = Math.cos(state.hover * step + state.angle + state.lean);
       const labelDepthBlur = clamp(1 - selectedCosine + speedBlur * .28, 0, 2.5);
       hoverLabel.style.filter = `blur(${labelDepthBlur.toFixed(2)}px)`;
       hoverLabel.style.opacity = String((.58 + (selectedCosine + 1) * .21).toFixed(3));
