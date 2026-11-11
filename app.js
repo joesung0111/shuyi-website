@@ -1,6 +1,11 @@
 (() => {
   if (!document.querySelector('link[rel="icon"]')) { const favicon = document.createElement('link'); favicon.rel = 'icon'; favicon.type = 'image/jpeg'; favicon.href = '/素材/淺色系-1K.jpeg'; document.head.append(favicon); }
   const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  const bookingGuide = document.querySelector('.booking-info');
+  if (bookingGuide && !bookingGuide.querySelector('.booking-policy')) {
+    bookingGuide.querySelector('.booking-guide__lead')?.remove();
+    bookingGuide.insertAdjacentHTML('beforeend', '<section class="booking-policy" aria-labelledby="booking-policy-title"><div class="booking-policy__heading"><p class="eyebrow">A LITTLE NOTE BEFORE YOU COME</p><h2 id="booking-policy-title">💜 為了讓每位客人都能<br><em>順利安排調理時間</em></h2></div><ul class="booking-policy__list"><li><span aria-hidden="true">✓</span><p>請準時赴約，若遲到將依原預約時段安排，以免影響下一位客人的預約。</p></li><li><span aria-hidden="true">✓</span><p>如需取消或更改預約，請於 4 小時前通知我們。</p></li><li><span aria-hidden="true">✓</span><p>無故未到或臨時取消累積 2 次，未來預約可能需支付定金。</p></li></ul></section>');
+  }
   const root = document.documentElement;
   const switcher = document.querySelector('.theme-switch');
   if (switcher) {
@@ -27,7 +32,7 @@
     typeNext();
   });
   document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '更懂自己'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
-  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=redesign-ui-20261106c`; }
+  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=1.0.14`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
   if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) { journalLead.classList.add('journal-typewriter'); journalLead.setAttribute('aria-label', journalText); journalLead.textContent = ''; let textIndex = 0; const typeNext = () => { if (textIndex >= journalText.length) return; const character = journalText[textIndex]; journalLead.textContent += character; textIndex += 1; window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30); }; typeNext(); } }
   if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; }
