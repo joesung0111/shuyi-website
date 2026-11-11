@@ -104,12 +104,144 @@
   document.querySelectorAll('.hero h1, .page-hero h1, .booking-card h1, .studio-page__copy h1').forEach((heading) => { heading.innerHTML = heading.innerHTML.replaceAll('。', ''); });
   const heroStamp = document.querySelector('.hero-stamp');
   if (heroStamp) { const words = ['MOVE', 'WELL', 'LIVE', 'LIGHT']; heroStamp.setAttribute('aria-label', words.join(' ')); heroStamp.innerHTML = words.map((word, index) => `<span style="--word-index:${index}">${word}</span>`).join(''); }
+  const setupHeroCrystal = (hero, sphere, reduceMotion) => {
+    const backdrop = hero?.querySelector('.hero-backdrop');
+    const canvas = sphere?.querySelector('.hero-crystal__refraction');
+    const output = canvas?.getContext('2d');
+    if (!hero || !sphere || !backdrop || !output) return;
+    const scene = document.createElement('canvas');
+    const sceneContext = scene.getContext('2d', { willReadFrequently:true });
+    if (!sceneContext) return;
+    let pixels = null;
+    let sourceScale = 1;
+    let frame = 0;
+    let lastFrame = 0;
+    const quality = Math.min(window.devicePixelRatio || 1, 1.1);
+    const rebuildScene = () => {
+      if (!backdrop.complete || !backdrop.naturalWidth) return;
+      const bounds = hero.getBoundingClientRect();
+      scene.width = Math.max(1, Math.round(bounds.width * quality));
+      scene.height = Math.max(1, Math.round(bounds.height * quality));
+      sourceScale = scene.width / Math.max(1, bounds.width);
+      const scale = Math.max(scene.width / backdrop.naturalWidth, scene.height / backdrop.naturalHeight);
+      const drawWidth = backdrop.naturalWidth * scale;
+      const drawHeight = backdrop.naturalHeight * scale;
+      const offsetX = (scene.width - drawWidth) * (window.matchMedia('(max-width:720px)').matches ? .52 : .5);
+      const offsetY = (scene.height - drawHeight) * (window.matchMedia('(max-width:720px)').matches ? .5 : .54);
+      sceneContext.clearRect(0, 0, scene.width, scene.height);
+      sceneContext.drawImage(backdrop, offsetX, offsetY, drawWidth, drawHeight);
+      const dark = document.documentElement.dataset.theme === 'dark';
+      const vertical = window.matchMedia('(max-width:720px)').matches;
+      const tint = sceneContext.createLinearGradient(0, 0, vertical ? 0 : scene.width, vertical ? scene.height : 0);
+      if (dark) {
+        tint.addColorStop(0, vertical ? 'rgba(24,17,22,.70)' : 'rgba(24,17,22,.78)');
+        tint.addColorStop(.48, vertical ? 'rgba(24,17,22,.35)' : 'rgba(24,17,22,.52)');
+        tint.addColorStop(1, vertical ? 'rgba(24,17,22,.78)' : 'rgba(24,17,22,.22)');
+      } else {
+        tint.addColorStop(0, vertical ? 'rgba(255,248,244,.76)' : 'rgba(255,248,244,.72)');
+        tint.addColorStop(.48, vertical ? 'rgba(255,248,244,.32)' : 'rgba(255,248,244,.46)');
+        tint.addColorStop(1, vertical ? 'rgba(255,248,244,.76)' : 'rgba(255,248,244,.12)');
+      }
+      sceneContext.fillStyle = tint;
+      sceneContext.fillRect(0, 0, scene.width, scene.height);
+      pixels = sceneContext.getImageData(0, 0, scene.width, scene.height).data;
+      draw(performance.now());
+    };
+    const draw = (time) => {
+      if (!pixels) return;
+      const heroBounds = hero.getBoundingClientRect();
+      const sphereBounds = sphere.getBoundingClientRect();
+      const width = Math.max(1, Math.round(sphereBounds.width * quality));
+      const height = Math.max(1, Math.round(sphereBounds.height * quality));
+      if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+      const image = output.createImageData(width, height);
+      const data = image.data;
+      const radius = Math.min(width, height) / 2;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const originX = (sphereBounds.left - heroBounds.left) * sourceScale;
+      const originY = (sphereBounds.top - heroBounds.top) * sourceScale;
+      const wavePhase = time * .0011;
+      for (let y = 0; y < height; y += 1) {
+        const dy = y + .5 - centerY;
+        const ny = dy / radius;
+        for (let x = 0; x < width; x += 1) {
+          const dx = x + .5 - centerX;
+          const nx = dx / radius;
+          const distance = Math.sqrt(nx * nx + ny * ny);
+          if (distance >= 1) continue;
+          const bulge = 1 - distance * distance;
+          const magnification = 1 + .16 * bulge;
+          const ripple = Math.sin((nx * .8 + ny * .56) * 7 + wavePhase) * 4.5 * bulge * quality;
+          const sx = Math.max(0, Math.min(scene.width - 1, Math.round(originX + centerX + dx / magnification + ripple * ny)));
+          const sy = Math.max(0, Math.min(scene.height - 1, Math.round(originY + centerY + dy / magnification + ripple * nx)));
+          const sourceIndex = (sy * scene.width + sx) * 4;
+          const redIndex = (sy * scene.width + Math.min(scene.width - 1, sx + Math.round(nx * 2 * bulge))) * 4;
+          const blueIndex = (sy * scene.width + Math.max(0, sx - Math.round(nx * 2 * bulge))) * 4;
+          const targetIndex = (y * width + x) * 4;
+          const edgeFade = Math.min(1, (1 - distance) * 11);
+          data[targetIndex] = pixels[redIndex];
+          data[targetIndex + 1] = pixels[sourceIndex + 1];
+          data[targetIndex + 2] = pixels[blueIndex + 2];
+          data[targetIndex + 3] = Math.round(224 * edgeFade);
+        }
+      }
+      output.putImageData(image, 0, 0);
+    };
+    const render = (time) => {
+      frame = requestAnimationFrame(render);
+      if (document.visibilityState !== 'visible' || time - lastFrame < 40) return;
+      lastFrame = time;
+      draw(time);
+    };
+    const onResize = () => { rebuildScene(); };
+    backdrop.addEventListener('load', rebuildScene, { once:true });
+    window.addEventListener('resize', onResize, { passive:true });
+    new MutationObserver(rebuildScene).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+    if (backdrop.complete) rebuildScene();
+    if (!reduceMotion) frame = requestAnimationFrame(render);
+    else if (!pixels && backdrop.complete) rebuildScene();
+    const drift = () => {
+      if (reduceMotion || !hero.isConnected || document.visibilityState !== 'visible') return;
+      const heroBounds = hero.getBoundingClientRect();
+      const sphereBounds = sphere.getBoundingClientRect();
+      const marginX = (sphereBounds.width / 2 + 16) / Math.max(1, heroBounds.width) * 100;
+      const minX = window.matchMedia('(max-width:720px)').matches ? Math.max(28, marginX) : Math.max(53, marginX);
+      const maxX = Math.min(window.matchMedia('(max-width:720px)').matches ? 72 : 83, 100 - marginX);
+      const mobile = window.matchMedia('(max-width:720px)').matches;
+      const minY = mobile ? 42 : 19;
+      const maxY = mobile ? 66 : 81;
+      const rect = sphere.getBoundingClientRect();
+      let currentX = (rect.left - heroBounds.left + rect.width / 2) / heroBounds.width * 100;
+      let currentY = (rect.top - heroBounds.top + rect.height / 2) / heroBounds.height * 100;
+      const choose = (low, high) => low + Math.random() * Math.max(1, high - low);
+      let nextX = currentX;
+      let nextY = currentY;
+      for (let attempt = 0; attempt < 8 && Math.hypot(nextX - currentX, nextY - currentY) < 11; attempt += 1) {
+        nextX = choose(minX, maxX);
+        nextY = choose(minY, maxY);
+      }
+      const animation = sphere.animate([{ left:`${currentX}%`, top:`${currentY}%` }, { left:`${nextX}%`, top:`${nextY}%` }], { duration:18000 + Math.random() * 24000, easing:'cubic-bezier(.42,0,.28,1)', fill:'forwards' });
+      animation.onfinish = () => {
+        currentX = nextX;
+        currentY = nextY;
+        sphere.style.left = `${currentX}%`;
+        sphere.style.top = `${currentY}%`;
+        animation.cancel();
+        window.setTimeout(drift, 700 + Math.random() * 1800);
+      };
+    };
+    if (!reduceMotion) window.setTimeout(drift, 7000);
+    return () => cancelAnimationFrame(frame);
+  };
   const homeHero = document.querySelector('.hero');
   if (homeHero) {
     const heroStage = homeHero.querySelector('.hero-stage');
+    const heroSphere = homeHero.querySelector('.hero-stage__move');
     const heroTitle = homeHero.querySelector('h1');
     const heroLead = homeHero.querySelector('.hero-lead');
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setupHeroCrystal(homeHero, heroSphere, reduceMotion);
     if (!reduceMotion) {
       homeHero.classList.add('home-intro');
       if (heroTitle) heroTitle.classList.add('home-title-appear');
@@ -121,21 +253,21 @@
           typewrite(heroLead, heroText).then(resolve);
         }, 2000))
         : Promise.resolve();
-      if (heroStage) {
-        const stageBounds = heroStage.getBoundingClientRect();
+      if (heroSphere) {
+        const stageBounds = heroSphere.getBoundingClientRect();
         const heroBounds = homeHero.getBoundingClientRect();
         const targetX = window.innerWidth / 2;
         const targetY = heroBounds.top + heroBounds.height / 2;
-        heroStage.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`);
-        heroStage.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`);
-        heroStage.classList.add('hero-stage--intro');
+        heroSphere.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`);
+        heroSphere.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`);
+        heroSphere.classList.add('hero-stage--intro');
         window.setTimeout(() => {
-          heroStage.classList.remove('hero-stage--intro');
-          heroStage.style.removeProperty('--intro-x');
-          heroStage.style.removeProperty('--intro-y');
+          heroSphere.classList.remove('hero-stage--intro');
+          heroSphere.style.removeProperty('--intro-x');
+          heroSphere.style.removeProperty('--intro-y');
         }, 5050);
       }
-      const stageAnimation = heroStage ? new Promise((resolve) => window.setTimeout(resolve, 5000)) : Promise.resolve();
+      const stageAnimation = heroSphere ? new Promise((resolve) => window.setTimeout(resolve, 5000)) : Promise.resolve();
       Promise.all([leadAnimation, stageAnimation]).then(() => heroStamp?.classList.add('is-ready'));
       homeHero.addEventListener('pointermove', (event) => {
         const bounds = homeHero.getBoundingClientRect();
