@@ -109,7 +109,9 @@
     const output = canvas?.getContext('2d');
     if (!hero || !sphere || !output) return;
     const orbit = hero.querySelector('.hero-orbit');
+    const visual = orbit?.querySelector('.hero-orbit__visual');
     const items = [...(orbit?.querySelectorAll('.hero-orbit__item') || [])];
+    const hoverLabel = orbit?.querySelector('.hero-orbit__hover-label');
     if (!orbit || !items.length) return;
     const scene = document.createElement('canvas');
     const sceneContext = scene.getContext('2d', { willReadFrequently:true });
@@ -139,6 +141,68 @@
         sceneContext.drawImage(imageElement, (bounds.left - sphereBounds.left) * quality, (bounds.top - sphereBounds.top) * quality, bounds.width * quality, bounds.height * quality);
         sceneContext.restore();
       });
+      if (hoverLabel?.dataset.behindGlass === 'true' && hoverLabel.classList.contains('is-visible')) {
+        const bubble = hoverLabel.querySelector('span');
+        if (bubble) {
+          const bounds = bubble.getBoundingClientRect();
+          const style = getComputedStyle(bubble);
+          const labelStyle = getComputedStyle(hoverLabel);
+          const x = (bounds.left - sphereBounds.left) * quality;
+          const y = (bounds.top - sphereBounds.top) * quality;
+          const w = bounds.width * quality;
+          const h = bounds.height * quality;
+          const tailX = Number.parseFloat(labelStyle.getPropertyValue('--bubble-tail-x')) * quality || w / 2;
+          const radius = 24 * quality;
+          const borderWidth = 2.25 * quality;
+          const border = style.borderTopColor;
+          const fill = style.backgroundColor;
+          const isBelow = hoverLabel.classList.contains('is-below');
+          sceneContext.save();
+          sceneContext.globalAlpha = Number(labelStyle.opacity || 1);
+          const bubbleBlur = Number(labelStyle.filter.match(/blur\(([\d.]+)px\)/)?.[1] || 0);
+          sceneContext.filter = bubbleBlur ? `blur(${(bubbleBlur * quality).toFixed(2)}px)` : 'none';
+          sceneContext.fillStyle = border;
+          sceneContext.beginPath();
+          if (isBelow) {
+            sceneContext.moveTo(x + tailX, y - 20 * quality);
+            sceneContext.lineTo(x + tailX - 18 * quality, y + 2 * quality);
+            sceneContext.lineTo(x + tailX + 18 * quality, y + 2 * quality);
+          } else {
+            sceneContext.moveTo(x + tailX, y + h + 20 * quality);
+            sceneContext.lineTo(x + tailX - 18 * quality, y + h - 2 * quality);
+            sceneContext.lineTo(x + tailX + 18 * quality, y + h - 2 * quality);
+          }
+          sceneContext.closePath();
+          sceneContext.fill();
+          sceneContext.fillStyle = fill;
+          sceneContext.beginPath();
+          if (isBelow) {
+            sceneContext.moveTo(x + tailX, y - 14 * quality);
+            sceneContext.lineTo(x + tailX - 13 * quality, y + 2 * quality);
+            sceneContext.lineTo(x + tailX + 13 * quality, y + 2 * quality);
+          } else {
+            sceneContext.moveTo(x + tailX, y + h + 14 * quality);
+            sceneContext.lineTo(x + tailX - 13 * quality, y + h - 2 * quality);
+            sceneContext.lineTo(x + tailX + 13 * quality, y + h - 2 * quality);
+          }
+          sceneContext.closePath();
+          sceneContext.fill();
+          sceneContext.fillStyle = border;
+          sceneContext.beginPath();
+          sceneContext.roundRect(x, y, w, h, radius);
+          sceneContext.fill();
+          sceneContext.fillStyle = fill;
+          sceneContext.beginPath();
+          sceneContext.roundRect(x + borderWidth, y + borderWidth, w - borderWidth * 2, h - borderWidth * 2, Math.max(2, radius - borderWidth));
+          sceneContext.fill();
+          sceneContext.fillStyle = style.color;
+          sceneContext.font = getComputedStyle(bubble).font;
+          sceneContext.textAlign = 'center';
+          sceneContext.textBaseline = 'middle';
+          sceneContext.fillText(bubble.textContent.trim(), x + w / 2, y + h / 2, w - 20 * quality);
+          sceneContext.restore();
+        }
+      }
       const pixels = sceneContext.getImageData(0, 0, width, height).data;
       const image = output.createImageData(width, height);
       const data = image.data;
@@ -183,9 +247,11 @@
   };
   const setupHeroOrbit = (hero, reduceMotion) => {
     const orbit = hero?.querySelector('.hero-orbit');
+    const visual = orbit?.querySelector('.hero-orbit__visual');
     const interaction = orbit?.querySelector('.hero-orbit__interaction');
     const items = [...(orbit?.querySelectorAll('.hero-orbit__item') || [])];
     const hoverLabel = orbit?.querySelector('.hero-orbit__hover-label');
+    if (visual && hoverLabel && hoverLabel.parentElement !== visual) visual.append(hoverLabel);
     const hoverLabelText = hoverLabel?.querySelector('span');
     const frontInfo = orbit?.querySelector('.hero-orbit__front-info');
     const frontInfoIndex = frontInfo?.querySelector('[data-front-index]');
@@ -296,10 +362,23 @@
       hoverLabel.style.top = `${(below ? labelY + itemHeight / 2 + 18 : labelY - itemHeight / 2 - 4).toFixed(2)}px`;
       hoverLabel.style.setProperty('--bubble-tail-x', `${tailX.toFixed(1)}px`);
       hoverLabel.classList.toggle('is-below', below);
-      const labelDepthBlur = clamp(1 - selectedCosine + speedBlur * .28, 0, 2.5);
+      const itemBlur = Number(selectedItem.style.filter.match(/blur\(([\d.]+)px\)/)?.[1] || 0);
+      const itemOpacity = Number(selectedItem.style.opacity || 1);
+      const itemDepth = Number(selectedItem.style.zIndex || 20);
+      const labelDepthBlur = clamp(itemBlur, 0, 2.6);
       hoverLabel.style.filter = `blur(${labelDepthBlur.toFixed(2)}px)`;
-      hoverLabel.style.opacity = String((.58 + (selectedCosine + 1) * .21).toFixed(3));
-      hoverLabel.style.zIndex = String(31 + Math.round((selectedCosine + 1) * 50));
+      hoverLabel.style.opacity = String(itemOpacity);
+      hoverLabel.style.zIndex = String(itemDepth);
+      hoverLabel.dataset.behindGlass = String(selectedCosine < -.02);
+      hoverLabel.classList.toggle('is-behind-glass', selectedCosine < -.02);
+      const sphere = orbit.querySelector('.hero-crystal');
+      if (sphere) {
+        const sphereRect = sphere.getBoundingClientRect();
+        const bubbleRect = hoverLabel.getBoundingClientRect();
+        hoverLabel.style.setProperty('--glass-x', `${(sphereRect.left + sphereRect.width / 2 - bubbleRect.left - bubbleRect.width / 2).toFixed(1)}px`);
+        hoverLabel.style.setProperty('--glass-y', `${(sphereRect.top + sphereRect.height / 2 - bubbleRect.top - bubbleRect.height / 2).toFixed(1)}px`);
+        hoverLabel.style.setProperty('--glass-radius', `${(Math.min(sphereRect.width, sphereRect.height) / 2).toFixed(1)}px`);
+      }
     };
     const update = (time) => {
       frame = requestAnimationFrame(update);
