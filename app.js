@@ -32,7 +32,7 @@
     typeNext();
   });
   document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '更懂自己'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
-  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=1.0.14`; }
+  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-v2-20261029`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
   if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) { journalLead.classList.add('journal-typewriter'); journalLead.setAttribute('aria-label', journalText); journalLead.textContent = ''; let textIndex = 0; const typeNext = () => { if (textIndex >= journalText.length) return; const character = journalText[textIndex]; journalLead.textContent += character; textIndex += 1; window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30); }; typeNext(); } }
   if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; }
@@ -44,6 +44,7 @@
     while (serviceHero.firstChild) copy.append(serviceHero.firstChild);
     const art = document.createElement('div');
     art.className = 'service-hero-art service-hero-art--scan-error';
+    art.setAttribute('aria-label', '身體訊號的抽象示意動畫');
     art.innerHTML = '<div class="service-spine" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="service-hero-art__status"><span></span><span>身體訊號</span></div>';
     serviceHero.classList.add('page-hero--service');
     serviceHero.append(copy, art);
@@ -300,90 +301,4 @@
   if (videoDialog && dialogVideo) { const dialogYoutube = document.createElement('iframe'); dialogYoutube.id = 'dialog-youtube'; dialogYoutube.title = 'YouTube 影片'; dialogYoutube.hidden = true; dialogYoutube.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; dialogYoutube.allowFullscreen = true; dialogVideo.after(dialogYoutube); document.addEventListener('click', (event) => { const play = event.target.closest('[data-video],[data-youtube]'); if (!play) return; event.preventDefault(); if (play.dataset.youtube) { dialogVideo.pause(); dialogVideo.removeAttribute('src'); dialogVideo.hidden = true; dialogYoutube.src = play.dataset.youtube; dialogYoutube.hidden = false; } else { dialogYoutube.removeAttribute('src'); dialogYoutube.hidden = true; dialogVideo.hidden = false; dialogVideo.src = play.dataset.video; dialogVideo.play(); } videoDialog.showModal(); }); videoDialog.querySelector('.dialog-close').addEventListener('click', () => { dialogVideo.pause(); dialogVideo.removeAttribute('src'); dialogYoutube.removeAttribute('src'); videoDialog.close(); }); }
   document.body.style.visibility = 'visible';
   document.body.style.animation = 'none';
-
-  // Each page gets its own word-free illustration, chosen for that page's subject.
-  const pageArt = {
-    home: { src: '/素材/網站插圖/首頁-舒光球.jpg', alt: '舒光球在明亮暖色光線中微笑，周圍放射出柔和日光。' },
-    services: { src: '/素材/網站插圖/服務-逸石脊椎.jpg', alt: '逸石拿著熱敷袋，旁邊有置中的脊椎形狀、綠色植物與柔和光圈。' },
-    offerings: { src: '/素材/網站插圖/服務項目-逸石毛巾.jpg', alt: '逸石整理摺好的毛巾與熱敷袋，呈現溫暖的照顧情境。' },
-    journal: { src: '/素材/網站插圖/日常-逸貓手帳.jpg', alt: '逸貓坐在桌旁寫空白手帳，窗邊有盆栽與咖啡。' },
-    article: { src: '/素材/網站插圖/文章-逸貓伸展.jpg', alt: '逸貓在椅子旁做上背伸展，窗邊灑進晨光。' },
-    studio: { src: '/素材/網站插圖/工作室-舒光球.jpg', alt: '舒光球在有瑜伽墊與植栽的日光工作室裡放鬆休息。' },
-    booking: { src: '/素材/網站插圖/預約-逸貓日曆.jpg', alt: '逸貓指著空白日曆上的日期，手裡拿著沒有文字的手機。' }
-  };
-  const artForPath = currentPath === '/' ? 'home'
-    : currentPath === '/services' ? 'services'
-    : currentPath === '/offerings' ? 'offerings'
-    : currentPath === '/journal' ? 'journal'
-    : currentPath.startsWith('/journal/') ? 'article'
-    : currentPath === '/studio' ? 'studio'
-    : currentPath === '/booking' ? 'booking'
-    : 'home';
-  document.body.dataset.mascot = artForPath;
-  const makePersonaFigure = (key, className, decorative = false) => {
-    const figure = document.createElement('figure');
-    figure.className = className;
-    if (decorative) figure.setAttribute('aria-hidden', 'true');
-    const image = document.createElement('img');
-    image.src = pageArt[key].src;
-    image.alt = decorative ? '' : pageArt[key].alt;
-    image.decoding = 'async';
-    image.loading = 'eager';
-    figure.append(image);
-    return figure;
-  };
-  if (currentPath === '/') {
-    const heroStage = document.querySelector('.hero-stage');
-    if (heroStage && !heroStage.querySelector('.hero-main-art')) {
-      heroStage.classList.add('hero-stage--sun-art');
-      heroStage.append(makePersonaFigure('home', 'hero-main-art'));
-    }
-    const homeLinks = [...document.querySelectorAll('.home-links .home-link')];
-    homeLinks.forEach((link) => {
-      const path = new URL(link.href, window.location.href).pathname;
-      const key = path.startsWith('/services') ? 'stone' : path.startsWith('/journal') ? 'cat' : 'sun';
-      const artMark = document.createElement('span');
-      artMark.className = `home-link-art home-link-art--${key}`;
-      artMark.setAttribute('aria-hidden', 'true');
-      link.append(artMark);
-    });
-  }
-  const pageHero = document.querySelector('.page-hero:not(.page-hero--service)');
-  if (pageHero) {
-    let copy = pageHero.querySelector('.page-hero__copy');
-    if (!copy) {
-      copy = document.createElement('div');
-      copy.className = 'page-hero__copy';
-      while (pageHero.firstChild) copy.append(pageHero.firstChild);
-    }
-    const key = currentPath === '/offerings' ? 'offerings' : 'journal';
-    pageHero.classList.add('page-hero--persona', `page-hero--persona-${key}`);
-    pageHero.append(copy, makePersonaFigure(key, 'page-character'));
-  }
-  const serviceArt = document.querySelector('.service-hero-art');
-  if (currentPath === '/services' && serviceArt) serviceArt.append(makePersonaFigure('services', 'service-persona-art'));
-  const article = document.querySelector('main.article');
-  if (article) {
-    const meta = article.querySelector('.article-meta');
-    const title = article.querySelector('h1');
-    if (meta && title) {
-      const feature = document.createElement('div');
-      feature.className = 'article-hero';
-      article.insertBefore(feature, meta);
-      feature.append(meta, title, makePersonaFigure('article', 'page-character article-character'));
-    }
-  }
-  const studioArt = document.querySelector('.studio-page__art');
-  if (studioArt) { studioArt.classList.add('has-page-art'); studioArt.append(makePersonaFigure('studio', 'studio-character')); }
-  const bookingCardReady = document.querySelector('.booking-card--ready');
-  if (bookingCardReady) {
-    const heading = bookingCardReady.querySelector(':scope > h1');
-    const bookingEntry = bookingCardReady.querySelector('.booking-entry');
-    if (heading && bookingEntry) {
-      const hero = document.createElement('div');
-      hero.className = 'booking-card__hero';
-      bookingCardReady.insertBefore(hero, heading);
-      hero.append(heading, makePersonaFigure('booking', 'booking-character'));
-    }
-  }
 })();
