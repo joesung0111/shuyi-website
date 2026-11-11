@@ -565,3 +565,20 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 @keyframes orbit-logo-appear{from{opacity:0;filter:blur(18px)}to{opacity:1;filter:blur(0)}}
 @media(max-width:720px){.hero.home-intro{min-height:calc(100svh - 68px);height:calc(100svh - 68px)}.hero.home-intro .hero-orbit{transform:translateY(-34px)}.hero-orbit__disc{width:110vw;height:110vw;top:54%;transform:translate(-50%,-50%) rotateX(72deg)}.hero-orbit__disc::after{-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 12px),#000 calc(100% - 9px));mask:radial-gradient(farthest-side,transparent calc(100% - 12px),#000 calc(100% - 9px))}.hero-orbit__interaction{width:100vw;height:90svh}.hero-orbit__item{width:min(31vw,165px);height:min(23vw,132px)}.hero-orbit__label{bottom:-21px;padding:4px 8px;font-size:11px}.hero.home-intro .hero-stage__move{width:min(44.2vw,172px);top:54%;transform:translate(-50%,calc(-50% - min(14.73vw,57.3px)))}.hero-orbit__front-info{left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);min-width:188px;padding:9px 13px 9px 9px}.hero-orbit__front-number{width:34px;height:34px;border-radius:11px}.hero-orbit__front-copy small{font-size:8px}.hero-orbit__front-copy strong{font-size:13px}}
 @media(prefers-reduced-motion:reduce){.hero.home-intro .hero-stage__move.hero-stage--intro{animation:none;opacity:1;filter:none}.hero-orbit__item{transition:none}.hero-orbit__hover-label span{animation:none}}
+
+/* Homepage orbit refinements: keep the crystal fixed, clear, and in front of the disk. */
+.hero.home-intro .hero-stage__move{width:clamp(177px,17.16vw,272px);transform:translate(-50%,-50%)}
+.hero.home-intro .hero-stage__move.hero-stage--intro{animation:orbit-logo-appear 1000ms cubic-bezier(.2,.8,.2,1) 420ms both}
+.hero-orbit__item{width:min(20.9vw,258.5px);height:min(17.6vw,204.6px)}
+.hero-orbit__front-info{left:50%;min-width:280px;min-height:76px;justify-content:center;gap:16px;padding:15px 22px 15px 16px;transform:translateX(-50%)}
+.hero-orbit__front-number{width:48px;height:48px;font-size:15px}
+.hero-orbit__front-copy small{font-size:10px}
+.hero-orbit__front-copy strong{font-size:17px}
+@media(max-width:720px){
+  .hero.home-intro .hero-stage__move{width:min(48.62vw,189px);transform:translate(-50%,-50%)}
+  .hero-orbit__item{width:min(34.1vw,181.5px);height:min(25.3vw,145.2px)}
+  .hero-orbit__front-info{left:50%;min-width:238px;min-height:66px;gap:13px;padding:12px 17px 12px 13px;transform:translateX(-50%)}
+  .hero-orbit__front-number{width:41px;height:41px;font-size:14px}
+  .hero-orbit__front-copy small{font-size:9px}
+  .hero-orbit__front-copy strong{font-size:15px}
+}

@@ -109,6 +109,12 @@
     const canvas = sphere?.querySelector('.hero-crystal__refraction');
     const output = canvas?.getContext('2d');
     if (!hero || !sphere || !output) return;
+    // Without a real backdrop image, leave the crystal transparent. A synthetic
+    // grid here reads as copied disk lines inside the logo sphere.
+    if (!backdrop) {
+      canvas.hidden = true;
+      return;
+    }
     const scene = document.createElement('canvas');
     const sceneContext = scene.getContext('2d', { willReadFrequently:true });
     if (!sceneContext) return;
@@ -135,17 +141,6 @@
         tint.addColorStop(1, dark ? 'rgba(24,17,22,.16)' : 'rgba(255,248,244,.12)');
         sceneContext.fillStyle = tint;
         sceneContext.fillRect(0, 0, scene.width, scene.height);
-      } else {
-        const background = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || (dark ? '#17171b' : '#f5f6f6');
-        sceneContext.fillStyle = background;
-        sceneContext.fillRect(0, 0, scene.width, scene.height);
-        sceneContext.strokeStyle = dark ? 'rgba(232,237,240,.09)' : 'rgba(88,110,124,.12)';
-        sceneContext.lineWidth = Math.max(1, quality);
-        const spacing = 26 * quality;
-        sceneContext.beginPath();
-        for (let x = 0; x <= scene.width; x += spacing) { sceneContext.moveTo(x, 0); sceneContext.lineTo(x, scene.height); }
-        for (let y = 0; y <= scene.height; y += spacing) { sceneContext.moveTo(0, y); sceneContext.lineTo(scene.width, y); }
-        sceneContext.stroke();
       }
       pixels = sceneContext.getImageData(0, 0, scene.width, scene.height).data;
       draw(performance.now());
@@ -292,7 +287,9 @@
         item.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) translate(-50%,-50%) scale(${scale.toFixed(3)})`;
         item.style.opacity = String(opacity.toFixed(3));
         item.style.filter = `blur(${blur.toFixed(2)}px) drop-shadow(0px 12px 9px color-mix(in srgb,var(--ink) 25%,transparent))`;
-        item.style.zIndex = String(30 + Math.round((cosine + 1) * 50));
+        // All mascots sit above the disk surface; depth remains expressed by
+        // their scale, opacity, and blur rather than disk lines crossing them.
+        item.style.zIndex = String(90 + Math.round((cosine + 1) * 40));
         item.dataset.active = String(index === active);
         item.dataset.depth = cosine > .35 ? 'front' : cosine < -.35 ? 'back' : 'middle';
         item.setAttribute('aria-label', item.dataset.label || item.textContent.trim());
