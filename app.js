@@ -242,6 +242,7 @@
     const orbit = hero?.querySelector('.hero-orbit');
     const interaction = orbit?.querySelector('.hero-orbit__interaction');
     const items = [...(orbit?.querySelectorAll('.hero-orbit__item') || [])];
+    const hoverLabel = orbit?.querySelector('.hero-orbit__hover-label');
     if (!orbit || !interaction || items.length !== 5) return;
     const step = Math.PI * 2 / items.length;
     const state = { angle:0, target:0, velocity:0, lastInput:0, lastMove:performance.now(), lastFrame:performance.now(), lean:0, leanTarget:0, dragging:false, hover:-1 };
@@ -250,6 +251,21 @@
     let introAnimations = [];
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     const nearest = (angle) => ((Math.round(-angle / step) % items.length) + items.length) % items.length;
+    const hideHoverLabel = () => hoverLabel?.classList.remove('is-visible');
+    const showHoverLabel = (item, clientX, clientY) => {
+      if (!hoverLabel || !item) return hideHoverLabel();
+      const bounds = orbit.getBoundingClientRect();
+      const x = clientX - bounds.left;
+      const y = clientY - bounds.top;
+      const text = hoverLabel.querySelector('span');
+      if (text) text.textContent = item.querySelector('.hero-orbit__label')?.textContent.trim() || item.getAttribute('aria-label') || '';
+      const onRight = x > bounds.width - 250;
+      hoverLabel.style.left = `${x + (onRight ? -82 : 82)}px`;
+      hoverLabel.style.top = `${y - 16}px`;
+      hoverLabel.classList.toggle('is-left', onRight);
+      hoverLabel.classList.toggle('is-below', y < 58);
+      hoverLabel.classList.add('is-visible');
+    };
     const cancelIntro = () => {
       introAnimations.forEach((animation) => animation.cancel());
       introAnimations = [];
@@ -302,6 +318,7 @@
     const pointerDown = (event) => {
       if (event.button !== undefined && event.button !== 0) return;
       cancelIntro();
+      hideHoverLabel();
       drag.down = true;
       drag.moved = false;
       drag.x = event.clientX;
@@ -312,6 +329,9 @@
       interaction.classList.add('is-grabbing');
     };
     const pointerMove = (event) => {
+      const hoveredItem = !drag.down && event.pointerType !== 'touch' ? event.target.closest?.('.hero-orbit__item') : null;
+      if (hoveredItem && orbit.contains(hoveredItem)) showHoverLabel(hoveredItem, event.clientX, event.clientY);
+      else hideHoverLabel();
       if (drag.down) {
         const now = performance.now();
         const dt = clamp((now - drag.time) / 1000, .008, .1);
@@ -333,11 +353,14 @@
         state.hover = hovered ? items.indexOf(hovered) : -1;
       }
     };
-    const pointerEnd = () => {
+    const pointerEnd = (event) => {
       if (!drag.down) return;
       drag.down = false;
       state.dragging = false;
       interaction.classList.remove('is-grabbing');
+      const hoveredItem = event?.target.closest?.('.hero-orbit__item');
+      if (hoveredItem && orbit.contains(hoveredItem)) showHoverLabel(hoveredItem, event.clientX, event.clientY);
+      else hideHoverLabel();
       const reach = clamp(state.velocity * .20, -step, step);
       const bias = Math.abs(state.velocity) > .04 ? Math.sign(state.velocity) * .4 : 0;
       state.target = Math.round((state.target + reach) / step + bias) * step;
@@ -345,6 +368,10 @@
       if (drag.moved) window.setTimeout(() => { drag.moved = false; }, 320);
     };
     interaction.addEventListener('pointerdown', pointerDown);
+    orbit.addEventListener('pointerleave', hideHoverLabel);
+    orbit.addEventListener('focusout', (event) => {
+      if (!orbit.contains(event.relatedTarget)) hideHoverLabel();
+    });
     window.addEventListener('pointermove', pointerMove, { passive:true });
     window.addEventListener('pointerup', pointerEnd);
     window.addEventListener('pointercancel', pointerEnd);
