@@ -205,12 +205,13 @@
       if (reduceMotion || !hero.isConnected || document.visibilityState !== 'visible') return;
       const heroBounds = hero.getBoundingClientRect();
       const sphereBounds = sphere.getBoundingClientRect();
-      const marginX = (sphereBounds.width / 2 + 16) / Math.max(1, heroBounds.width) * 100;
-      const minX = window.matchMedia('(max-width:720px)').matches ? Math.max(28, marginX) : Math.max(53, marginX);
-      const maxX = Math.min(window.matchMedia('(max-width:720px)').matches ? 72 : 83, 100 - marginX);
       const mobile = window.matchMedia('(max-width:720px)').matches;
-      const minY = mobile ? 42 : 19;
-      const maxY = mobile ? 66 : 81;
+      const centerX = mobile ? 50 : 72;
+      const centerY = mobile ? 59 : 49;
+      const minX = centerX - 2.5;
+      const maxX = centerX + 2.5;
+      const minY = centerY - 3.2;
+      const maxY = centerY + 3.2;
       const rect = sphere.getBoundingClientRect();
       let currentX = (rect.left - heroBounds.left + rect.width / 2) / heroBounds.width * 100;
       let currentY = (rect.top - heroBounds.top + rect.height / 2) / heroBounds.height * 100;
@@ -256,8 +257,9 @@
       if (heroSphere) {
         const stageBounds = heroSphere.getBoundingClientRect();
         const heroBounds = homeHero.getBoundingClientRect();
-        const targetX = window.innerWidth / 2;
-        const targetY = heroBounds.top + heroBounds.height / 2;
+        const mobile = window.matchMedia('(max-width:720px)').matches;
+        const targetX = heroBounds.left + heroBounds.width * (mobile ? .50 : .72);
+        const targetY = heroBounds.top + heroBounds.height * (mobile ? .59 : .49);
         heroSphere.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`);
         heroSphere.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`);
         heroSphere.classList.add('hero-stage--intro');

@@ -22,7 +22,7 @@ const googleVerificationMeta = GOOGLE_SITE_VERIFICATION ? `<meta name="google-si
 // Railway uses DATABASE_PATH on its mounted Volume (for example /data/shuyi.sqlite).
 // Local development keeps the database in the project data folder.
 const DB_PATH = resolve(process.env.DATABASE_PATH || join(ROOT, 'data', 'shuyi.sqlite'));
-const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.ico': 'image/x-icon' };
+const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.ico': 'image/x-icon' };
 const themeBoot = '<script>(function(){try{var t=localStorage.getItem("shuyi-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}}())<\/script>';
 const headEnhancements = (admin = false) => `${admin ? '<link rel="icon" href="/manage-center/favicon.svg" type="image/svg+xml">' : '<link rel="icon" href="/素材/淺色系-1K.jpeg" type="image/jpeg">'}${themeBoot}`;
 const withoutSloganStops = (html) => ['不只放鬆。', '動起來。', '自在的樣子。', '新的情報。', '工作室。', '自己。'].reduce((result, phrase) => result.replaceAll(phrase, phrase.slice(0, -1)), html);
