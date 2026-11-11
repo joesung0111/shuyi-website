@@ -249,6 +249,10 @@
     const interaction = orbit?.querySelector('.hero-orbit__interaction');
     const items = [...(orbit?.querySelectorAll('.hero-orbit__item') || [])];
     const hoverLabel = orbit?.querySelector('.hero-orbit__hover-label');
+    const hoverLabelText = hoverLabel?.querySelector('span');
+    const frontInfo = orbit?.querySelector('.hero-orbit__front-info');
+    const frontInfoIndex = frontInfo?.querySelector('[data-front-index]');
+    const frontInfoName = frontInfo?.querySelector('[data-front-name]');
     if (!orbit || !interaction || items.length !== 5) return;
     const step = Math.PI * 2 / items.length;
     const state = { angle:0, target:0, velocity:0, lastInput:0, lastMove:performance.now(), lastFrame:performance.now(), lean:0, leanTarget:0, dragging:false, hover:-1 };
@@ -257,20 +261,12 @@
     let introAnimations = [];
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     const nearest = (angle) => ((Math.round(-angle / step) % items.length) + items.length) % items.length;
-    const hideHoverLabel = () => hoverLabel?.classList.remove('is-visible');
-    const showHoverLabel = (item, clientX, clientY) => {
-      if (!hoverLabel || !item) return hideHoverLabel();
-      const bounds = orbit.getBoundingClientRect();
-      const x = clientX - bounds.left;
-      const y = clientY - bounds.top;
-      const text = hoverLabel.querySelector('span');
-      if (text) text.textContent = item.querySelector('.hero-orbit__label')?.textContent.trim() || item.getAttribute('aria-label') || '';
-      const onRight = x > bounds.width - 250;
-      hoverLabel.style.left = `${x + (onRight ? -8 : 8)}px`;
-      hoverLabel.style.top = `${y - 10}px`;
-      hoverLabel.classList.toggle('is-left', onRight);
-      hoverLabel.classList.toggle('is-below', y < 58);
-      hoverLabel.classList.add('is-visible');
+    let labelItem = -1;
+    const hideHoverLabel = () => {
+      hoverLabel?.classList.remove('is-visible');
+      hoverLabel?.style.removeProperty('opacity');
+      hoverLabel?.style.removeProperty('filter');
+      hoverLabel?.style.removeProperty('z-index');
     };
     const cancelIntro = () => {
       introAnimations.forEach((animation) => animation.cancel());
@@ -281,9 +277,9 @@
       const height = Math.max(1, orbit.clientHeight);
       const mobile = matchMedia('(max-width:720px)').matches;
       const radius = Math.min(width * (mobile ? .37 : .39), mobile ? 176 : 380);
-      const planeY = Math.cos(78.5 * Math.PI / 180);
+      const planeY = Math.cos(72 * Math.PI / 180);
       const speedBlur = clamp(Math.abs(state.velocity) * .09, 0, .9);
-      const active = nearest(state.angle);
+      const active = nearest(state.angle + state.lean);
       items.forEach((item, index) => {
         const angle = index * step + state.angle + state.lean;
         const cosine = Math.cos(angle);
@@ -296,7 +292,7 @@
         item.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) translate(-50%,-50%) scale(${scale.toFixed(3)})`;
         item.style.opacity = String(opacity.toFixed(3));
         item.style.filter = `blur(${blur.toFixed(2)}px) drop-shadow(0px 12px 9px color-mix(in srgb,var(--ink) 25%,transparent))`;
-        item.style.zIndex = String(80 + Math.round((cosine + 1) * 35));
+        item.style.zIndex = String(30 + Math.round((cosine + 1) * 50));
         item.dataset.active = String(index === active);
         item.dataset.depth = cosine > .35 ? 'front' : cosine < -.35 ? 'back' : 'middle';
         item.setAttribute('aria-label', item.dataset.label || item.textContent.trim());
@@ -305,6 +301,40 @@
       if (disc) disc.style.setProperty('--orbit-neon-angle', `${(-state.angle - state.lean) * 180 / Math.PI}deg`);
       const logo = orbit.querySelector('.hero-stage');
       if (logo) logo.style.zIndex = '84';
+      const currentName = items[active]?.querySelector('.hero-orbit__label')?.textContent.trim() || '';
+      if (frontInfoIndex) frontInfoIndex.textContent = String(active + 1).padStart(2, '0');
+      if (frontInfoName && frontInfoName.textContent !== currentName) frontInfoName.textContent = currentName;
+      const selectedItem = state.hover >= 0 ? items[state.hover] : null;
+      if (!hoverLabel || !hoverLabelText || !selectedItem) {
+        labelItem = -1;
+        hideHoverLabel();
+        return;
+      }
+      const selectedAngle = state.hover * step + state.angle + state.lean;
+      const selectedCosine = Math.cos(selectedAngle);
+      const selectedScale = .56 + (selectedCosine + 1) * .27;
+      const labelX = width / 2 + Math.sin(selectedAngle) * radius;
+      const labelY = height / 2 + selectedCosine * radius * planeY + height * .04;
+      const itemHeight = selectedItem.offsetHeight * selectedScale;
+      if (labelItem !== state.hover) {
+        hoverLabelText.textContent = selectedItem.querySelector('.hero-orbit__label')?.textContent.trim() || selectedItem.getAttribute('aria-label') || '';
+        labelItem = state.hover;
+      }
+      hoverLabel.classList.add('is-visible');
+      const bubbleWidth = hoverLabel.offsetWidth || 124;
+      const bubbleHeight = hoverLabel.offsetHeight || 42;
+      const safeX = clamp(labelX, bubbleWidth / 2 + 10, width - bubbleWidth / 2 - 10);
+      const tailX = clamp(bubbleWidth / 2 + labelX - safeX, 14, bubbleWidth - 14);
+      const aboveTop = labelY - itemHeight / 2 - bubbleHeight - 20;
+      const below = aboveTop < 8;
+      hoverLabel.style.left = `${safeX.toFixed(2)}px`;
+      hoverLabel.style.top = `${(below ? labelY + itemHeight / 2 + 18 : labelY - itemHeight / 2 - 4).toFixed(2)}px`;
+      hoverLabel.style.setProperty('--bubble-tail-x', `${tailX.toFixed(1)}px`);
+      hoverLabel.classList.toggle('is-below', below);
+      const labelDepthBlur = clamp(1 - selectedCosine + speedBlur * .28, 0, 2.5);
+      hoverLabel.style.filter = `blur(${labelDepthBlur.toFixed(2)}px)`;
+      hoverLabel.style.opacity = String((.58 + (selectedCosine + 1) * .21).toFixed(3));
+      hoverLabel.style.zIndex = String(31 + Math.round((selectedCosine + 1) * 50));
     };
     const update = (time) => {
       frame = requestAnimationFrame(update);
@@ -328,6 +358,7 @@
       if (event.button !== undefined && event.button !== 0) return;
       cancelIntro();
       hideHoverLabel();
+      state.hover = -1;
       drag.down = true;
       drag.moved = false;
       drag.x = event.clientX;
@@ -339,8 +370,7 @@
     };
     const pointerMove = (event) => {
       const hoveredItem = !drag.down && event.pointerType !== 'touch' ? event.target.closest?.('.hero-orbit__item') : null;
-      if (hoveredItem && orbit.contains(hoveredItem)) showHoverLabel(hoveredItem, event.clientX, event.clientY);
-      else hideHoverLabel();
+      state.hover = hoveredItem && orbit.contains(hoveredItem) ? items.indexOf(hoveredItem) : -1;
       if (drag.down) {
         const now = performance.now();
         const dt = clamp((now - drag.time) / 1000, .008, .1);
@@ -358,8 +388,6 @@
         const x = (event.clientX / Math.max(1, window.innerWidth) - .5) * 2;
         const y = (event.clientY / Math.max(1, window.innerHeight) - .5) * 2;
         state.leanTarget = -x * .11 * (1 + Math.max(0, -y) * .55);
-        const hovered = event.target.closest?.('.hero-orbit__item');
-        state.hover = hovered ? items.indexOf(hovered) : -1;
       }
     };
     const pointerEnd = (event) => {
@@ -368,8 +396,7 @@
       state.dragging = false;
       interaction.classList.remove('is-grabbing');
       const hoveredItem = event?.target.closest?.('.hero-orbit__item');
-      if (hoveredItem && orbit.contains(hoveredItem)) showHoverLabel(hoveredItem, event.clientX, event.clientY);
-      else hideHoverLabel();
+      state.hover = hoveredItem && orbit.contains(hoveredItem) ? items.indexOf(hoveredItem) : -1;
       const reach = clamp(state.velocity * .20, -step, step);
       const bias = Math.abs(state.velocity) > .04 ? Math.sign(state.velocity) * .4 : 0;
       state.target = Math.round((state.target + reach) / step + bias) * step;
@@ -377,9 +404,13 @@
       if (drag.moved) window.setTimeout(() => { drag.moved = false; }, 320);
     };
     interaction.addEventListener('pointerdown', pointerDown);
-    orbit.addEventListener('pointerleave', hideHoverLabel);
+    orbit.addEventListener('pointerleave', () => { state.hover = -1; hideHoverLabel(); });
+    orbit.addEventListener('focusin', (event) => {
+      const focusedItem = event.target.closest?.('.hero-orbit__item');
+      state.hover = focusedItem ? items.indexOf(focusedItem) : -1;
+    });
     orbit.addEventListener('focusout', (event) => {
-      if (!orbit.contains(event.relatedTarget)) hideHoverLabel();
+      if (!orbit.contains(event.relatedTarget)) { state.hover = -1; hideHoverLabel(); }
     });
     window.addEventListener('pointermove', pointerMove, { passive:true });
     window.addEventListener('pointerup', pointerEnd);
