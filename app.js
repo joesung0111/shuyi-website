@@ -114,6 +114,48 @@
     const scene = document.createElement('canvas');
     const sceneContext = scene.getContext('2d', { willReadFrequently:true });
     if (!sceneContext) return;
+    const crystal = sphere.querySelector('.hero-crystal');
+    const prepareLogoLinework = (logo) => {
+      if (!crystal || !logo || logo.dataset.lineworkReady === 'true') return;
+      const layer = crystal.querySelector(logo.classList.contains('hero-logo--dark') ? '.hero-crystal__logo-ink--dark' : '.hero-crystal__logo-ink--light');
+      const context = layer?.getContext('2d', { willReadFrequently:true });
+      if (!layer || !context || !logo.naturalWidth) return;
+      const source = document.createElement('canvas');
+      source.width = logo.naturalWidth;
+      source.height = logo.naturalHeight;
+      const sourceContext = source.getContext('2d', { willReadFrequently:true });
+      if (!sourceContext) return;
+      sourceContext.drawImage(logo, 0, 0);
+      const frame = sourceContext.getImageData(0, 0, source.width, source.height);
+      const pixels = frame.data;
+      let bgR = 0, bgG = 0, bgB = 0, samples = 0;
+      const edge = Math.max(1, Math.round(Math.min(source.width, source.height) * .055));
+      for (let y = 0; y < source.height; y += 7) {
+        for (let x = 0; x < source.width; x += 7) {
+          if (x > edge && x < source.width - edge && y > edge && y < source.height - edge) continue;
+          const index = (y * source.width + x) * 4;
+          bgR += pixels[index]; bgG += pixels[index + 1]; bgB += pixels[index + 2]; samples += 1;
+        }
+      }
+      bgR /= samples; bgG /= samples; bgB /= samples;
+      const darkLogo = logo.classList.contains('hero-logo--dark');
+      const threshold = darkLogo ? 20 : 18;
+      const range = darkLogo ? 32 : 28;
+      for (let index = 0; index < pixels.length; index += 4) {
+        const red = pixels[index], green = pixels[index + 1], blue = pixels[index + 2];
+        const distance = Math.hypot(red - bgR, green - bgG, blue - bgB);
+        const ink = Math.min(1, Math.max(0, (distance - threshold) / range));
+        pixels[index + 3] = Math.round(pixels[index + 3] * ink);
+      }
+      layer.width = source.width;
+      layer.height = source.height;
+      context.putImageData(frame, 0, 0);
+      logo.dataset.lineworkReady = 'true';
+    };
+    sphere.querySelectorAll('.hero-logo').forEach((logo) => {
+      if (logo.complete && logo.naturalWidth) prepareLogoLinework(logo);
+      else logo.addEventListener('load', () => prepareLogoLinework(logo), { once:true });
+    });
     let frame = 0;
     let lastFrame = 0;
     const quality = Math.min(window.devicePixelRatio || 1, 1.1);
@@ -192,6 +234,8 @@
     const frontInfoName = frontInfo?.querySelector('[data-front-name]');
     const frontInfoIndexText = frontInfoIndex?.querySelector('span');
     const frontInfoNameText = frontInfoName?.querySelector('span');
+    const orbitTurns = [...(orbit?.querySelectorAll('[data-orbit-step]') || [])];
+    const downCue = orbit?.querySelector('.hero-orbit__down-cue');
     if (!orbit || !interaction || items.length !== 5) return;
     const step = Math.PI * 2 / items.length;
     const state = { angle:0, target:0, velocity:0, lastInput:0, lastMove:performance.now(), lastFrame:performance.now(), lean:0, leanTarget:0, dragging:false, hover:-1 };
@@ -244,6 +288,10 @@
       if (logo) logo.style.zIndex = '84';
       const currentName = items[active]?.querySelector('.hero-orbit__label')?.textContent.trim() || '';
       const currentIndex = String(active + 1).padStart(2, '0');
+      if (frontInfo) {
+        frontInfo.href = items[active]?.getAttribute('href') || '#';
+        frontInfo.setAttribute('aria-label', `前往${currentName}頁面`);
+      }
       const revealInfoText = (element, value) => {
         if (!element || element.textContent === value) return false;
         element.classList.remove('is-swapping');
@@ -313,6 +361,16 @@
       } else state.angle = state.target;
       render(time);
     };
+    orbitTurns.forEach((button) => button.addEventListener('click', () => {
+      cancelIntro();
+      state.target += (button.dataset.orbitStep === 'previous' ? 1 : -1) * step;
+      state.velocity = 0;
+      state.lastInput = performance.now();
+      state.lastMove = state.lastInput;
+    }));
+    downCue?.addEventListener('click', () => {
+      document.querySelector('#home-explore')?.scrollIntoView({ behavior:reduceMotion ? 'instant' : 'smooth', block:'start' });
+    });
     const pointerDown = (event) => {
       if (event.button !== undefined && event.button !== 0) return;
       cancelIntro();
