@@ -204,39 +204,45 @@
     if (!backdrop || backdrop.complete) rebuildScene();
     if (!reduceMotion) frame = requestAnimationFrame(render);
     else if (!pixels && (!backdrop || backdrop.complete)) rebuildScene();
-    const drift = () => {
-      if (reduceMotion || !hero.isConnected || document.visibilityState !== 'visible') return;
-      const heroBounds = hero.getBoundingClientRect();
-      const sphereBounds = sphere.getBoundingClientRect();
-      const mobile = window.matchMedia('(max-width:720px)').matches;
-      const centerX = 50;
-      const centerY = 50;
-      const minX = centerX - 1.1;
-      const maxX = centerX + 1.1;
-      const minY = centerY - 1.4;
-      const maxY = centerY + 1.4;
-      const rect = sphere.getBoundingClientRect();
-      let currentX = (rect.left - heroBounds.left + rect.width / 2) / heroBounds.width * 100;
-      let currentY = (rect.top - heroBounds.top + rect.height / 2) / heroBounds.height * 100;
-      const choose = (low, high) => low + Math.random() * Math.max(1, high - low);
-      let nextX = currentX;
-      let nextY = currentY;
-      for (let attempt = 0; attempt < 8 && Math.hypot(nextX - currentX, nextY - currentY) < .6; attempt += 1) {
-        nextX = choose(minX, maxX);
-        nextY = choose(minY, maxY);
+    let driftFrame = 0;
+    let driftTimer = 0;
+    let driftLastFrame = 0;
+    let driftPath = null;
+    const choose = (low, high) => low + Math.random() * (high - low);
+    const startDriftPath = (x, y) => {
+      let targetX = x;
+      let targetY = y;
+      for (let attempt = 0; attempt < 8 && Math.hypot(targetX - x, targetY - y) < .65; attempt += 1) {
+        targetX = choose(48.9, 51.1);
+        targetY = choose(52.7, 55.3);
       }
-      const animation = sphere.animate([{ left:`${currentX}%`, top:`${currentY}%` }, { left:`${nextX}%`, top:`${nextY}%` }], { duration:18000 + Math.random() * 24000, easing:'cubic-bezier(.42,0,.28,1)', fill:'forwards' });
-      animation.onfinish = () => {
-        currentX = nextX;
-        currentY = nextY;
-        sphere.style.left = `${currentX}%`;
-        sphere.style.top = `${currentY}%`;
-        animation.cancel();
-        window.setTimeout(drift, 700 + Math.random() * 1800);
-      };
+      return { fromX:x, fromY:y, toX:targetX, toY:targetY, elapsed:0, duration:24 + Math.random() * 12 };
     };
-    if (!reduceMotion) window.setTimeout(drift, 7000);
-    return () => cancelAnimationFrame(frame);
+    const drift = (time) => {
+      driftFrame = requestAnimationFrame(drift);
+      if (!hero.isConnected) { cancelAnimationFrame(driftFrame); return; }
+      if (document.visibilityState !== 'visible') { driftLastFrame = time; return; }
+      const delta = driftLastFrame ? Math.min(.05, Math.max(0, (time - driftLastFrame) / 1000)) : 0;
+      driftLastFrame = time;
+      if (!driftPath) {
+        const stageBounds = (sphere.offsetParent || hero).getBoundingClientRect();
+        const rect = sphere.getBoundingClientRect();
+        const x = (rect.left - stageBounds.left + rect.width / 2) / Math.max(1, stageBounds.width) * 100;
+        const y = (rect.top - stageBounds.top + rect.height / 2) / Math.max(1, stageBounds.height) * 100;
+        driftPath = startDriftPath(x, y);
+      }
+      driftPath.elapsed += delta;
+      while (driftPath.elapsed >= driftPath.duration) {
+        driftPath.elapsed -= driftPath.duration;
+        driftPath = startDriftPath(driftPath.toX, driftPath.toY);
+      }
+      const progress = driftPath.elapsed / driftPath.duration;
+      const eased = progress * progress * (3 - 2 * progress);
+      sphere.style.left = `${(driftPath.fromX + (driftPath.toX - driftPath.fromX) * eased).toFixed(3)}%`;
+      sphere.style.top = `${(driftPath.fromY + (driftPath.toY - driftPath.fromY) * eased).toFixed(3)}%`;
+    };
+    if (!reduceMotion) driftTimer = window.setTimeout(() => { driftLastFrame = 0; driftFrame = requestAnimationFrame(drift); }, 7000);
+    return () => { cancelAnimationFrame(frame); cancelAnimationFrame(driftFrame); window.clearTimeout(driftTimer); };
   };
   const setupHeroOrbit = (hero, reduceMotion) => {
     const orbit = hero?.querySelector('.hero-orbit');
@@ -260,8 +266,8 @@
       const text = hoverLabel.querySelector('span');
       if (text) text.textContent = item.querySelector('.hero-orbit__label')?.textContent.trim() || item.getAttribute('aria-label') || '';
       const onRight = x > bounds.width - 250;
-      hoverLabel.style.left = `${x + (onRight ? -82 : 82)}px`;
-      hoverLabel.style.top = `${y - 16}px`;
+      hoverLabel.style.left = `${x + (onRight ? -8 : 8)}px`;
+      hoverLabel.style.top = `${y - 10}px`;
       hoverLabel.classList.toggle('is-left', onRight);
       hoverLabel.classList.toggle('is-below', y < 58);
       hoverLabel.classList.add('is-visible');
@@ -274,14 +280,15 @@
       const width = Math.max(1, orbit.clientWidth);
       const height = Math.max(1, orbit.clientHeight);
       const mobile = matchMedia('(max-width:720px)').matches;
-      const radius = Math.min(width * (mobile ? .34 : .39), mobile ? 176 : 380);
+      const radius = Math.min(width * (mobile ? .37 : .39), mobile ? 176 : 380);
+      const planeY = Math.cos(78.5 * Math.PI / 180);
       const speedBlur = clamp(Math.abs(state.velocity) * .09, 0, .9);
       const active = nearest(state.angle);
       items.forEach((item, index) => {
         const angle = index * step + state.angle + state.lean;
         const cosine = Math.cos(angle);
         const x = Math.sin(angle) * radius;
-        const y = cosine * radius * (mobile ? .58 : .20) + height * .04;
+        const y = cosine * radius * planeY + height * .04;
         const scale = .56 + (cosine + 1) * .27;
         const opacity = .34 + (.66 * (cosine + 1) / 2);
         const depthBlur = clamp(1 - cosine, 0, 2);
@@ -294,8 +301,10 @@
         item.dataset.depth = cosine > .35 ? 'front' : cosine < -.35 ? 'back' : 'middle';
         item.setAttribute('aria-label', item.dataset.label || item.textContent.trim());
       });
+      const disc = orbit.querySelector('.hero-orbit__disc');
+      if (disc) disc.style.setProperty('--orbit-neon-angle', `${(-state.angle - state.lean) * 180 / Math.PI}deg`);
       const logo = orbit.querySelector('.hero-stage');
-      if (logo) logo.style.zIndex = '108';
+      if (logo) logo.style.zIndex = '84';
     };
     const update = (time) => {
       frame = requestAnimationFrame(update);
