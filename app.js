@@ -142,6 +142,10 @@
       const threshold = darkLogo ? 20 : 18;
       const range = darkLogo ? 32 : 28;
       for (let index = 0; index < pixels.length; index += 4) {
+        if (Math.floor(index / (source.width * 4)) < source.height * .56) {
+          pixels[index + 3] = 0;
+          continue;
+        }
         const red = pixels[index], green = pixels[index + 1], blue = pixels[index + 2];
         const distance = Math.hypot(red - bgR, green - bgG, blue - bgB);
         const ink = Math.min(1, Math.max(0, (distance - threshold) / range));
