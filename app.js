@@ -586,8 +586,58 @@
         return;
       }
       const items = window.SHU_YI_CONTENT.filter((item) => activeFilter === 'all' || item.type === activeFilter);
-      grid.innerHTML = items.map((item) => { const title = escapeHtml(item.title); const href = escapeHtml(item.href); const cover = item.cover ? `<a class="card-art-link" href="${href}" aria-label="閱讀文章：${title}"><img class="card-cover" src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.imageAlt)}" loading="lazy"></a>` : ''; const visual = cover || (item.type === 'video' ? `<button class="card-play" ${item.embed_url ? `data-youtube="${escapeHtml(item.embed_url)}"` : `data-video="${escapeHtml(item.video)}"`} aria-label="播放 ${title}">▶</button>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`); return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}"><div class="card-art">${visual}</div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p><a href="${href}">閱讀內容 <span>→</span></a></article>`; }).join('');
+      grid.innerHTML = items.map((item, index) => { const title = escapeHtml(item.title); const href = escapeHtml(item.href); const cover = item.cover ? `<a class="card-art-link" href="${href}" aria-label="閱讀文章：${title}"><img class="card-cover" src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.imageAlt)}" loading="lazy"></a>` : ''; const visual = cover || (item.type === 'video' ? `<button class="card-play" ${item.embed_url ? `data-youtube="${escapeHtml(item.embed_url)}"` : `data-video="${escapeHtml(item.video)}"`} aria-label="播放 ${title}">▶</button>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`); return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}" style="--card-index:${index}"><div class="card-art">${visual}<span class="card-liquid-glass" aria-hidden="true"></span></div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p><a href="${href}">閱讀內容 <span>→</span></a></article>`; }).join('');
     };
+    let cardPointerFrame = 0;
+    let pendingCardPointer = null;
+    grid.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch') return;
+      const card = event.target.closest('.content-card');
+      if (!card) return;
+      const bounds = card.getBoundingClientRect();
+      const artBounds = card.querySelector('.card-art')?.getBoundingClientRect() || bounds;
+      pendingCardPointer = {
+        card,
+        x: Math.max(0, Math.min(100, (event.clientX - bounds.left) / bounds.width * 100)),
+        y: Math.max(0, Math.min(100, (event.clientY - bounds.top) / bounds.height * 100)),
+        artX: Math.max(0, Math.min(100, (event.clientX - artBounds.left) / artBounds.width * 100)),
+        artY: Math.max(0, Math.min(100, (event.clientY - artBounds.top) / artBounds.height * 100))
+      };
+      if (cardPointerFrame) return;
+      cardPointerFrame = window.requestAnimationFrame(() => {
+        cardPointerFrame = 0;
+        if (!pendingCardPointer) return;
+        const { card: activeCard, x, y, artX, artY } = pendingCardPointer;
+        activeCard.style.setProperty('--card-pointer-x', `${x.toFixed(1)}%`);
+        activeCard.style.setProperty('--card-pointer-y', `${y.toFixed(1)}%`);
+        activeCard.style.setProperty('--card-art-pointer-x', `${artX.toFixed(1)}%`);
+        activeCard.style.setProperty('--card-art-pointer-y', `${artY.toFixed(1)}%`);
+        activeCard.style.setProperty('--card-tilt-x', `${((50 - y) * .035).toFixed(2)}deg`);
+        activeCard.style.setProperty('--card-tilt-y', `${((x - 50) * .035).toFixed(2)}deg`);
+        pendingCardPointer = null;
+      });
+    });
+    grid.addEventListener('pointerover', (event) => {
+      if (event.pointerType === 'touch') return;
+      const card = event.target.closest('.content-card');
+      if (card && !card.contains(event.relatedTarget)) card.classList.add('is-jelly-active');
+    });
+    grid.addEventListener('pointerout', (event) => {
+      const card = event.target.closest('.content-card');
+      if (card && !card.contains(event.relatedTarget)) {
+        card.classList.remove('is-jelly-active');
+        card.style.setProperty('--card-tilt-x', '0deg');
+        card.style.setProperty('--card-tilt-y', '0deg');
+      }
+    });
+    grid.addEventListener('focusin', (event) => {
+      const card = event.target.closest('.content-card');
+      if (card) card.classList.add('is-jelly-active');
+    });
+    grid.addEventListener('focusout', (event) => {
+      const card = event.target.closest('.content-card');
+      if (card && !card.contains(event.relatedTarget)) card.classList.remove('is-jelly-active');
+    });
     renderContent();
     document.addEventListener('shuyi-content-ready', renderContent);
     if (window.SHU_YI_CONTENT_READY && typeof window.SHU_YI_CONTENT_READY.then === 'function') window.SHU_YI_CONTENT_READY.then(restoreListPosition);
