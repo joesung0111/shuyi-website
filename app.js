@@ -108,7 +108,7 @@
     const backdrop = hero?.querySelector('.hero-backdrop');
     const canvas = sphere?.querySelector('.hero-crystal__refraction');
     const output = canvas?.getContext('2d');
-    if (!hero || !sphere || !backdrop || !output) return;
+    if (!hero || !sphere || !output) return;
     const scene = document.createElement('canvas');
     const sceneContext = scene.getContext('2d', { willReadFrequently:true });
     if (!sceneContext) return;
@@ -118,32 +118,35 @@
     let lastFrame = 0;
     const quality = Math.min(window.devicePixelRatio || 1, 1.1);
     const rebuildScene = () => {
-      if (!backdrop.complete || !backdrop.naturalWidth) return;
+      if (backdrop && (!backdrop.complete || !backdrop.naturalWidth)) return;
       const bounds = hero.getBoundingClientRect();
       scene.width = Math.max(1, Math.round(bounds.width * quality));
       scene.height = Math.max(1, Math.round(bounds.height * quality));
       sourceScale = scene.width / Math.max(1, bounds.width);
-      const scale = Math.max(scene.width / backdrop.naturalWidth, scene.height / backdrop.naturalHeight);
-      const drawWidth = backdrop.naturalWidth * scale;
-      const drawHeight = backdrop.naturalHeight * scale;
-      const offsetX = (scene.width - drawWidth) * (window.matchMedia('(max-width:720px)').matches ? .52 : .5);
-      const offsetY = (scene.height - drawHeight) * (window.matchMedia('(max-width:720px)').matches ? .5 : .54);
       sceneContext.clearRect(0, 0, scene.width, scene.height);
-      sceneContext.drawImage(backdrop, offsetX, offsetY, drawWidth, drawHeight);
       const dark = document.documentElement.dataset.theme === 'dark';
-      const vertical = window.matchMedia('(max-width:720px)').matches;
-      const tint = sceneContext.createLinearGradient(0, 0, vertical ? 0 : scene.width, vertical ? scene.height : 0);
-      if (dark) {
-        tint.addColorStop(0, vertical ? 'rgba(24,17,22,.70)' : 'rgba(24,17,22,.78)');
-        tint.addColorStop(.48, vertical ? 'rgba(24,17,22,.35)' : 'rgba(24,17,22,.52)');
-        tint.addColorStop(1, vertical ? 'rgba(24,17,22,.78)' : 'rgba(24,17,22,.22)');
+      if (backdrop) {
+        const scale = Math.max(scene.width / backdrop.naturalWidth, scene.height / backdrop.naturalHeight);
+        const drawWidth = backdrop.naturalWidth * scale;
+        const drawHeight = backdrop.naturalHeight * scale;
+        sceneContext.drawImage(backdrop, (scene.width - drawWidth) * .5, (scene.height - drawHeight) * .5, drawWidth, drawHeight);
+        const tint = sceneContext.createLinearGradient(0, 0, scene.width, scene.height);
+        tint.addColorStop(0, dark ? 'rgba(24,17,22,.48)' : 'rgba(255,248,244,.4)');
+        tint.addColorStop(1, dark ? 'rgba(24,17,22,.16)' : 'rgba(255,248,244,.12)');
+        sceneContext.fillStyle = tint;
+        sceneContext.fillRect(0, 0, scene.width, scene.height);
       } else {
-        tint.addColorStop(0, vertical ? 'rgba(255,248,244,.76)' : 'rgba(255,248,244,.72)');
-        tint.addColorStop(.48, vertical ? 'rgba(255,248,244,.32)' : 'rgba(255,248,244,.46)');
-        tint.addColorStop(1, vertical ? 'rgba(255,248,244,.76)' : 'rgba(255,248,244,.12)');
+        const background = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || (dark ? '#17171b' : '#f5f6f6');
+        sceneContext.fillStyle = background;
+        sceneContext.fillRect(0, 0, scene.width, scene.height);
+        sceneContext.strokeStyle = dark ? 'rgba(232,237,240,.09)' : 'rgba(88,110,124,.12)';
+        sceneContext.lineWidth = Math.max(1, quality);
+        const spacing = 26 * quality;
+        sceneContext.beginPath();
+        for (let x = 0; x <= scene.width; x += spacing) { sceneContext.moveTo(x, 0); sceneContext.lineTo(x, scene.height); }
+        for (let y = 0; y <= scene.height; y += spacing) { sceneContext.moveTo(0, y); sceneContext.lineTo(scene.width, y); }
+        sceneContext.stroke();
       }
-      sceneContext.fillStyle = tint;
-      sceneContext.fillRect(0, 0, scene.width, scene.height);
       pixels = sceneContext.getImageData(0, 0, scene.width, scene.height).data;
       draw(performance.now());
     };
@@ -195,30 +198,30 @@
       draw(time);
     };
     const onResize = () => { rebuildScene(); };
-    backdrop.addEventListener('load', rebuildScene, { once:true });
+    backdrop?.addEventListener('load', rebuildScene, { once:true });
     window.addEventListener('resize', onResize, { passive:true });
     new MutationObserver(rebuildScene).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
-    if (backdrop.complete) rebuildScene();
+    if (!backdrop || backdrop.complete) rebuildScene();
     if (!reduceMotion) frame = requestAnimationFrame(render);
-    else if (!pixels && backdrop.complete) rebuildScene();
+    else if (!pixels && (!backdrop || backdrop.complete)) rebuildScene();
     const drift = () => {
       if (reduceMotion || !hero.isConnected || document.visibilityState !== 'visible') return;
       const heroBounds = hero.getBoundingClientRect();
       const sphereBounds = sphere.getBoundingClientRect();
       const mobile = window.matchMedia('(max-width:720px)').matches;
-      const centerX = mobile ? 50 : 72;
-      const centerY = mobile ? 59 : 49;
-      const minX = centerX - 2.5;
-      const maxX = centerX + 2.5;
-      const minY = centerY - 3.2;
-      const maxY = centerY + 3.2;
+      const centerX = 50;
+      const centerY = 50;
+      const minX = centerX - 1.1;
+      const maxX = centerX + 1.1;
+      const minY = centerY - 1.4;
+      const maxY = centerY + 1.4;
       const rect = sphere.getBoundingClientRect();
       let currentX = (rect.left - heroBounds.left + rect.width / 2) / heroBounds.width * 100;
       let currentY = (rect.top - heroBounds.top + rect.height / 2) / heroBounds.height * 100;
       const choose = (low, high) => low + Math.random() * Math.max(1, high - low);
       let nextX = currentX;
       let nextY = currentY;
-      for (let attempt = 0; attempt < 8 && Math.hypot(nextX - currentX, nextY - currentY) < 11; attempt += 1) {
+      for (let attempt = 0; attempt < 8 && Math.hypot(nextX - currentX, nextY - currentY) < .6; attempt += 1) {
         nextX = choose(minX, maxX);
         nextY = choose(minY, maxY);
       }
@@ -235,51 +238,176 @@
     if (!reduceMotion) window.setTimeout(drift, 7000);
     return () => cancelAnimationFrame(frame);
   };
+  const setupHeroOrbit = (hero, reduceMotion) => {
+    const orbit = hero?.querySelector('.hero-orbit');
+    const interaction = orbit?.querySelector('.hero-orbit__interaction');
+    const items = [...(orbit?.querySelectorAll('.hero-orbit__item') || [])];
+    if (!orbit || !interaction || items.length !== 5) return;
+    const step = Math.PI * 2 / items.length;
+    const state = { angle:0, target:0, velocity:0, lastInput:0, lastMove:performance.now(), lastFrame:performance.now(), lean:0, leanTarget:0, dragging:false, hover:-1 };
+    const drag = { x:0, y:0, start:0, time:0, moved:false, down:false };
+    let frame = 0;
+    let introAnimations = [];
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    const nearest = (angle) => ((Math.round(-angle / step) % items.length) + items.length) % items.length;
+    const cancelIntro = () => {
+      introAnimations.forEach((animation) => animation.cancel());
+      introAnimations = [];
+    };
+    const render = (time = performance.now()) => {
+      const width = Math.max(1, orbit.clientWidth);
+      const height = Math.max(1, orbit.clientHeight);
+      const mobile = matchMedia('(max-width:720px)').matches;
+      const radius = Math.min(width * (mobile ? .34 : .39), mobile ? 176 : 380);
+      const speedBlur = clamp(Math.abs(state.velocity) * .09, 0, .9);
+      const active = nearest(state.angle);
+      items.forEach((item, index) => {
+        const angle = index * step + state.angle + state.lean;
+        const cosine = Math.cos(angle);
+        const x = Math.sin(angle) * radius;
+        const y = cosine * radius * (mobile ? .58 : .20) + height * .04;
+        const scale = .56 + (cosine + 1) * .27;
+        const opacity = .34 + (.66 * (cosine + 1) / 2);
+        const depthBlur = clamp(1 - cosine, 0, 2);
+        const blur = clamp(depthBlur + speedBlur, 0, 2.6);
+        item.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) translate(-50%,-50%) scale(${scale.toFixed(3)})`;
+        item.style.opacity = String(opacity.toFixed(3));
+        item.style.filter = `blur(${blur.toFixed(2)}px) drop-shadow(0px 12px 9px color-mix(in srgb,var(--ink) 25%,transparent))`;
+        item.style.zIndex = String(80 + Math.round((cosine + 1) * 35));
+        item.dataset.active = String(index === active);
+        item.dataset.depth = cosine > .35 ? 'front' : cosine < -.35 ? 'back' : 'middle';
+        item.setAttribute('aria-label', item.dataset.label || item.textContent.trim());
+      });
+      const logo = orbit.querySelector('.hero-stage');
+      if (logo) logo.style.zIndex = '108';
+    };
+    const update = (time) => {
+      frame = requestAnimationFrame(update);
+      const dt = clamp((time - state.lastFrame) / 1000, 0, .08);
+      state.lastFrame = time;
+      if (!reduceMotion) {
+        const idle = time - state.lastInput;
+        if (state.dragging || idle < 60) state.velocity *= Math.exp(-dt * 4);
+        const snapping = !state.dragging && state.lastInput > 0 && idle > 130;
+        if (snapping) {
+          const bias = Math.abs(state.velocity) > .04 ? Math.sign(state.velocity) * .4 : 0;
+          state.target = Math.round(state.target / step + bias) * step;
+        }
+        state.angle += (state.target - state.angle) * (1 - Math.exp(-(snapping ? 6 : 12) * dt));
+        if (Math.abs(state.angle - state.target) < .0001) state.angle = state.target;
+        state.lean += (state.leanTarget - state.lean) * (1 - Math.exp(-4 * dt));
+      } else state.angle = state.target;
+      render(time);
+    };
+    const pointerDown = (event) => {
+      if (event.button !== undefined && event.button !== 0) return;
+      cancelIntro();
+      drag.down = true;
+      drag.moved = false;
+      drag.x = event.clientX;
+      drag.y = event.clientY;
+      drag.start = state.target;
+      drag.time = performance.now();
+      state.dragging = true;
+      interaction.classList.add('is-grabbing');
+    };
+    const pointerMove = (event) => {
+      if (drag.down) {
+        const now = performance.now();
+        const dt = clamp((now - drag.time) / 1000, .008, .1);
+        const delta = event.clientX - drag.x;
+        if (Math.abs(delta) > 5 || Math.abs(event.clientY - drag.y) > 5) drag.moved = true;
+        const next = drag.start + delta / Math.max(1, window.innerWidth) * 2;
+        state.velocity = clamp((next - state.target) / dt, -7, 7);
+        state.target = next;
+        state.lastInput = now;
+        drag.time = now;
+        drag.start = next;
+        drag.x = event.clientX;
+        state.leanTarget = 0;
+      } else if (interaction.contains(event.target) || orbit.contains(event.target)) {
+        const x = (event.clientX / Math.max(1, window.innerWidth) - .5) * 2;
+        const y = (event.clientY / Math.max(1, window.innerHeight) - .5) * 2;
+        state.leanTarget = -x * .11 * (1 + Math.max(0, -y) * .55);
+        const hovered = event.target.closest?.('.hero-orbit__item');
+        state.hover = hovered ? items.indexOf(hovered) : -1;
+      }
+    };
+    const pointerEnd = () => {
+      if (!drag.down) return;
+      drag.down = false;
+      state.dragging = false;
+      interaction.classList.remove('is-grabbing');
+      const reach = clamp(state.velocity * .20, -step, step);
+      const bias = Math.abs(state.velocity) > .04 ? Math.sign(state.velocity) * .4 : 0;
+      state.target = Math.round((state.target + reach) / step + bias) * step;
+      state.lastInput = 0;
+      if (drag.moved) window.setTimeout(() => { drag.moved = false; }, 320);
+    };
+    interaction.addEventListener('pointerdown', pointerDown);
+    window.addEventListener('pointermove', pointerMove, { passive:true });
+    window.addEventListener('pointerup', pointerEnd);
+    window.addEventListener('pointercancel', pointerEnd);
+    orbit.addEventListener('click', (event) => {
+      if (!drag.moved) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      drag.moved = false;
+    }, true);
+    orbit.addEventListener('wheel', (event) => {
+      if (event.ctrlKey || event.target.closest?.('button, [role=dialog]')) return;
+      event.preventDefault();
+      cancelIntro();
+      const dt = clamp((performance.now() - state.lastMove) / 1000, .008, .1);
+      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+      const raw = clamp((Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX) * unit, -240, 240);
+      const delta = raw * .0022;
+      state.target -= delta;
+      const sample = clamp(-delta / dt, -7, 7);
+      state.velocity = state.velocity * .6 + sample * .4;
+      state.lastMove = performance.now();
+      state.lastInput = state.lastMove;
+    }, { passive:false });
+    orbit.addEventListener('keydown', (event) => {
+      if (['ArrowRight', 'ArrowDown'].includes(event.key)) { event.preventDefault(); state.target -= step; state.velocity = 0; state.lastInput = performance.now(); }
+      else if (['ArrowLeft', 'ArrowUp'].includes(event.key)) { event.preventDefault(); state.target += step; state.velocity = 0; state.lastInput = performance.now(); }
+    });
+    window.addEventListener('resize', () => render());
+    render();
+    if (!reduceMotion) {
+      requestAnimationFrame(() => {
+        const order = items.map((item, index) => ({ item, index, depth:Math.cos(index * step) })).sort((a, b) => Math.abs(b.depth) - Math.abs(a.depth));
+        order.forEach(({ item, index }, rank) => {
+          const destination = item.style.transform;
+          const opacity = item.style.opacity;
+          const filter = item.style.filter;
+          const animation = item.animate([
+            { transform:destination.replace(/scale\([^)]+\)$/, 'scale(.05)'), opacity:0, filter:'blur(14px)' },
+            { transform:destination, opacity, filter }
+          ], { duration:820, delay:240 + rank * 115, easing:'cubic-bezier(.2,.8,.2,1)', fill:'both' });
+          introAnimations.push(animation);
+          animation.onfinish = () => { animation.cancel(); introAnimations = introAnimations.filter((activeAnimation) => activeAnimation !== animation); render(); };
+        });
+      });
+      frame = requestAnimationFrame(update);
+    }
+    return () => { cancelAnimationFrame(frame); cancelIntro(); };
+  };
   const homeHero = document.querySelector('.hero');
   if (homeHero) {
     const heroStage = homeHero.querySelector('.hero-stage');
     const heroSphere = homeHero.querySelector('.hero-stage__move');
-    const heroTitle = homeHero.querySelector('h1');
-    const heroLead = homeHero.querySelector('.hero-lead');
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    homeHero.classList.add('home-intro');
     setupHeroCrystal(homeHero, heroSphere, reduceMotion);
+    setupHeroOrbit(homeHero, reduceMotion);
     if (!reduceMotion) {
-      homeHero.classList.add('home-intro');
-      if (heroTitle) heroTitle.classList.add('home-title-appear');
-      const heroText = '美式活化槍全身調理，搭配舒緩與個人化附加服務。不是按摩，是重新認識身體的節奏。';
-      const leadAnimation = heroLead
-        ? new Promise((resolve) => window.setTimeout(() => {
-          heroLead.textContent = '';
-          heroLead.classList.add('is-typing');
-          typewrite(heroLead, heroText).then(resolve);
-        }, 2000))
-        : Promise.resolve();
       if (heroSphere) {
-        const stageBounds = heroSphere.getBoundingClientRect();
-        const heroBounds = homeHero.getBoundingClientRect();
-        const mobile = window.matchMedia('(max-width:720px)').matches;
-        const targetX = heroBounds.left + heroBounds.width * (mobile ? .50 : .72);
-        const targetY = heroBounds.top + heroBounds.height * (mobile ? .59 : .49);
-        heroSphere.style.setProperty('--intro-x', `${targetX - (stageBounds.left + stageBounds.width / 2)}px`);
-        heroSphere.style.setProperty('--intro-y', `${targetY - (stageBounds.top + stageBounds.height / 2)}px`);
         heroSphere.classList.add('hero-stage--intro');
         window.setTimeout(() => {
           heroSphere.classList.remove('hero-stage--intro');
-          heroSphere.style.removeProperty('--intro-x');
-          heroSphere.style.removeProperty('--intro-y');
-        }, 5050);
+        }, 1800);
       }
-      const stageAnimation = heroSphere ? new Promise((resolve) => window.setTimeout(resolve, 5000)) : Promise.resolve();
-      Promise.all([leadAnimation, stageAnimation]).then(() => heroStamp?.classList.add('is-ready'));
-      homeHero.addEventListener('pointermove', (event) => {
-        const bounds = homeHero.getBoundingClientRect();
-        homeHero.style.setProperty('--pointer-x', `${((event.clientX - bounds.left) / bounds.width * 100).toFixed(1)}%`);
-        homeHero.style.setProperty('--pointer-y', `${((event.clientY - bounds.top) / bounds.height * 100).toFixed(1)}%`);
-      });
-      homeHero.addEventListener('pointerleave', () => {
-        homeHero.style.removeProperty('--pointer-x');
-        homeHero.style.removeProperty('--pointer-y');
-      });
       const homeMotionTargets = [...document.querySelectorAll('.home-links .home-link, .motion-copy h2')];
       homeMotionTargets.forEach((element, index) => {
         if (element.matches('.home-links .home-link')) element.classList.add('home-link-reveal');
@@ -290,7 +418,6 @@
           const bounds = element.getBoundingClientRect();
           if (bounds.top < window.innerHeight * .92 && bounds.bottom > 0) element.classList.add('is-motion-visible');
         });
-        if (heroStage) heroStage.style.setProperty('--hero-scroll-shift', `${Math.min(window.scrollY, 600) * -.075}px`);
       };
       requestAnimationFrame(revealHomeMotion);
       window.addEventListener('scroll', revealHomeMotion, { passive:true });
