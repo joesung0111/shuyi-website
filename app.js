@@ -164,26 +164,26 @@
           sceneContext.fillStyle = border;
           sceneContext.beginPath();
           if (isBelow) {
-            sceneContext.moveTo(x + tailX, y - 20 * quality);
-            sceneContext.lineTo(x + tailX - 18 * quality, y + 2 * quality);
-            sceneContext.lineTo(x + tailX + 18 * quality, y + 2 * quality);
+            sceneContext.moveTo(x + tailX, y - 21 * quality);
+            sceneContext.lineTo(x + tailX - 18 * quality, y + 3 * quality);
+            sceneContext.lineTo(x + tailX + 18 * quality, y + 3 * quality);
           } else {
-            sceneContext.moveTo(x + tailX, y + h + 20 * quality);
-            sceneContext.lineTo(x + tailX - 18 * quality, y + h - 2 * quality);
-            sceneContext.lineTo(x + tailX + 18 * quality, y + h - 2 * quality);
+            sceneContext.moveTo(x + tailX, y + h + 21 * quality);
+            sceneContext.lineTo(x + tailX - 18 * quality, y + h - 3 * quality);
+            sceneContext.lineTo(x + tailX + 18 * quality, y + h - 3 * quality);
           }
           sceneContext.closePath();
           sceneContext.fill();
           sceneContext.fillStyle = fill;
           sceneContext.beginPath();
           if (isBelow) {
-            sceneContext.moveTo(x + tailX, y - 14 * quality);
-            sceneContext.lineTo(x + tailX - 13 * quality, y + 2 * quality);
-            sceneContext.lineTo(x + tailX + 13 * quality, y + 2 * quality);
+            sceneContext.moveTo(x + tailX, y - 16 * quality);
+            sceneContext.lineTo(x + tailX - 13 * quality, y + 3 * quality);
+            sceneContext.lineTo(x + tailX + 13 * quality, y + 3 * quality);
           } else {
-            sceneContext.moveTo(x + tailX, y + h + 14 * quality);
-            sceneContext.lineTo(x + tailX - 13 * quality, y + h - 2 * quality);
-            sceneContext.lineTo(x + tailX + 13 * quality, y + h - 2 * quality);
+            sceneContext.moveTo(x + tailX, y + h + 16 * quality);
+            sceneContext.lineTo(x + tailX - 13 * quality, y + h - 3 * quality);
+            sceneContext.lineTo(x + tailX + 13 * quality, y + h - 3 * quality);
           }
           sceneContext.closePath();
           sceneContext.fill();

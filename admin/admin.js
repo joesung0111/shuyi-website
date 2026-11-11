@@ -1,4 +1,4 @@
-const APP_VERSION = '1.0.33';
+const APP_VERSION = '1.0.34';
 const state = { items: [], filter: 'all', editingId: null };
 const $ = (selector) => document.querySelector(selector);
 const loginView = $('#login-view'); const appView = $('#app-view'); const dialog = $('#editor-dialog'); const form = $('#editor-form');
