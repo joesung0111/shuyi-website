@@ -549,9 +549,8 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 .hero-orbit__item:focus-visible .hero-orbit__label{opacity:1;transform:translate(-50%,0)}
 .hero-orbit__front-info{position:absolute;z-index:190;left:clamp(20px,4vw,64px);bottom:clamp(18px,3.5vh,38px);display:flex;align-items:center;gap:13px;min-width:204px;padding:11px 16px 11px 11px;border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);border-radius:18px;background:color-mix(in srgb,var(--bg) 76%,transparent);color:var(--ink);box-shadow:0 12px 32px color-mix(in srgb,var(--ink) 14%,transparent),inset 0 1px 0 rgba(255,255,255,.38);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);pointer-events:none}
 .hero-orbit__front-number{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:13px;background:color-mix(in srgb,var(--accent) 17%,transparent);color:var(--accent);font:500 13px var(--mono)}
-.hero-orbit__front-copy{display:grid;gap:4px;min-width:0}
-.hero-orbit__front-copy small{color:var(--muted);font:9px var(--mono);letter-spacing:.11em}
-.hero-orbit__front-copy strong{font-size:14px;line-height:1.15;white-space:nowrap}
+.hero-orbit__front-copy{display:grid;align-content:center;gap:0;min-width:0}
+.hero-orbit__front-copy strong{font-size:19px;line-height:1.25;white-space:nowrap}
 .hero.home-intro .hero-stage{position:absolute;inset:0;z-index:84;display:block;width:100%;height:100%;margin:0;pointer-events:none}
 .hero.home-intro .hero-stage__move{position:absolute;inset:auto;left:50%;top:54%;display:block;width:clamp(161px,15.6vw,247px);aspect-ratio:1;transform:translate(-50%,calc(-50% - clamp(53.7px,5.2vw,82.3px)));translate:0 0;will-change:left,top,opacity,filter;z-index:84}
 .hero.home-intro .hero-stage__move.hero-stage--intro{animation:orbit-logo-appear 1000ms cubic-bezier(.2,.8,.2,1) 420ms both}
@@ -559,7 +558,7 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 .hero.home-intro .hero-crystal__refraction{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;opacity:.9}
 .hero.home-intro .hero-crystal__shine{position:absolute;inset:3.5% 5%;z-index:3;border:0;border-radius:50%;background:radial-gradient(ellipse at 26% 16%,rgba(255,255,255,.44),transparent 24%),linear-gradient(132deg,rgba(255,255,255,.16),transparent 27% 67%,rgba(255,255,255,.18));pointer-events:none}
 @keyframes orbit-logo-appear{from{opacity:0;filter:blur(18px)}to{opacity:1;filter:blur(0)}}
-@media(max-width:720px){.hero.home-intro{min-height:calc(100svh - 68px);height:calc(100svh - 68px)}.hero.home-intro .hero-orbit{transform:translateY(-34px)}.hero-orbit__disc{width:110vw;height:110vw;top:54%;transform:translate(-50%,-50%) rotateX(72deg)}.hero-orbit__disc::after{-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 12px),#000 calc(100% - 9px));mask:radial-gradient(farthest-side,transparent calc(100% - 12px),#000 calc(100% - 9px))}.hero-orbit__interaction{width:100vw;height:90svh}.hero-orbit__item{width:min(31vw,165px);height:min(23vw,132px)}.hero-orbit__label{bottom:-21px;padding:4px 8px;font-size:11px}.hero.home-intro .hero-stage__move{width:min(44.2vw,172px);top:54%;transform:translate(-50%,calc(-50% - min(14.73vw,57.3px)))}.hero-orbit__front-info{left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);min-width:188px;padding:9px 13px 9px 9px}.hero-orbit__front-number{width:34px;height:34px;border-radius:11px}.hero-orbit__front-copy small{font-size:8px}.hero-orbit__front-copy strong{font-size:13px}}
+@media(max-width:720px){.hero.home-intro{min-height:calc(100svh - 68px);height:calc(100svh - 68px)}.hero.home-intro .hero-orbit{transform:translateY(-34px)}.hero-orbit__disc{width:110vw;height:110vw;top:54%;transform:translate(-50%,-50%) rotateX(72deg)}.hero-orbit__disc::after{-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 12px),#000 calc(100% - 9px));mask:radial-gradient(farthest-side,transparent calc(100% - 12px),#000 calc(100% - 9px))}.hero-orbit__interaction{width:100vw;height:90svh}.hero-orbit__item{width:min(31vw,165px);height:min(23vw,132px)}.hero-orbit__label{bottom:-21px;padding:4px 8px;font-size:11px}.hero.home-intro .hero-stage__move{width:min(44.2vw,172px);top:54%;transform:translate(-50%,calc(-50% - min(14.73vw,57.3px)))}.hero-orbit__front-info{left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);min-width:188px;padding:9px 13px 9px 9px}.hero-orbit__front-number{width:34px;height:34px;border-radius:11px}.hero-orbit__front-copy strong{font-size:17px}}
 @media(prefers-reduced-motion:reduce){.hero.home-intro .hero-stage__move.hero-stage--intro{animation:none;opacity:1;filter:none}.hero-orbit__item{transition:none}.hero-orbit__hover-label.is-visible{animation:none}}
 
 /* Homepage orbit refinements: keep the crystal fixed, clear, and in front of the disk. */
@@ -568,8 +567,7 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 .hero-orbit__item{width:min(20.9vw,258.5px);height:min(17.6vw,204.6px)}
 .hero-orbit__front-info{left:50%;min-width:280px;min-height:76px;justify-content:center;gap:16px;padding:15px 22px 15px 16px;transform:translateX(-50%)}
 .hero-orbit__front-number{width:48px;height:48px;font-size:15px}
-.hero-orbit__front-copy small{font-size:10px}
-.hero-orbit__front-copy strong{display:block;overflow:hidden;font-size:17px}
+.hero-orbit__front-copy strong{display:block;overflow:hidden;font-size:19px}
 .hero-orbit__front-copy strong>span,.hero-orbit__front-number>span{display:inline-block}
 .hero-orbit__front-copy strong>span.is-swapping,.hero-orbit__front-number>span.is-swapping{animation:nearest-info-reveal .68s cubic-bezier(.22,1,.36,1) both}
 .hero-orbit__front-info.is-transitioning{animation:nearest-info-pulse .68s cubic-bezier(.22,1,.36,1) both}
@@ -580,8 +578,7 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
   .hero-orbit__item{width:min(34.1vw,181.5px);height:min(25.3vw,145.2px)}
   .hero-orbit__front-info{left:50%;min-width:238px;min-height:66px;gap:13px;padding:12px 17px 12px 13px;transform:translateX(-50%)}
   .hero-orbit__front-number{width:41px;height:41px;font-size:14px}
-  .hero-orbit__front-copy small{font-size:9px}
-  .hero-orbit__front-copy strong{font-size:15px}
+  .hero-orbit__front-copy strong{font-size:17px}
 }
 @media(prefers-reduced-motion:reduce){.hero-orbit__front-copy strong>span.is-swapping,.hero-orbit__front-number>span.is-swapping,.hero-orbit__front-info.is-transitioning{animation:none}}
 
@@ -685,6 +682,10 @@ html:has(body.home-page){--home-header-height:88px;scroll-snap-type:y mandatory;
 .hero.home-intro .hero-orbit__visual{position:absolute;inset:0;z-index:2;transform:translateY(calc(-1 * clamp(22px,2.145vw,34px)));pointer-events:none}
 @media(max-width:720px){.hero.home-intro .hero-orbit__visual{transform:translateY(calc(-1 * min(6.08vw,23.6px)))}.home-page .home-intro-copy .motion-feature.section{grid-template-rows:minmax(120px,1fr) auto}.home-page .home-intro-copy .motion-video{width:100%;height:100%;aspect-ratio:auto}.home-final-panel .home-links.section{height:clamp(148px,24svh,204px)}}
 
-/* Render one unaltered brand file inside the glass sphere; no reconstructed logo layers. */
+/* Keep the glass logo image translucent, with an exact-color foreground artwork overlay. */
 .hero.home-intro .hero-logo{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;border-radius:0;object-fit:cover;opacity:.46;mix-blend-mode:multiply;filter:none;clip-path:none}
 :root[data-theme='dark'] .hero.home-intro .hero-logo{opacity:.4;mix-blend-mode:screen}
+.hero.home-intro .hero-crystal__logo-art{position:absolute;inset:0;z-index:6;width:100%;height:100%;border:0;border-radius:0;object-fit:cover;opacity:1;mix-blend-mode:normal;filter:none;clip-path:none;pointer-events:none}
+.hero.home-intro .hero-crystal__logo-art--dark{display:none}
+:root[data-theme='dark'] .hero.home-intro .hero-crystal__logo-art--light{display:none}
+:root[data-theme='dark'] .hero.home-intro .hero-crystal__logo-art--dark{display:block}
