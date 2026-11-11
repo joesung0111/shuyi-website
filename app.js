@@ -105,60 +105,46 @@
   const heroStamp = document.querySelector('.hero-stamp');
   if (heroStamp) { const words = ['MOVE', 'WELL', 'LIVE', 'LIGHT']; heroStamp.setAttribute('aria-label', words.join(' ')); heroStamp.innerHTML = words.map((word, index) => `<span style="--word-index:${index}">${word}</span>`).join(''); }
   const setupHeroCrystal = (hero, sphere, reduceMotion) => {
-    const backdrop = hero?.querySelector('.hero-backdrop');
     const canvas = sphere?.querySelector('.hero-crystal__refraction');
     const output = canvas?.getContext('2d');
     if (!hero || !sphere || !output) return;
-    // Without a real backdrop image, leave the crystal transparent. A synthetic
-    // grid here reads as copied disk lines inside the logo sphere.
-    if (!backdrop) {
-      canvas.hidden = true;
-      return;
-    }
+    const orbit = hero.querySelector('.hero-orbit');
+    const items = [...(orbit?.querySelectorAll('.hero-orbit__item') || [])];
+    if (!orbit || !items.length) return;
     const scene = document.createElement('canvas');
     const sceneContext = scene.getContext('2d', { willReadFrequently:true });
     if (!sceneContext) return;
-    let pixels = null;
-    let sourceScale = 1;
     let frame = 0;
     let lastFrame = 0;
     const quality = Math.min(window.devicePixelRatio || 1, 1.1);
-    const rebuildScene = () => {
-      if (backdrop && (!backdrop.complete || !backdrop.naturalWidth)) return;
-      const bounds = hero.getBoundingClientRect();
-      scene.width = Math.max(1, Math.round(bounds.width * quality));
-      scene.height = Math.max(1, Math.round(bounds.height * quality));
-      sourceScale = scene.width / Math.max(1, bounds.width);
-      sceneContext.clearRect(0, 0, scene.width, scene.height);
-      const dark = document.documentElement.dataset.theme === 'dark';
-      if (backdrop) {
-        const scale = Math.max(scene.width / backdrop.naturalWidth, scene.height / backdrop.naturalHeight);
-        const drawWidth = backdrop.naturalWidth * scale;
-        const drawHeight = backdrop.naturalHeight * scale;
-        sceneContext.drawImage(backdrop, (scene.width - drawWidth) * .5, (scene.height - drawHeight) * .5, drawWidth, drawHeight);
-        const tint = sceneContext.createLinearGradient(0, 0, scene.width, scene.height);
-        tint.addColorStop(0, dark ? 'rgba(24,17,22,.48)' : 'rgba(255,248,244,.4)');
-        tint.addColorStop(1, dark ? 'rgba(24,17,22,.16)' : 'rgba(255,248,244,.12)');
-        sceneContext.fillStyle = tint;
-        sceneContext.fillRect(0, 0, scene.width, scene.height);
-      }
-      pixels = sceneContext.getImageData(0, 0, scene.width, scene.height).data;
-      draw(performance.now());
-    };
     const draw = (time) => {
-      if (!pixels) return;
-      const heroBounds = hero.getBoundingClientRect();
       const sphereBounds = sphere.getBoundingClientRect();
       const width = Math.max(1, Math.round(sphereBounds.width * quality));
       const height = Math.max(1, Math.round(sphereBounds.height * quality));
       if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+      if (scene.width !== width || scene.height !== height) { scene.width = width; scene.height = height; }
+      sceneContext.clearRect(0, 0, width, height);
+      // Rasterize only mascots whose orbit depth places them behind the glass.
+      // The canvas then bends those live pixels, instead of drawing a fake grid.
+      items.forEach((item) => {
+        if (Number(item.style.zIndex) >= 84) return;
+        const imageElement = item.querySelector('img');
+        if (!imageElement?.complete || !imageElement.naturalWidth) return;
+        const bounds = imageElement.getBoundingClientRect();
+        const opacity = Number.parseFloat(item.style.opacity || '1');
+        const blur = Number(item.style.filter.match(/blur\(([\d.]+)px\)/)?.[1] || 0);
+        sceneContext.save();
+        sceneContext.globalAlpha = opacity;
+        sceneContext.filter = blur ? `blur(${blur.toFixed(2)}px)` : 'none';
+        sceneContext.drawImage(imageElement, (bounds.left - sphereBounds.left) * quality, (bounds.top - sphereBounds.top) * quality, bounds.width * quality, bounds.height * quality);
+        sceneContext.restore();
+      });
+      const pixels = sceneContext.getImageData(0, 0, width, height).data;
       const image = output.createImageData(width, height);
       const data = image.data;
       const radius = Math.min(width, height) / 2;
       const centerX = width / 2;
       const centerY = height / 2;
-      const originX = (sphereBounds.left - heroBounds.left) * sourceScale;
-      const originY = (sphereBounds.top - heroBounds.top) * sourceScale;
       const wavePhase = time * .0011;
       for (let y = 0; y < height; y += 1) {
         const dy = y + .5 - centerY;
@@ -169,10 +155,10 @@
           const distance = Math.sqrt(nx * nx + ny * ny);
           if (distance >= 1) continue;
           const bulge = 1 - distance * distance;
-          const magnification = 1 + .16 * bulge;
-          const ripple = Math.sin((nx * .8 + ny * .56) * 7 + wavePhase) * 4.5 * bulge * quality;
-          const sx = Math.max(0, Math.min(scene.width - 1, Math.round(originX + centerX + dx / magnification + ripple * ny)));
-          const sy = Math.max(0, Math.min(scene.height - 1, Math.round(originY + centerY + dy / magnification + ripple * nx)));
+          const magnification = 1 + .48 * bulge;
+          const ripple = Math.sin((nx * .8 + ny * .56) * 7 + wavePhase) * 6.5 * bulge * quality;
+          const sx = Math.max(0, Math.min(scene.width - 1, Math.round(centerX + dx / magnification + ripple * ny)));
+          const sy = Math.max(0, Math.min(scene.height - 1, Math.round(centerY + dy / magnification + ripple * nx)));
           const sourceIndex = (sy * scene.width + sx) * 4;
           const redIndex = (sy * scene.width + Math.min(scene.width - 1, sx + Math.round(nx * 2 * bulge))) * 4;
           const blueIndex = (sy * scene.width + Math.max(0, sx - Math.round(nx * 2 * bulge))) * 4;
@@ -181,7 +167,7 @@
           data[targetIndex] = pixels[redIndex];
           data[targetIndex + 1] = pixels[sourceIndex + 1];
           data[targetIndex + 2] = pixels[blueIndex + 2];
-          data[targetIndex + 3] = Math.round(224 * edgeFade);
+          data[targetIndex + 3] = Math.round(pixels[sourceIndex + 3] * .92 * edgeFade);
         }
       }
       output.putImageData(image, 0, 0);
@@ -190,54 +176,10 @@
       frame = requestAnimationFrame(render);
       if (document.visibilityState !== 'visible' || time - lastFrame < 40) return;
       lastFrame = time;
-      draw(time);
+      draw(reduceMotion ? 0 : time);
     };
-    const onResize = () => { rebuildScene(); };
-    backdrop?.addEventListener('load', rebuildScene, { once:true });
-    window.addEventListener('resize', onResize, { passive:true });
-    new MutationObserver(rebuildScene).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
-    if (!backdrop || backdrop.complete) rebuildScene();
-    if (!reduceMotion) frame = requestAnimationFrame(render);
-    else if (!pixels && (!backdrop || backdrop.complete)) rebuildScene();
-    let driftFrame = 0;
-    let driftTimer = 0;
-    let driftLastFrame = 0;
-    let driftPath = null;
-    const choose = (low, high) => low + Math.random() * (high - low);
-    const startDriftPath = (x, y) => {
-      let targetX = x;
-      let targetY = y;
-      for (let attempt = 0; attempt < 8 && Math.hypot(targetX - x, targetY - y) < .65; attempt += 1) {
-        targetX = choose(48.9, 51.1);
-        targetY = choose(52.7, 55.3);
-      }
-      return { fromX:x, fromY:y, toX:targetX, toY:targetY, elapsed:0, duration:24 + Math.random() * 12 };
-    };
-    const drift = (time) => {
-      driftFrame = requestAnimationFrame(drift);
-      if (!hero.isConnected) { cancelAnimationFrame(driftFrame); return; }
-      if (document.visibilityState !== 'visible') { driftLastFrame = time; return; }
-      const delta = driftLastFrame ? Math.min(.05, Math.max(0, (time - driftLastFrame) / 1000)) : 0;
-      driftLastFrame = time;
-      if (!driftPath) {
-        const stageBounds = (sphere.offsetParent || hero).getBoundingClientRect();
-        const rect = sphere.getBoundingClientRect();
-        const x = (rect.left - stageBounds.left + rect.width / 2) / Math.max(1, stageBounds.width) * 100;
-        const y = (rect.top - stageBounds.top + rect.height / 2) / Math.max(1, stageBounds.height) * 100;
-        driftPath = startDriftPath(x, y);
-      }
-      driftPath.elapsed += delta;
-      while (driftPath.elapsed >= driftPath.duration) {
-        driftPath.elapsed -= driftPath.duration;
-        driftPath = startDriftPath(driftPath.toX, driftPath.toY);
-      }
-      const progress = driftPath.elapsed / driftPath.duration;
-      const eased = progress * progress * (3 - 2 * progress);
-      sphere.style.left = `${(driftPath.fromX + (driftPath.toX - driftPath.fromX) * eased).toFixed(3)}%`;
-      sphere.style.top = `${(driftPath.fromY + (driftPath.toY - driftPath.fromY) * eased).toFixed(3)}%`;
-    };
-    if (!reduceMotion) driftTimer = window.setTimeout(() => { driftLastFrame = 0; driftFrame = requestAnimationFrame(drift); }, 7000);
-    return () => { cancelAnimationFrame(frame); cancelAnimationFrame(driftFrame); window.clearTimeout(driftTimer); };
+    frame = requestAnimationFrame(render);
+    return () => cancelAnimationFrame(frame);
   };
   const setupHeroOrbit = (hero, reduceMotion) => {
     const orbit = hero?.querySelector('.hero-orbit');
@@ -248,6 +190,8 @@
     const frontInfo = orbit?.querySelector('.hero-orbit__front-info');
     const frontInfoIndex = frontInfo?.querySelector('[data-front-index]');
     const frontInfoName = frontInfo?.querySelector('[data-front-name]');
+    const frontInfoIndexText = frontInfoIndex?.querySelector('span');
+    const frontInfoNameText = frontInfoName?.querySelector('span');
     if (!orbit || !interaction || items.length !== 5) return;
     const step = Math.PI * 2 / items.length;
     const state = { angle:0, target:0, velocity:0, lastInput:0, lastMove:performance.now(), lastFrame:performance.now(), lean:0, leanTarget:0, dragging:false, hover:-1 };
@@ -271,7 +215,7 @@
       const width = Math.max(1, orbit.clientWidth);
       const height = Math.max(1, orbit.clientHeight);
       const mobile = matchMedia('(max-width:720px)').matches;
-      const radius = Math.min(width * (mobile ? .37 : .39), mobile ? 176 : 380);
+      const radius = Math.min(width * (mobile ? .31 : .39), mobile ? 160 : 280);
       const planeY = Math.cos(72 * Math.PI / 180);
       const speedBlur = clamp(Math.abs(state.velocity) * .09, 0, .9);
       const active = nearest(state.angle + state.lean);
@@ -289,7 +233,7 @@
         item.style.filter = `blur(${blur.toFixed(2)}px) drop-shadow(0px 12px 9px color-mix(in srgb,var(--ink) 25%,transparent))`;
         // All mascots sit above the disk surface; depth remains expressed by
         // their scale, opacity, and blur rather than disk lines crossing them.
-        item.style.zIndex = String(90 + Math.round((cosine + 1) * 40));
+        item.style.zIndex = String(cosine < 0 ? 81 + Math.round((cosine + 1) * 2) : 85 + Math.round(cosine * 4));
         item.dataset.active = String(index === active);
         item.dataset.depth = cosine > .35 ? 'front' : cosine < -.35 ? 'back' : 'middle';
         item.setAttribute('aria-label', item.dataset.label || item.textContent.trim());
@@ -299,8 +243,26 @@
       const logo = orbit.querySelector('.hero-stage');
       if (logo) logo.style.zIndex = '84';
       const currentName = items[active]?.querySelector('.hero-orbit__label')?.textContent.trim() || '';
-      if (frontInfoIndex) frontInfoIndex.textContent = String(active + 1).padStart(2, '0');
-      if (frontInfoName && frontInfoName.textContent !== currentName) frontInfoName.textContent = currentName;
+      const currentIndex = String(active + 1).padStart(2, '0');
+      const revealInfoText = (element, value) => {
+        if (!element || element.textContent === value) return false;
+        element.classList.remove('is-swapping');
+        element.textContent = value;
+        if (!reduceMotion) {
+          void element.offsetWidth;
+          element.classList.add('is-swapping');
+        }
+        return true;
+      };
+      revealInfoText(frontInfoIndexText, currentIndex);
+      const infoChanged = revealInfoText(frontInfoNameText, currentName);
+      if (infoChanged && frontInfo) {
+        frontInfo.classList.remove('is-transitioning');
+        if (!reduceMotion) {
+          void frontInfo.offsetWidth;
+          frontInfo.classList.add('is-transitioning');
+        }
+      }
       const selectedItem = state.hover >= 0 ? items[state.hover] : null;
       if (!hoverLabel || !hoverLabelText || !selectedItem) {
         labelItem = -1;

@@ -567,18 +567,24 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 @media(prefers-reduced-motion:reduce){.hero.home-intro .hero-stage__move.hero-stage--intro{animation:none;opacity:1;filter:none}.hero-orbit__item{transition:none}.hero-orbit__hover-label span{animation:none}}
 
 /* Homepage orbit refinements: keep the crystal fixed, clear, and in front of the disk. */
-.hero.home-intro .hero-stage__move{width:clamp(177px,17.16vw,272px);transform:translate(-50%,-50%)}
+.hero.home-intro .hero-stage__move{width:clamp(177px,17.16vw,272px);transform:translate(-50%,calc(-50% - 20%))}
 .hero.home-intro .hero-stage__move.hero-stage--intro{animation:orbit-logo-appear 1000ms cubic-bezier(.2,.8,.2,1) 420ms both}
 .hero-orbit__item{width:min(20.9vw,258.5px);height:min(17.6vw,204.6px)}
 .hero-orbit__front-info{left:50%;min-width:280px;min-height:76px;justify-content:center;gap:16px;padding:15px 22px 15px 16px;transform:translateX(-50%)}
 .hero-orbit__front-number{width:48px;height:48px;font-size:15px}
 .hero-orbit__front-copy small{font-size:10px}
-.hero-orbit__front-copy strong{font-size:17px}
+.hero-orbit__front-copy strong{display:block;overflow:hidden;font-size:17px}
+.hero-orbit__front-copy strong>span,.hero-orbit__front-number>span{display:inline-block}
+.hero-orbit__front-copy strong>span.is-swapping,.hero-orbit__front-number>span.is-swapping{animation:nearest-info-reveal .68s cubic-bezier(.22,1,.36,1) both}
+.hero-orbit__front-info.is-transitioning{animation:nearest-info-pulse .68s cubic-bezier(.22,1,.36,1) both}
+@keyframes nearest-info-reveal{from{opacity:0;filter:blur(6px);transform:translateY(118%)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes nearest-info-pulse{0%,100%{border-color:color-mix(in srgb,var(--ink) 16%,transparent);box-shadow:0 12px 32px color-mix(in srgb,var(--ink) 14%,transparent),inset 0 1px 0 rgba(255,255,255,.38)}45%{border-color:color-mix(in srgb,var(--accent) 70%,var(--ink));box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 13%,transparent),0 14px 34px color-mix(in srgb,var(--ink) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.38)}}
 @media(max-width:720px){
-  .hero.home-intro .hero-stage__move{width:min(48.62vw,189px);transform:translate(-50%,-50%)}
+  .hero.home-intro .hero-stage__move{width:min(48.62vw,189px);transform:translate(-50%,calc(-50% - 20%))}
   .hero-orbit__item{width:min(34.1vw,181.5px);height:min(25.3vw,145.2px)}
   .hero-orbit__front-info{left:50%;min-width:238px;min-height:66px;gap:13px;padding:12px 17px 12px 13px;transform:translateX(-50%)}
   .hero-orbit__front-number{width:41px;height:41px;font-size:14px}
   .hero-orbit__front-copy small{font-size:9px}
   .hero-orbit__front-copy strong{font-size:15px}
 }
+@media(prefers-reduced-motion:reduce){.hero-orbit__front-copy strong>span.is-swapping,.hero-orbit__front-number>span.is-swapping,.hero-orbit__front-info.is-transitioning{animation:none}}
