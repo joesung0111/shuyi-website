@@ -669,7 +669,7 @@ html:has(body.home-page){--home-header-height:88px;scroll-snap-type:y mandatory;
 
 /* Journal landing: two full-height panels with the infinite gradient 3D carousel. */
 html:has(.journal-page){--journal-header-height:88px;scroll-padding-top:var(--journal-header-height);scroll-snap-type:y mandatory;scroll-behavior:smooth}
-body:has(.journal-page)>.site-header{position:sticky;top:0;z-index:300;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+body:has(.journal-page)>.site-header{position:fixed;inset:0 0 auto;z-index:300}
 .journal-page > .journal-intro,.journal-page > .journal-carousel{height:calc(100svh - var(--journal-header-height));min-height:0;scroll-snap-align:start;scroll-snap-stop:always}
 .journal-page > .journal-intro{position:relative;display:block;padding:clamp(75px,13vw,180px) clamp(20px,8vw,128px) 70px;border-bottom:1px solid var(--line)}
 .journal-intro__copy{width:auto;margin:0}
