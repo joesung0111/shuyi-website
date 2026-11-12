@@ -834,12 +834,9 @@ html:has(.services-page) {
 .services-page > .page-hero--service .page-hero__copy {
   position:relative;
   z-index:3;
-  width:min(600px,50%);
+  width:min(620px,54%);
   max-width:none;
-  align-self:flex-start;
   margin-right:auto;
-  margin-top:clamp(8px,2svh,20px);
-  transform:none;
 }
 .services-page > .page-hero--service .service-hero-art {
   position:absolute;
@@ -855,8 +852,12 @@ html:has(.services-page) {
   transform:none;
   border-radius:24px;
   background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--accent) 17%,transparent),transparent 58%),color-mix(in srgb,var(--surface) 82%,transparent);
-  box-shadow:0 22px 55px color-mix(in srgb,var(--ink) 16%,transparent);
+  box-shadow:0 8px 24px color-mix(in srgb,var(--ink) 9%,transparent);
   backdrop-filter:blur(4px);
+  /* Temporarily hidden; keep this animated spine component intact for later reuse. */
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
 }
 .services-page > .page-hero--service .service-hero-art .service-spine { transform:scale(.7); }
 @media(max-width:720px) {
@@ -878,7 +879,7 @@ html:has(.services-page) {
       color-mix(in srgb,var(--bg) 23%,transparent) 74%,
       transparent 100%);
   }
-  .services-page > .page-hero--service .page-hero__copy { width:100%; align-self:flex-start; margin-top:8px; transform:none; }
+  .services-page > .page-hero--service .page-hero__copy { width:100%; align-self:center; margin-top:0; }
   .services-page > .page-hero--service .service-hero-art {
     top:auto;
     right:auto;
