@@ -32,7 +32,7 @@
     typeNext();
   });
   document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '更懂自己'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
-  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-spine-restored-20261112f`; }
+  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-depth-relight-20261112g`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
   if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) { journalLead.classList.add('journal-typewriter'); journalLead.setAttribute('aria-label', journalText); journalLead.textContent = ''; let textIndex = 0; const typeNext = () => { if (textIndex >= journalText.length) return; const character = journalText[textIndex]; journalLead.textContent += character; textIndex += 1; window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30); }; typeNext(); } }
   if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; }
@@ -47,10 +47,167 @@
     art.className = 'service-hero-art service-hero-art--scan-error';
     art.setAttribute('aria-label', '身體訊號的抽象示意動畫');
     art.innerHTML = '<div class="service-spine" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="service-hero-art__status"><span></span><span>身體訊號</span></div>';
-    const light = document.createElement('div');
-    light.className = 'service-hero-light';
-    light.setAttribute('aria-hidden', 'true');
-    serviceHero.append(light, art, copy);
+    const canvas = document.createElement('canvas');
+    canvas.className = 'service-hero-relight';
+    canvas.setAttribute('aria-hidden', 'true');
+    const wash = document.createElement('div');
+    wash.className = 'service-hero-wash';
+    wash.setAttribute('aria-hidden', 'true');
+    serviceHero.append(canvas, wash, art, copy);
+    const gl = canvas.getContext('webgl', { alpha:false, antialias:false, powerPreference:'low-power' });
+    if (gl) {
+      const vertexSource = `attribute vec2 aPosition; varying vec2 vUv; void main(){ vUv=aPosition*.5+.5; gl_Position=vec4(aPosition,0.0,1.0); }`;
+      const fragmentSource = `
+        #ifdef GL_FRAGMENT_PRECISION_HIGH
+        precision highp float;
+        #else
+        precision mediump float;
+        #endif
+        varying vec2 vUv;
+        uniform sampler2D uImage;
+        uniform sampler2D uDepth;
+        uniform vec2 uTexel;
+        uniform vec2 uCoverScale;
+        uniform vec2 uCoverPosition;
+        uniform vec2 uPointer;
+        uniform float uLightHeight;
+        vec2 fitUv(vec2 screenUv){ return screenUv*uCoverScale+(1.0-uCoverScale)*uCoverPosition; }
+        float depthAt(vec2 uv){ return texture2D(uDepth,clamp(uv,vec2(0.001),vec2(0.999))).r; }
+        float luminanceAt(vec2 uv){ vec3 c=texture2D(uImage,clamp(uv,vec2(0.001),vec2(0.999))).rgb; return dot(c,vec3(.2126,.7152,.0722)); }
+        void main(){
+          vec2 uv=fitUv(vUv);
+          vec3 base=texture2D(uImage,uv).rgb;
+          vec2 depthStep=uTexel*3.0;
+          float dl=depthAt(uv-vec2(depthStep.x,0.0));
+          float dr=depthAt(uv+vec2(depthStep.x,0.0));
+          float db=depthAt(uv-vec2(0.0,depthStep.y));
+          float dt=depthAt(uv+vec2(0.0,depthStep.y));
+          vec2 depthSlope=vec2(dr-dl,dt-db)*0.5;
+          vec2 detailStep=uTexel*7.0;
+          vec2 detailSlope=vec2(
+            luminanceAt(uv+vec2(detailStep.x,0.0))-luminanceAt(uv-vec2(detailStep.x,0.0)),
+            luminanceAt(uv+vec2(0.0,detailStep.y))-luminanceAt(uv-vec2(0.0,detailStep.y))
+          )*0.5;
+          vec3 normal=normalize(vec3(-depthSlope*24.0-detailSlope*2.6,1.0));
+          float depth=depthAt(uv);
+          vec3 surface=vec3(vUv-0.5,(depth-1.0)*0.22);
+          vec3 lightPosition=vec3(uPointer-0.5,uLightHeight);
+          vec3 toLight=lightPosition-surface;
+          float distanceSquared=dot(toLight,toLight);
+          vec3 lightDirection=normalize(toLight);
+          float diffuse=max(dot(normal,lightDirection),0.0);
+          vec2 rayOffset=lightDirection.xy/max(lightDirection.z,0.16)*(1.0-depth)*0.28*uCoverScale;
+          float occlusion=0.0;
+          for(int i=0;i<10;i++){
+            float progress=float(i+1)/10.0;
+            float rayDepth=depth+(1.0-depth)*progress;
+            float blocker=depthAt(uv+rayOffset*progress);
+            occlusion=max(occlusion,smoothstep(rayDepth+0.018,rayDepth+0.12,blocker));
+          }
+          float visibility=1.0-occlusion*0.76;
+          float attenuation=1.0/(1.0+distanceSquared*3.2);
+          float specular=pow(max(dot(reflect(-lightDirection,normal),vec3(0.0,0.0,1.0)),0.0),28.0)*0.16;
+          float illumination=0.54+diffuse*attenuation*1.32*visibility;
+          vec3 relit=base*illumination+vec3(1.0,.91,.76)*specular*attenuation*visibility;
+          gl_FragColor=vec4(relit,1.0);
+        }`;
+      const compileShader = (type, source) => {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader) || 'Shader compile failed');
+        return shader;
+      };
+      try {
+        const program = gl.createProgram();
+        gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vertexSource));
+        gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fragmentSource));
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program) || 'Shader link failed');
+        gl.useProgram(program);
+        const vertices = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertices);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+        const positionLocation = gl.getAttribLocation(program, 'aPosition');
+        gl.enableVertexAttribArray(positionLocation);
+        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+        const uniforms = Object.fromEntries(['uImage','uDepth','uTexel','uCoverScale','uCoverPosition','uPointer','uLightHeight'].map((name) => [name, gl.getUniformLocation(program, name)]));
+        const imageTexture = gl.createTexture();
+        const depthTexture = gl.createTexture();
+        const uploadTexture = (texture, image, unit) => {
+          gl.activeTexture(gl.TEXTURE0 + unit);
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+          gl.uniform1i(unit === 0 ? uniforms.uImage : uniforms.uDepth, unit);
+        };
+        let lightX = .72;
+        let lightY = .55;
+        let coverPositionX = window.innerWidth <= 720 ? .64 : 1;
+        let textureWidth = 1;
+        let textureHeight = 1;
+        let drawFrame = 0;
+        let ready = false;
+        const draw = () => {
+          drawFrame = 0;
+          if (!ready) return;
+          const bounds = serviceHero.getBoundingClientRect();
+          const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+          const width = Math.max(1, Math.round(bounds.width * ratio));
+          const height = Math.max(1, Math.round(bounds.height * ratio));
+          if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+          gl.viewport(0, 0, width, height);
+          const imageAspect = textureWidth / textureHeight;
+          const viewAspect = bounds.width / Math.max(bounds.height, 1);
+          let coverX = 1, coverY = 1;
+          if (imageAspect > viewAspect) coverX = viewAspect / imageAspect;
+          else coverY = imageAspect / viewAspect;
+          coverPositionX = bounds.width <= 720 ? .64 : 1;
+          gl.uniform2f(uniforms.uTexel, 1 / textureWidth, 1 / textureHeight);
+          gl.uniform2f(uniforms.uCoverScale, coverX, coverY);
+          gl.uniform2f(uniforms.uCoverPosition, coverPositionX, .5);
+          gl.uniform2f(uniforms.uPointer, lightX, lightY);
+          gl.uniform1f(uniforms.uLightHeight, .62);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+          canvas.classList.add('is-ready');
+        };
+        const queueDraw = () => { if (!drawFrame) drawFrame = requestAnimationFrame(draw); };
+        const loadImage = (path) => new Promise((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = reject;
+          image.src = path;
+        });
+        Promise.all([loadImage('/素材/網站插圖/活化調理-首屏背景.jpg'), loadImage('/素材/網站插圖/活化調理-首屏深度圖.jpg')]).then(([image, depth]) => {
+          textureWidth = image.width;
+          textureHeight = image.height;
+          uploadTexture(imageTexture, image, 0);
+          uploadTexture(depthTexture, depth, 1);
+          ready = true;
+          queueDraw();
+        }).catch(() => {});
+        const moveRelight = (event) => {
+          const bounds = serviceHero.getBoundingClientRect();
+          lightX = Math.min(1, Math.max(0, (event.clientX - bounds.left) / bounds.width));
+          lightY = 1 - Math.min(1, Math.max(0, (event.clientY - bounds.top) / bounds.height));
+          if (window.innerWidth <= 720) coverPositionX = .64;
+          queueDraw();
+        };
+        serviceHero.addEventListener('pointermove', moveRelight, { passive:true });
+        serviceHero.addEventListener('pointerdown', moveRelight, { passive:true });
+        serviceHero.addEventListener('pointerleave', (event) => {
+          if (event.pointerType !== 'touch') { lightX = .72; lightY = .55; queueDraw(); }
+        }, { passive:true });
+        const resizeObserver = new ResizeObserver(queueDraw);
+        resizeObserver.observe(serviceHero);
+      } catch (error) {
+        canvas.remove();
+      }
+    }
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const nodes = [...art.querySelectorAll('.service-spine i')];
       const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -103,24 +260,6 @@
       };
       scanDown();
     }
-    let lightFrame = 0;
-    let latestPointer = null;
-    const moveHeroLight = (event) => {
-      latestPointer = event;
-      if (lightFrame) return;
-      lightFrame = requestAnimationFrame(() => {
-        lightFrame = 0;
-        const bounds = serviceHero.getBoundingClientRect();
-        serviceHero.style.setProperty('--service-light-x', `${((latestPointer.clientX - bounds.left) / bounds.width) * 100}%`);
-        serviceHero.style.setProperty('--service-light-y', `${((latestPointer.clientY - bounds.top) / bounds.height) * 100}%`);
-        serviceHero.classList.add('has-pointer-light');
-      });
-    };
-    serviceHero.addEventListener('pointermove', moveHeroLight, { passive:true });
-    serviceHero.addEventListener('pointerdown', moveHeroLight, { passive:true });
-    serviceHero.addEventListener('pointerleave', (event) => {
-      if (event.pointerType !== 'touch') serviceHero.classList.remove('has-pointer-light');
-    }, { passive:true });
   }
   document.querySelectorAll('.hero h1, .page-hero h1, .booking-card h1, .studio-page__copy h1').forEach((heading) => { heading.innerHTML = heading.innerHTML.replaceAll('。', ''); });
   const heroStamp = document.querySelector('.hero-stamp');
