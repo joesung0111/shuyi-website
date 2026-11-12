@@ -32,7 +32,7 @@
     typeNext();
   });
   document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '更懂自己'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
-  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-v2-20261029`; }
+  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-snap-fill-20261112c`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
   if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) { journalLead.classList.add('journal-typewriter'); journalLead.setAttribute('aria-label', journalText); journalLead.textContent = ''; let textIndex = 0; const typeNext = () => { if (textIndex >= journalText.length) return; const character = journalText[textIndex]; journalLead.textContent += character; textIndex += 1; window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30); }; typeNext(); } }
   if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; }
@@ -566,7 +566,35 @@
       window.addEventListener('scroll', revealHomeMotion, { passive:true });
     }
   }
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article, .services-faq'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
+  if (currentPath === '/services' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const openingPanels = [...document.querySelectorAll('.services-page > .page-hero--service, .services-page > .services-summary')];
+    let snapTimer = 0;
+    if (openingPanels.length === 2) window.addEventListener('scroll', () => {
+      window.clearTimeout(snapTimer);
+      snapTimer = window.setTimeout(() => {
+        const anchor = openingPanels[0].getBoundingClientRect().top + window.scrollY;
+        const nearest = openingPanels.map((panel) => ({ panel, distance: Math.abs(panel.getBoundingClientRect().top - anchor) })).reduce((best, panel) => panel.distance < best.distance ? panel : best);
+        if (nearest.distance > window.innerHeight * .48) return;
+        const target = Math.max(0, window.scrollY + nearest.panel.getBoundingClientRect().top - anchor);
+        if (Math.abs(target - window.scrollY) > 24) window.scrollTo({ top:target, behavior:'smooth' });
+      }, 140);
+    }, { passive:true });
+  }
+  if (currentPath === '/services' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const openingPanels = [...document.querySelectorAll('.services-page > .page-hero--service, .services-page > .services-summary')];
+    let snapTimer = 0;
+    if (openingPanels.length === 2) window.addEventListener('scroll', () => {
+      window.clearTimeout(snapTimer);
+      snapTimer = window.setTimeout(() => {
+        const anchor = openingPanels[0].getBoundingClientRect().top + window.scrollY;
+        const nearest = openingPanels.map((panel) => ({ panel, distance: Math.abs(panel.getBoundingClientRect().top - anchor) })).reduce((best, panel) => panel.distance < best.distance ? panel : best);
+        if (nearest.distance > window.innerHeight * .48) return;
+        const target = Math.max(0, window.scrollY + nearest.panel.getBoundingClientRect().top - anchor);
+        if (Math.abs(target - window.scrollY) > 24) window.scrollTo({ top:target, behavior:'smooth' });
+      }, 140);
+    }, { passive:true });
+  }
   const serviceList = document.querySelector('.service-list');
   if (serviceList && !document.querySelector('[data-flow-progress]')) {
     serviceList.closest('section').insertAdjacentHTML('afterend', '<section class="service-flow section" data-flow-progress><div class="service-flow__intro"><p class="eyebrow">THE SHU YI WAY / 02</p><h2>從理解開始<br><em>慢慢找回活動</em></h2><p>每一次調理都從當下狀態出發，在過程裡感受身體，再把合適的照顧帶回日常。</p></div><div class="service-flow__track"><div class="service-flow__line" aria-hidden="true"><i></i></div><ol class="service-flow__steps"><li class="service-flow__step is-active"><span>01</span><div><h3>先理解狀態</h3><p>從今天的身體感受與日常活動開始，找到舒服的起點。</p></div></li><li class="service-flow__step"><span>02</span><div><h3>安排活化節奏</h3><p>依當下狀態安排調理，不套用每個人都一樣的固定流程。</p></div></li><li class="service-flow__step"><span>03</span><div><h3>留意身體變化</h3><p>在過程中保持感受，讓活動與舒適度成為調整的方向。</p></div></li><li class="service-flow__step"><span>04</span><div><h3>帶回日常裡</h3><p>留下能延續到生活中的身體照顧空間，慢慢找回自在。</p></div></li></ol></div></section>');

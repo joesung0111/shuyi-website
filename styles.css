@@ -694,3 +694,82 @@ html:has(body.home-page){--home-header-height:88px;scroll-snap-type:y mandatory;
 .hero.home-intro .hero-crystal__logo-art--dark{display:none}
 :root[data-theme='dark'] .hero.home-intro .hero-crystal__logo-art--light{display:none}
 :root[data-theme='dark'] .hero.home-intro .hero-crystal__logo-art--dark{display:block}
+
+/* The first two services panels mirror the homepage viewport and snap behavior. */
+html:has(.services-page) {
+  --services-header-height:88px;
+  scroll-padding-top:var(--services-header-height);
+  scroll-snap-type:y proximity;
+  scroll-behavior:smooth;
+}
+.services-page > .page-hero--service,
+.services-page > .services-summary {
+  height:calc(100svh - var(--services-header-height));
+  min-height:0;
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+}
+.services-page > .page-hero--service { padding-block:clamp(30px,5svh,64px); }
+.services-page > .services-summary {
+  width:100%;
+  margin:0;
+  padding:clamp(20px,3.5svh,44px) clamp(22px,5vw,76px);
+  border-inline:0;
+  border-radius:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.services-page > .services-summary .services-facts > div { min-height:clamp(76px,10svh,120px); }
+.services-faq details {
+  position:relative;
+  margin-inline:-14px;
+  padding:20px 48px 20px 14px;
+  border:1px solid transparent;
+  border-radius:18px;
+  transition:background .35s ease,border-color .35s ease,transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease;
+}
+.services-faq details + details { margin-top:8px; }
+.services-faq details:last-child { border-bottom:1px solid transparent; }
+.services-faq details:hover,.services-faq details[open] {
+  background:color-mix(in srgb,var(--surface) 78%,var(--sun));
+  border-color:color-mix(in srgb,var(--accent) 25%,var(--line));
+  box-shadow:0 12px 28px color-mix(in srgb,var(--ink) 7%,transparent);
+  transform:translateX(5px);
+}
+.services-faq summary { list-style:none; position:relative; }
+.services-faq summary::-webkit-details-marker { display:none; }
+.services-faq summary::after {
+  content:'＋'; position:absolute; right:-31px; top:50%; display:grid; place-items:center;
+  width:25px; height:25px; border:1px solid var(--line); border-radius:50%;
+  color:var(--accent); font-size:14px; transform:translateY(-50%);
+  transition:transform .35s ease,background .35s ease,color .35s ease;
+}
+.services-faq details[open] summary::after { content:'−'; transform:translateY(-50%) rotate(180deg); background:var(--accent); color:var(--bg); }
+.services-faq details[open] > p { animation:faq-answer-in .42s cubic-bezier(.2,.8,.2,1) both; }
+.services-faq > details { opacity:1; transform:none; }
+.services-faq.reveal-on-scroll > details { opacity:0; transform:translateY(24px) scale(.985); }
+.services-faq.is-revealed > details { animation:faq-item-in .65s cubic-bezier(.2,.8,.2,1) both; }
+.services-faq.is-revealed > details:nth-child(2) { animation-delay:90ms; }
+.services-faq.is-revealed > details:nth-child(3) { animation-delay:180ms; }
+.services-faq.is-revealed > details:nth-child(4) { animation-delay:270ms; }
+.services-faq.is-revealed > details:nth-child(5) { animation-delay:360ms; }
+.services-faq.is-revealed > details:nth-child(6) { animation-delay:450ms; }
+.services-faq.is-revealed > details:nth-child(7) { animation-delay:540ms; }
+.services-faq.is-revealed > details:nth-child(8) { animation-delay:630ms; }
+@keyframes faq-item-in { to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes faq-answer-in { from { opacity:0; transform:translateY(-7px); } to { opacity:1; transform:translateY(0); } }
+@media(max-width:720px) {
+  html:has(.services-page) { --services-header-height:68px; }
+  .services-page > .page-hero--service { padding-block:clamp(20px,3.5svh,32px); }
+  .services-page > .services-summary { padding:clamp(16px,2.6svh,26px) 20px; }
+  .services-page > .services-summary .services-facts > div { min-height:clamp(68px,8svh,82px); padding:clamp(8px,1.8svh,12px)!important; }
+  .services-faq details { margin-inline:-8px; padding:17px 40px 17px 8px; }
+  .services-faq summary::after { right:-29px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  html:has(.services-page) { scroll-behavior:auto; scroll-snap-type:none; }
+  .services-faq details,.services-faq summary::after { transition:none; }
+  .services-faq > details { opacity:1; transform:none; }
+  .services-faq.is-revealed > details,.services-faq details[open] > p { animation:none; }
+}
