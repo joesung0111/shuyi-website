@@ -727,6 +727,57 @@
     }
   }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article, .services-faq'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
+  const offerings = document.querySelector('.offerings');
+  if (offerings && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const glyphs = [];
+    offerings.querySelectorAll('.offering-group__label h2, .offering h3').forEach((heading) => {
+      const label = heading.textContent.trim();
+      heading.setAttribute('aria-label', label);
+      const fragment = document.createDocumentFragment();
+      [...label].forEach((character) => {
+        const glyph = document.createElement('span');
+        glyph.className = 'offering-bulge__glyph';
+        glyph.setAttribute('aria-hidden', 'true');
+        glyph.textContent = character === ' ' ? '\u00a0' : character;
+        fragment.append(glyph);
+        glyphs.push({ element:glyph, x:0, y:0, z:0, targetX:0, targetY:0, targetZ:0 });
+      });
+      heading.replaceChildren(fragment);
+      heading.classList.add('offering-bulge');
+    });
+    let pointer = null;
+    let frame = 0;
+    const animateBulge = () => {
+      let moving = false;
+      glyphs.forEach((glyph) => {
+        const rect = glyph.element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const dx = pointer ? centerX - pointer.x : 999;
+        const dy = pointer ? centerY - pointer.y : 999;
+        const distance = Math.hypot(dx, dy);
+        const influence = Math.max(0, 1 - distance / 170);
+        const eased = influence * influence * (3 - 2 * influence);
+        glyph.targetZ = 24 * eased;
+        glyph.targetX = Math.max(-13, Math.min(13, dy / 12)) * eased;
+        glyph.targetY = Math.max(-13, Math.min(13, -dx / 12)) * eased;
+        glyph.x += (glyph.targetX - glyph.x) * .18;
+        glyph.y += (glyph.targetY - glyph.y) * .18;
+        glyph.z += (glyph.targetZ - glyph.z) * .18;
+        glyph.element.style.transform = `translateZ(${glyph.z.toFixed(2)}px) rotateX(${glyph.x.toFixed(2)}deg) rotateY(${glyph.y.toFixed(2)}deg)`;
+        glyph.element.style.setProperty('--bulge-light', (glyph.z / 24).toFixed(2));
+        if (Math.abs(glyph.targetZ - glyph.z) > .15 || Math.abs(glyph.targetX - glyph.x) > .15 || Math.abs(glyph.targetY - glyph.y) > .15) moving = true;
+      });
+      if (moving) frame = requestAnimationFrame(animateBulge);
+      else frame = 0;
+    };
+    const updatePointer = (event) => {
+      pointer = event ? { x:event.clientX, y:event.clientY } : null;
+      if (!frame) frame = requestAnimationFrame(animateBulge);
+    };
+    offerings.addEventListener('pointermove', updatePointer, { passive:true });
+    offerings.addEventListener('pointerleave', () => updatePointer(null), { passive:true });
+  }
   if (currentPath === '/services' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const openingPanels = [...document.querySelectorAll('.services-page > .page-hero--service, .services-page > .services-summary')];
     let snapTimer = 0;

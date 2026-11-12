@@ -376,6 +376,8 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 
 /* Service options: editorial guidance with fees kept secondary to the choice of care. */
 .offerings { scroll-margin-top:110px; padding-top:clamp(20px,4vw,56px); }
+.offering-bulge { perspective:900px; transform-style:preserve-3d; }
+.offering-bulge__glyph { display:inline-block; transform-origin:50% 55%; transform-style:preserve-3d; will-change:transform; text-shadow:0 0 calc(var(--bulge-light,0) * 9px) color-mix(in srgb,var(--accent) 45%,transparent); }
 .offerings__heading { display:grid; grid-template-columns:1fr minmax(250px,.55fr); align-items:end; gap:48px; margin-bottom:clamp(45px,7vw,90px); }
 .offerings__heading h2 { margin:22px 0 0; font-size:clamp(40px,5.4vw,78px); line-height:1.12; letter-spacing:-.065em; }
 .offerings__heading > p { max-width:390px; margin:0 0 6px auto; color:var(--muted); line-height:1.9; }
