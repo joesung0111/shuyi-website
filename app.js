@@ -740,7 +740,7 @@
       try {
         const program=gl.createProgram();
         gl.attachShader(program,compile(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 uv; void main(){uv=p*.5+.5; gl_Position=vec4(p,0.,1.);}'));
-        gl.attachShader(program,compile(gl.FRAGMENT_SHADER, `precision highp float; varying vec2 uv; uniform sampler2D scene; uniform vec2 size; uniform vec2 center; uniform float radius; void main(){vec2 pixel=uv*size; vec2 d=(pixel-center)/radius; float r=length(d); if(r>=1.0) discard; float z=sqrt(max(0.0,1.0-r*r)); vec2 normal=d/(z+0.35); vec2 shift=normal*radius*0.13*(1.0-r*r); vec2 sampleUV=(pixel-shift)/size; float ca=1.0+0.025*r; vec4 c=texture2D(scene,sampleUV); c.r=texture2D(scene,(pixel-shift*ca)/size).r; c.b=texture2D(scene,(pixel-shift/ca)/size).b; float edge=smoothstep(.73,1.0,r); float shine=pow(max(0.0,1.0-length(d-vec2(-.35,.4))*2.1),3.0); c.rgb=mix(c.rgb,c.rgb*.55,edge*.65)+shine*.2; gl_FragColor=vec4(c.rgb,1.0); }`));
+        gl.attachShader(program,compile(gl.FRAGMENT_SHADER, `precision highp float; varying vec2 uv; uniform sampler2D scene; uniform vec2 size; uniform vec2 center; uniform float radius; uniform float opacity; uniform float headerBottom; void main(){vec2 pixel=uv*size; if(pixel.y > size.y-headerBottom) discard; vec2 d=(pixel-center)/radius; float r=length(d); if(r>=1.0) discard; float z=sqrt(max(0.0,1.0-r*r)); vec2 normal=d/(z+0.35); vec2 shift=normal*radius*0.13*(1.0-r*r); vec2 sampleUV=(pixel-shift)/size; float ca=1.0+0.025*r; vec4 c=texture2D(scene,sampleUV); c.r=texture2D(scene,(pixel-shift*ca)/size).r; c.b=texture2D(scene,(pixel-shift/ca)/size).b; float edge=smoothstep(.73,1.0,r); float shine=pow(max(0.0,1.0-length(d-vec2(-.35,.4))*2.1),3.0); c.rgb=mix(c.rgb,c.rgb*.55,edge*.65)+shine*.2; gl_FragColor=vec4(c.rgb,opacity); }`));
         gl.linkProgram(program); if (!gl.getProgramParameter(program,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
         gl.useProgram(program);
         const buffer=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buffer); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
@@ -749,6 +749,11 @@
         const source=document.createElement('canvas'), ctx=source.getContext('2d');
         const main=document.querySelector('.offerings-page main');
         let targetX=innerWidth*.65,targetY=innerHeight*.45,x=targetX,y=targetY, frame=0, dirty=true;
+        const header=document.querySelector('.site-header');
+        const trails=Array.from({length:3},()=>({x,y}));
+        let previousTime=0;
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
         const snapshot=()=>{
           const w=innerWidth,h=innerHeight; source.width=w; source.height=h; canvas.width=w; canvas.height=h; gl.viewport(0,0,w,h);
           ctx.fillStyle=getComputedStyle(document.body).backgroundColor; ctx.fillRect(0,0,w,h);
@@ -757,10 +762,29 @@
           while((node=walker.nextNode())) { if(!node.nodeValue.trim()) continue; const parent=node.parentElement, style=getComputedStyle(parent); if(style.visibility==='hidden'||style.display==='none'||Number(style.opacity)===0) continue; ctx.font=`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`; ctx.fillStyle=style.color; ctx.textBaseline='top'; const range=document.createRange(); for(let i=0;i<node.length;i++){if(/\s/.test(node.data[i]))continue; range.setStart(node,i); range.setEnd(node,i+1); const r=range.getBoundingClientRect(); if(r.bottom<0||r.top>h||r.right<0||r.left>w)continue; ctx.fillText(node.data[i],r.left,r.top); } }
           gl.bindTexture(gl.TEXTURE_2D,texture); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source); dirty=false;
         };
-        const render=()=>{ if(dirty) snapshot(); x+=(targetX-x)*.14; y+=(targetY-y)*.14; gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT); gl.uniform2f(gl.getUniformLocation(program,'size'),innerWidth,innerHeight); gl.uniform2f(gl.getUniformLocation(program,'center'),x,innerHeight-y); gl.uniform1f(gl.getUniformLocation(program,'radius'),Math.min(innerWidth,innerHeight)*.14); gl.drawArrays(gl.TRIANGLES,0,6); frame=requestAnimationFrame(render); };
+        const render=(time=0)=>{
+          if(dirty) snapshot();
+          const dt=previousTime ? Math.min((time-previousTime)/1000,.05) : 1/60;
+          previousTime=time;
+          const radius=Math.min(innerWidth,innerHeight)*.14;
+          const headerBottom=Math.max(0,header?.getBoundingClientRect().bottom || 0);
+          const safeY=Math.max(headerBottom+radius+8,targetY);
+          const follow=1-Math.exp(-9*dt);
+          x+=(targetX-x)*follow; y+=(safeY-y)*follow;
+          y=Math.max(headerBottom+radius+8,y);
+          let leader={x,y};
+          trails.forEach(trail=>{const damping=1-Math.exp(-13*dt); trail.x+=(leader.x-trail.x)*damping; trail.y+=(leader.y-trail.y)*damping; trail.y=Math.max(headerBottom+radius+8,trail.y); leader=trail;});
+          gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
+          gl.uniform2f(gl.getUniformLocation(program,'size'),innerWidth,innerHeight);
+          gl.uniform1f(gl.getUniformLocation(program,'headerBottom'),headerBottom);
+          const drawLens=(cx,cy,alpha,scale=1)=>{gl.uniform2f(gl.getUniformLocation(program,'center'),cx,innerHeight-cy); gl.uniform1f(gl.getUniformLocation(program,'radius'),radius*scale); gl.uniform1f(gl.getUniformLocation(program,'opacity'),alpha); gl.drawArrays(gl.TRIANGLES,0,6);};
+          for(let i=trails.length-1;i>=0;i--){const trail=trails[i]; const strength=Math.min(1,Math.hypot(trail.x-x,trail.y-y)/(radius*.75)); drawLens(trail.x,trail.y,strength*(.12-i*.035),1-i*.035);}
+          drawLens(x,y,1);
+          frame=requestAnimationFrame(render);
+        };
         window.addEventListener('pointermove',event=>{targetX=event.clientX;targetY=event.clientY;},{passive:true});
         window.addEventListener('scroll',()=>{dirty=true;},{passive:true}); window.addEventListener('resize',()=>{dirty=true;},{passive:true});
-        new MutationObserver(()=>{dirty=true;}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+        new MutationObserver(()=>{dirty=true; setTimeout(()=>{dirty=true;},400);}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
         document.fonts.ready.then(()=>{dirty=true;}); render(); window.addEventListener('pagehide',()=>cancelAnimationFrame(frame),{once:true});
       } catch(error) { canvas.remove(); console.error('Lens unavailable',error); }
     }
