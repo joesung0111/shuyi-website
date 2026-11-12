@@ -161,7 +161,6 @@
           const border = style.borderTopColor;
           const fill = style.backgroundColor;
           const isBelow = hoverLabel.classList.contains('is-below');
-          const tailFill = getComputedStyle(hoverLabel).getPropertyValue('--bubble-tail-fill').trim() || '#fff';
           sceneContext.save();
           sceneContext.globalAlpha = Number(labelStyle.opacity || 1);
           const bubbleBlur = Number(labelStyle.filter.match(/blur\(([\d.]+)px\)/)?.[1] || 0);
@@ -190,29 +189,29 @@
           }
           sceneContext.closePath();
           sceneContext.fill();
-          sceneContext.fillStyle = tailFill;
+          sceneContext.fillStyle = fill;
           sceneContext.beginPath();
           if (isBelow) {
-            sceneContext.moveTo(x + tailX, y - 19 * quality);
-            sceneContext.lineTo(x + tailX - 15.5 * quality, y + 3 * quality);
-            sceneContext.lineTo(x + tailX + 15.5 * quality, y + 3 * quality);
+            sceneContext.moveTo(x + tailX, y - 16 * quality);
+            sceneContext.lineTo(x + tailX - 13 * quality, y + 3 * quality);
+            sceneContext.lineTo(x + tailX + 13 * quality, y + 3 * quality);
           } else {
-            sceneContext.moveTo(x + tailX, y + h + 19 * quality);
-            sceneContext.lineTo(x + tailX - 15.5 * quality, y + h - 3 * quality);
-            sceneContext.lineTo(x + tailX + 15.5 * quality, y + h - 3 * quality);
+            sceneContext.moveTo(x + tailX, y + h + 16 * quality);
+            sceneContext.lineTo(x + tailX - 13 * quality, y + h - 3 * quality);
+            sceneContext.lineTo(x + tailX + 13 * quality, y + h - 3 * quality);
           }
           sceneContext.closePath();
           sceneContext.fill();
           tailMaskContext.fillStyle = '#fff';
           tailMaskContext.beginPath();
           if (isBelow) {
-            tailMaskContext.moveTo(x + tailX, y - 19 * quality);
-            tailMaskContext.lineTo(x + tailX - 15.5 * quality, y + 3 * quality);
-            tailMaskContext.lineTo(x + tailX + 15.5 * quality, y + 3 * quality);
+            tailMaskContext.moveTo(x + tailX, y - 16 * quality);
+            tailMaskContext.lineTo(x + tailX - 13 * quality, y + 3 * quality);
+            tailMaskContext.lineTo(x + tailX + 13 * quality, y + 3 * quality);
           } else {
-            tailMaskContext.moveTo(x + tailX, y + h + 19 * quality);
-            tailMaskContext.lineTo(x + tailX - 15.5 * quality, y + h - 3 * quality);
-            tailMaskContext.lineTo(x + tailX + 15.5 * quality, y + h - 3 * quality);
+            tailMaskContext.moveTo(x + tailX, y + h + 16 * quality);
+            tailMaskContext.lineTo(x + tailX - 13 * quality, y + h - 3 * quality);
+            tailMaskContext.lineTo(x + tailX + 13 * quality, y + h - 3 * quality);
           }
           tailMaskContext.closePath();
           tailMaskContext.fill();
