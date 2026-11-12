@@ -7,24 +7,6 @@
     bookingGuide.insertAdjacentHTML('beforeend', '<section class="booking-policy" aria-labelledby="booking-policy-title"><div class="booking-policy__heading"><p class="eyebrow">A LITTLE NOTE BEFORE YOU COME</p><h2 id="booking-policy-title">💜 為了讓每位客人都能<br><em>順利安排調理時間</em></h2></div><ul class="booking-policy__list"><li><span aria-hidden="true">✓</span><p>請準時赴約，若遲到將依原預約時段安排，以免影響下一位客人的預約。</p></li><li><span aria-hidden="true">✓</span><p>如需取消或更改預約，請於 4 小時前通知我們。</p></li><li><span aria-hidden="true">✓</span><p>無故未到或臨時取消累積 2 次，未來預約可能需支付定金。</p></li></ul></section>');
   }
   const root = document.documentElement;
-  // Use one bounded pull cue across pages; keep navigation outside the effect.
-  if (document.querySelector('.site-header')) {
-    const strip=document.createElement('div');
-    strip.className='pull-mascots'; strip.setAttribute('aria-hidden','true');
-    const characters=['06_逸貓_酷臉貓_安心微笑','12_逸石_稜角石_綠圍巾揮手','06_逸貓_酷臉貓_毛帽揮手','12_逸石_稜角石_藍圍裙獻心','06_逸貓_酷臉貓_雨衣新芽'];
-    for(let i=0;i<20;i++){const img=document.createElement('img');img.src=`/素材/人物/AI加工/${characters[i%characters.length]}.webp`;img.alt='';img.width=44;img.height=44;img.decoding='async';strip.append(img);}
-    document.body.append(strip);
-    let releaseTimer=0, touchStart=null, amount=0;
-    const release=()=>{amount=0;strip.classList.remove('is-pulling');strip.style.setProperty('--pull','0px');};
-    const pull=distance=>{clearTimeout(releaseTimer);amount=Math.min(44,distance*.25);strip.classList.add('is-pulling');strip.style.setProperty('--pull',`${amount}px`);};
-    window.addEventListener('wheel',event=>{
-      if(event.ctrlKey || event.target.closest('dialog, .site-nav, [role="listbox"]'))return;
-      if(window.scrollY<=1 && event.deltaY<0){pull(amount*4+Math.abs(event.deltaY));releaseTimer=setTimeout(release,16);}else release();
-    },{passive:true});
-    window.addEventListener('touchstart',event=>{touchStart=window.scrollY<=1 && event.touches.length===1 ? event.touches[0].clientY : null;},{passive:true});
-    window.addEventListener('touchmove',event=>{if(touchStart===null)return;if(event.touches.length!==1 || window.scrollY>1){touchStart=null;release();return;}pull(Math.max(0,event.touches[0].clientY-touchStart));},{passive:true});
-    ['touchend','touchcancel'].forEach(type=>window.addEventListener(type,()=>{touchStart=null;release();},{passive:true}));
-  }
   const switcher = document.querySelector('.theme-switch');
   if (switcher) {
     const label = switcher.querySelector('.theme-switch__label');
