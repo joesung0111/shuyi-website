@@ -729,54 +729,67 @@
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article, .services-faq'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
   const offerings = document.querySelector('.offerings');
   if (offerings && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const glyphs = [];
-    offerings.querySelectorAll('.offering-group__label h2, .offering h3').forEach((heading) => {
-      const label = heading.textContent.trim();
-      heading.setAttribute('aria-label', label);
-      const fragment = document.createDocumentFragment();
-      [...label].forEach((character) => {
-        const glyph = document.createElement('span');
-        glyph.className = 'offering-bulge__glyph';
-        glyph.setAttribute('aria-hidden', 'true');
-        glyph.textContent = character === ' ' ? '\u00a0' : character;
-        fragment.append(glyph);
-        glyphs.push({ element:glyph, x:0, y:0, z:0, targetX:0, targetY:0, targetZ:0 });
+    // Codrops-style implementation: render the real DOM labels into textures,
+    // then bulge a finely subdivided plane in a vertex shader around the pointer.
+    import('https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js').then((THREE) => {
+      if (!offerings.isConnected) return;
+      const headings = [...offerings.querySelectorAll('.offering-group__label h2, .offering h3')];
+      if (!headings.length) return;
+      const renderer = new THREE.WebGLRenderer({ alpha:true, antialias:true, powerPreference:'low-power' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.domElement.className = 'offering-bulge-canvas';
+      renderer.domElement.setAttribute('aria-hidden', 'true');
+      document.body.append(renderer.domElement);
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-window.innerWidth / 2, window.innerWidth / 2, window.innerHeight / 2, -window.innerHeight / 2, .1, 100);
+      camera.position.z = 10;
+      const mouse = new THREE.Vector2(0, 0);
+      const material = new THREE.ShaderMaterial({
+        transparent:true,
+        uniforms:{ uMouse:{ value:mouse }, uColor:{ value:new THREE.Color('#ffffff') }, map:{ value:null } },
+        vertexShader:`varying vec2 vUv; varying float vBulge; uniform vec2 uMouse; void main(){ vUv=uv; float d=distance(uv,uMouse); vBulge=1.0-smoothstep(0.0,0.2,d); vec3 p=position; p.z += vBulge*42.0; gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0); }`,
+        fragmentShader:`uniform sampler2D map; uniform vec3 uColor; varying vec2 vUv; varying float vBulge; void main(){ vec4 tex=texture2D(map,vUv); float light=0.78+vBulge*0.5; gl_FragColor=vec4(tex.rgb*uColor*light,tex.a); }`
       });
-      heading.replaceChildren(fragment);
-      heading.classList.add('offering-bulge');
-    });
-    let pointer = null;
-    let frame = 0;
-    const animateBulge = () => {
-      let moving = false;
-      glyphs.forEach((glyph) => {
-        const rect = glyph.element.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const dx = pointer ? centerX - pointer.x : 999;
-        const dy = pointer ? centerY - pointer.y : 999;
-        const distance = Math.hypot(dx, dy);
-        const influence = Math.max(0, 1 - distance / 170);
-        const eased = influence * influence * (3 - 2 * influence);
-        glyph.targetZ = 24 * eased;
-        glyph.targetX = Math.max(-13, Math.min(13, dy / 12)) * eased;
-        glyph.targetY = Math.max(-13, Math.min(13, -dx / 12)) * eased;
-        glyph.x += (glyph.targetX - glyph.x) * .18;
-        glyph.y += (glyph.targetY - glyph.y) * .18;
-        glyph.z += (glyph.targetZ - glyph.z) * .18;
-        glyph.element.style.transform = `translateZ(${glyph.z.toFixed(2)}px) rotateX(${glyph.x.toFixed(2)}deg) rotateY(${glyph.y.toFixed(2)}deg)`;
-        glyph.element.style.setProperty('--bulge-light', (glyph.z / 24).toFixed(2));
-        if (Math.abs(glyph.targetZ - glyph.z) > .15 || Math.abs(glyph.targetX - glyph.x) > .15 || Math.abs(glyph.targetY - glyph.y) > .15) moving = true;
+      const entries = headings.map((heading) => {
+        const textureCanvas = document.createElement('canvas');
+        const context = textureCanvas.getContext('2d');
+        const bounds = heading.getBoundingClientRect();
+        const style = getComputedStyle(heading);
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        textureCanvas.width = Math.max(1, Math.ceil(bounds.width * ratio));
+        textureCanvas.height = Math.max(1, Math.ceil(bounds.height * ratio));
+        context.scale(ratio, ratio);
+        context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        context.textBaseline = 'top';
+        context.fillStyle = style.color;
+        context.fillText(heading.textContent.trim(), 0, 0, bounds.width);
+        const texture = new THREE.CanvasTexture(textureCanvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        const geometry = new THREE.PlaneGeometry(bounds.width, bounds.height, 254, 100);
+        const mesh = new THREE.Mesh(geometry, material.clone());
+        mesh.material.uniforms.map = { value:texture };
+        mesh.position.z = 0;
+        scene.add(mesh);
+        heading.classList.add('offering-bulge-source');
+        return { heading, mesh, texture, canvas:textureCanvas };
       });
-      if (moving) frame = requestAnimationFrame(animateBulge);
-      else frame = 0;
-    };
-    const updatePointer = (event) => {
-      pointer = event ? { x:event.clientX, y:event.clientY } : null;
-      if (!frame) frame = requestAnimationFrame(animateBulge);
-    };
-    offerings.addEventListener('pointermove', updatePointer, { passive:true });
-    offerings.addEventListener('pointerleave', () => updatePointer(null), { passive:true });
+      const position = () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.left=-window.innerWidth/2; camera.right=window.innerWidth/2; camera.top=window.innerHeight/2; camera.bottom=-window.innerHeight/2; camera.updateProjectionMatrix();
+        entries.forEach(({heading,mesh}) => { const r=heading.getBoundingClientRect(); mesh.position.set(r.left+r.width/2-window.innerWidth/2, window.innerHeight/2-r.top-r.height/2, 0); });
+        renderer.render(scene,camera);
+      };
+      let raf=0;
+      const render = () => { renderer.render(scene,camera); raf=requestAnimationFrame(render); };
+      const pointer = (event) => { entries.forEach(({heading,mesh}) => { const r=heading.getBoundingClientRect(); if(event && event.clientX>=r.left && event.clientX<=r.right && event.clientY>=r.top && event.clientY<=r.bottom){ const x=(event.clientX-r.left)/r.width; const y=1-(event.clientY-r.top)/r.height; mesh.material.uniforms.uMouse.value.set(x,y); } else mesh.material.uniforms.uMouse.value.set(-2,-2); }); };
+      offerings.addEventListener('pointermove',pointer,{passive:true});
+      offerings.addEventListener('pointerleave',()=>pointer(null),{passive:true});
+      window.addEventListener('resize',position,{passive:true});
+      window.addEventListener('scroll',position,{passive:true});
+      position(); render();
+      window.addEventListener('pagehide',()=>{ cancelAnimationFrame(raf); renderer.dispose(); renderer.domElement.remove(); },{once:true});
+    }).catch(() => {});
   }
   if (currentPath === '/services' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const openingPanels = [...document.querySelectorAll('.services-page > .page-hero--service, .services-page > .services-summary')];
