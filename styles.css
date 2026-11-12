@@ -790,7 +790,7 @@ html:has(.services-page) {
   z-index:-2;
   inset:-12px;
   pointer-events:none;
-  background:url('../素材/網站插圖/活化調理-首屏背景.jpg') center right / cover no-repeat;
+  background:url('../素材/網站插圖/活化調理-首屏背景-背面.jpg') center right / cover no-repeat;
   filter:blur(4px);
   transform:scale(1.02);
 }
@@ -834,25 +834,29 @@ html:has(.services-page) {
 .services-page > .page-hero--service .page-hero__copy {
   position:relative;
   z-index:3;
-  width:min(620px,54%);
+  width:min(600px,50%);
   max-width:none;
   margin-right:auto;
+  transform:translateY(-clamp(28px,4.5svh,48px));
 }
 .services-page > .page-hero--service .service-hero-art {
   position:absolute;
   z-index:2;
-  top:50%;
-  right:clamp(24px,6vw,88px);
-  width:min(38vw,520px);
-  height:min(470px,calc(100% - 72px));
-  min-height:390px;
+  top:auto;
+  right:auto;
+  left:clamp(22px,6vw,88px);
+  bottom:24px;
+  width:min(24vw,310px);
+  height:min(260px,calc(100% - 48px));
+  min-height:220px;
   margin:0;
-  transform:translateY(-50%);
-  border-radius:28px;
+  transform:none;
+  border-radius:24px;
   background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--accent) 17%,transparent),transparent 58%),color-mix(in srgb,var(--surface) 82%,transparent);
   box-shadow:0 22px 55px color-mix(in srgb,var(--ink) 16%,transparent);
   backdrop-filter:blur(4px);
 }
+.services-page > .page-hero--service .service-hero-art .service-spine { transform:scale(.7); }
 @media(max-width:720px) {
   .services-page > .page-hero--service {
     padding:clamp(20px,3.5svh,32px) 22px;
@@ -872,17 +876,19 @@ html:has(.services-page) {
       color-mix(in srgb,var(--bg) 23%,transparent) 74%,
       transparent 100%);
   }
-  .services-page > .page-hero--service .page-hero__copy { width:100%; align-self:center; }
+  .services-page > .page-hero--service .page-hero__copy { width:100%; align-self:flex-start; margin-top:8px; transform:none; }
   .services-page > .page-hero--service .service-hero-art {
     top:auto;
-    right:12px;
+    right:auto;
+    left:12px;
     bottom:12px;
-    width:min(42vw,220px);
-    height:190px;
+    width:min(40vw,152px);
+    height:146px;
     min-height:0;
     transform:none;
-    border-radius:22px;
+    border-radius:18px;
   }
+  .services-page > .page-hero--service .service-hero-art .service-spine { transform:scale(.42); }
 }
 @media(prefers-reduced-motion:reduce) {
   .service-hero-relight { transition:none; }
