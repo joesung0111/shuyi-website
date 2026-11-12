@@ -947,3 +947,24 @@ html:has(.offerings-page) { scroll-snap-type:y mandatory; scroll-padding-top:88p
 .offerings-page main > .page-hero { scroll-snap-stop:always; }
 @media(max-width:720px) { html:has(.offerings-page) { scroll-padding-top:68px; } .offerings-page main > .page-hero { min-height:calc(100svh - 68px); } }
 @media(prefers-reduced-motion:reduce) { html:has(.offerings-page) { scroll-snap-type:none; scroll-behavior:auto; } }
+
+/* Shared bounded pull feedback. Navigation keeps the same size on every page. */
+html { overscroll-behavior-y:none; --site-header-height:88px; }
+body { padding-top:var(--site-header-height); }
+body .site-header,
+.home-page .site-header,
+body:has(.journal-page)>.site-header {
+  position:fixed; inset:0 0 auto; height:var(--site-header-height);
+  min-height:var(--site-header-height); max-height:var(--site-header-height);
+  z-index:300; flex-shrink:0;
+}
+.pull-mascots {
+  --pull:0px; position:fixed; top:var(--site-header-height); left:0; right:0;
+  height:44px; z-index:299; display:flex; justify-content:space-around;
+  align-items:center; gap:12px; overflow:hidden; pointer-events:none;
+  background:var(--surface); clip-path:inset(0 0 calc(44px - var(--pull)));
+  transition:clip-path .22s ease-out;
+}
+.pull-mascots img { flex:0 0 40px; width:40px; height:40px; object-fit:contain; }
+@media(max-width:720px) { html { --site-header-height:68px; } .pull-mascots { gap:8px; justify-content:flex-start; } }
+@media(prefers-reduced-motion:reduce) { .pull-mascots { transition:none; } }
