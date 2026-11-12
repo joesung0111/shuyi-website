@@ -836,8 +836,10 @@ html:has(.services-page) {
   z-index:3;
   width:min(600px,50%);
   max-width:none;
+  align-self:flex-start;
   margin-right:auto;
-  transform:translateY(-clamp(28px,4.5svh,48px));
+  margin-top:clamp(8px,2svh,20px);
+  transform:none;
 }
 .services-page > .page-hero--service .service-hero-art {
   position:absolute;
@@ -889,6 +891,8 @@ html:has(.services-page) {
     border-radius:18px;
   }
   .services-page > .page-hero--service .service-hero-art .service-spine { transform:scale(.42); }
+  .services-page > .page-hero--service .service-hero-art__status { top:8px; right:8px; bottom:auto; }
+  .services-page > .page-hero--service .service-hero-art__status > span:last-child { display:none; }
 }
 @media(prefers-reduced-motion:reduce) {
   .service-hero-relight { transition:none; }
