@@ -778,12 +778,23 @@ html:has(.services-page) {
 .services-page > .page-hero--service {
   position:relative;
   isolation:isolate;
+  overflow:hidden;
   display:flex;
   align-items:center;
   background-color:var(--surface);
-  background-image:url('../素材/網站插圖/活化調理-首屏背景.jpg');
-  background-position:center right;
-  background-size:cover;
+  background-image:none;
+  --service-light-x:70%;
+  --service-light-y:45%;
+}
+.services-page > .page-hero--service::after {
+  content:'';
+  position:absolute;
+  z-index:-2;
+  inset:-12px;
+  pointer-events:none;
+  background:url('../素材/網站插圖/活化調理-首屏背景.jpg') center right / cover no-repeat;
+  filter:blur(4px);
+  transform:scale(1.02);
 }
 .services-page > .page-hero--service::before {
   content:'';
@@ -797,6 +808,17 @@ html:has(.services-page) {
     color-mix(in srgb,var(--bg) 42%,transparent) 62%,
     transparent 82%);
 }
+.service-hero-light {
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  opacity:.34;
+  background:radial-gradient(ellipse 22vw 28vh at var(--service-light-x,70%) var(--service-light-y,45%),rgba(255,255,236,.76) 0%,rgba(255,225,175,.42) 30%,rgba(255,204,135,.14) 52%,transparent 76%);
+  mix-blend-mode:screen;
+  transition:opacity .45s ease;
+}
+.services-page > .page-hero--service.has-pointer-light .service-hero-light { opacity:.92; }
 .services-page > .page-hero--service .page-hero__copy {
   position:relative;
   z-index:1;
@@ -807,8 +829,9 @@ html:has(.services-page) {
 @media(max-width:720px) {
   .services-page > .page-hero--service {
     padding:clamp(20px,3.5svh,32px) 22px;
-    background-position:64% center;
   }
+  .services-page > .page-hero--service::after { background-position:64% center; filter:blur(3px); }
+  .service-hero-light { background:radial-gradient(circle 150px at var(--service-light-x,70%) var(--service-light-y,45%),rgba(255,255,236,.8) 0%,rgba(255,225,175,.43) 35%,rgba(255,204,135,.16) 58%,transparent 78%); }
   .services-page > .page-hero--service::before {
     background:linear-gradient(180deg,
       color-mix(in srgb,var(--bg) 95%,transparent) 0%,
@@ -817,4 +840,7 @@ html:has(.services-page) {
       color-mix(in srgb,var(--bg) 18%,transparent) 100%);
   }
   .services-page > .page-hero--service .page-hero__copy { width:100%; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .service-hero-light { transition:none; }
 }
