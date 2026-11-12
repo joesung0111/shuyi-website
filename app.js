@@ -31,7 +31,7 @@
     };
     typeNext();
   });
-  document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '更懂自己'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
+  document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '多多了解'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
   if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-relight-shadow-20261112k`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
   if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) { journalLead.classList.add('journal-typewriter'); journalLead.setAttribute('aria-label', journalText); journalLead.textContent = ''; let textIndex = 0; const typeNext = () => { if (textIndex >= journalText.length) return; const character = journalText[textIndex]; journalLead.textContent += character; textIndex += 1; window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30); }; typeNext(); } }
@@ -875,64 +875,68 @@
       if (!link || !/^\.\/|^\/journal\//.test(link.getAttribute('href') || '')) return;
       try { sessionStorage.setItem(returnStateKey, JSON.stringify({ scrollY: window.scrollY, filter: activeFilter })); } catch {}
     });
+    let carousel = null;
     const renderContent = () => {
       if (!Array.isArray(window.SHU_YI_CONTENT)) {
         grid.querySelectorAll('[data-content-type]').forEach((card) => { card.hidden = activeFilter !== 'all' && card.dataset.contentType !== activeFilter; });
+        if (carousel) carousel.refresh(); else carousel = createJournalCarousel(grid);
         return;
       }
       const items = window.SHU_YI_CONTENT.filter((item) => activeFilter === 'all' || item.type === activeFilter);
-      grid.innerHTML = items.map((item, index) => { const title = escapeHtml(item.title); const href = escapeHtml(item.href); const cover = item.cover ? `<a class="card-art-link" href="${href}" aria-label="閱讀文章：${title}"><img class="card-cover" src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.imageAlt)}" loading="lazy"></a>` : ''; const visual = cover || (item.type === 'video' ? `<button class="card-play" ${item.embed_url ? `data-youtube="${escapeHtml(item.embed_url)}"` : `data-video="${escapeHtml(item.video)}"`} aria-label="播放 ${title}">▶</button>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`); return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}" style="--card-index:${index}"><div class="card-art">${visual}<span class="card-liquid-glass" aria-hidden="true"></span></div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p><a href="${href}">閱讀內容 <span>→</span></a></article>`; }).join('');
+      grid.innerHTML = items.map((item, index) => { const title = escapeHtml(item.title); const href = escapeHtml(item.href); const cover = item.cover ? `<a class="card-art-link" href="${href}" aria-label="閱讀文章：${title}"><img class="card-cover" src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.imageAlt)}" loading="eager" draggable="false"></a>` : ''; const visual = cover || (item.type === 'video' ? `<button class="card-play" ${item.embed_url ? `data-youtube="${escapeHtml(item.embed_url)}"` : `data-video="${escapeHtml(item.video)}"`} aria-label="播放 ${title}">▶</button>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`); return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}" style="--card-index:${index}"><div class="card-art">${visual}</div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p><a href="${href}">閱讀內容 <span>→</span></a></article>`; }).join('');
+      if (carousel) carousel.refresh(); else carousel = createJournalCarousel(grid);
     };
-    let cardPointerFrame = 0;
-    let pendingCardPointer = null;
-    grid.addEventListener('pointermove', (event) => {
-      if (event.pointerType === 'touch') return;
-      const card = event.target.closest('.content-card');
-      if (!card) return;
-      const bounds = card.getBoundingClientRect();
-      const artBounds = card.querySelector('.card-art')?.getBoundingClientRect() || bounds;
-      pendingCardPointer = {
-        card,
-        x: Math.max(0, Math.min(100, (event.clientX - bounds.left) / bounds.width * 100)),
-        y: Math.max(0, Math.min(100, (event.clientY - bounds.top) / bounds.height * 100)),
-        artX: Math.max(0, Math.min(100, (event.clientX - artBounds.left) / artBounds.width * 100)),
-        artY: Math.max(0, Math.min(100, (event.clientY - artBounds.top) / artBounds.height * 100))
+    const createJournalCarousel = (stage) => {
+      const canvas = document.querySelector('.journal-carousel__gradient');
+      const context = canvas?.getContext('2d', { alpha:false });
+      const status = document.querySelector('[data-carousel-status]');
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const palette = { peach:['#ba6873','#f1b5a0'], violet:['#715987','#c6a1d7'], lime:['#758454','#d1d9a4'] };
+      const state = { cards:[], step:0, track:0, x:0, velocity:0, active:-1, lastTime:0, pointerId:null, pointerX:0, lastX:0, raf:0, size:[0,0], from:['#c99c92','#e7c5bb'], to:['#c99c92','#e7c5bb'], gradientAt:0 };
+      const hexRgb = (hex) => hex.match(/[\da-f]{2}/gi).map((part) => parseInt(part,16));
+      const colorForCard = (card) => {
+        const img = card.querySelector('.card-cover');
+        const fallback = palette[card.classList.contains('content-card--violet') ? 'violet' : card.classList.contains('content-card--lime') ? 'lime' : 'peach'];
+        if (!img?.complete || !img.naturalWidth) return fallback;
+        try {
+          const sample = document.createElement('canvas'); sample.width=24; sample.height=24;
+          const ctx=sample.getContext('2d',{willReadFrequently:true}); ctx.drawImage(img,0,0,24,24);
+          const data=ctx.getImageData(0,0,24,24).data; let r=0,g=0,b=0,n=0;
+          for(let i=0;i<data.length;i+=16){ const lum=(data[i]+data[i+1]+data[i+2])/3; if(lum>242||lum<16) continue; r+=data[i];g+=data[i+1];b+=data[i+2];n++; }
+          if(n<1) return fallback;
+          const base=[r/n,g/n,b/n]; const sat=(v)=>Math.max(0,Math.min(255,Math.round(v)));
+          const c1=`#${base.map(v=>sat(v*.72).toString(16).padStart(2,'0')).join('')}`;
+          const c2=`#${base.map(v=>sat(v*.56+112).toString(16).padStart(2,'0')).join('')}`;
+          return [c1,c2];
+        } catch { return fallback; }
       };
-      if (cardPointerFrame) return;
-      cardPointerFrame = window.requestAnimationFrame(() => {
-        cardPointerFrame = 0;
-        if (!pendingCardPointer) return;
-        const { card: activeCard, x, y, artX, artY } = pendingCardPointer;
-        activeCard.style.setProperty('--card-pointer-x', `${x.toFixed(1)}%`);
-        activeCard.style.setProperty('--card-pointer-y', `${y.toFixed(1)}%`);
-        activeCard.style.setProperty('--card-art-pointer-x', `${artX.toFixed(1)}%`);
-        activeCard.style.setProperty('--card-art-pointer-y', `${artY.toFixed(1)}%`);
-        activeCard.style.setProperty('--card-tilt-x', `${((50 - y) * .035).toFixed(2)}deg`);
-        activeCard.style.setProperty('--card-tilt-y', `${((x - 50) * .035).toFixed(2)}deg`);
-        pendingCardPointer = null;
-      });
-    });
-    grid.addEventListener('pointerover', (event) => {
-      if (event.pointerType === 'touch') return;
-      const card = event.target.closest('.content-card');
-      if (card && !card.contains(event.relatedTarget)) card.classList.add('is-jelly-active');
-    });
-    grid.addEventListener('pointerout', (event) => {
-      const card = event.target.closest('.content-card');
-      if (card && !card.contains(event.relatedTarget)) {
-        card.classList.remove('is-jelly-active');
-        card.style.setProperty('--card-tilt-x', '0deg');
-        card.style.setProperty('--card-tilt-y', '0deg');
-      }
-    });
-    grid.addEventListener('focusin', (event) => {
-      const card = event.target.closest('.content-card');
-      if (card) card.classList.add('is-jelly-active');
-    });
-    grid.addEventListener('focusout', (event) => {
-      const card = event.target.closest('.content-card');
-      if (card && !card.contains(event.relatedTarget)) card.classList.remove('is-jelly-active');
-    });
+      const setActive = (index) => {
+        if(index===state.active) return;
+        state.active=index; state.from=state.to; state.to=colorForCard(state.cards[index]); state.gradientAt=performance.now();
+        if(status) status.textContent=`${String(index+1).padStart(2,'0')} / ${String(state.cards.length).padStart(2,'0')}　${state.cards[index].querySelector('h3')?.textContent.trim()||'探索內容'}`;
+      };
+      const resize = () => { const rect=stage.getBoundingClientRect(); state.size=[Math.max(1,rect.width),Math.max(1,rect.height)]; if(canvas){const dpr=Math.min(devicePixelRatio||1,1.5); canvas.width=Math.round(state.size[0]*dpr);canvas.height=Math.round(state.size[1]*dpr);context?.setTransform(dpr,0,0,dpr,0,0);} measure(); };
+      const measure = () => { const sample=state.cards[0]; if(!sample){state.track=0;return;} const bounds=sample.getBoundingClientRect(); state.step=(bounds.width||340)+28;state.track=state.cards.length*state.step;state.x=state.track?((state.x%state.track)+state.track)%state.track:0; };
+      const render = (time) => {
+        const dt=state.lastTime?Math.min(.05,(time-state.lastTime)/1000):0;state.lastTime=time;
+        if(!state.pointerId && !reduceMotion){state.x+=state.velocity*dt;state.velocity*=Math.pow(.9,dt*60);if(Math.abs(state.velocity)<.02)state.velocity=0;}
+        if(state.track){state.x=((state.x%state.track)+state.track)%state.track;let closest=0,dist=Infinity;const half=state.track/2;
+          state.cards.forEach((card,i)=>{let pos=i*state.step-state.x;if(pos< -half)pos+=state.track;if(pos>half)pos-=state.track;const norm=Math.max(-1,Math.min(1,pos/(innerWidth/2)));const depth=(1-Math.abs(norm))*140;const scale=.92+(1-Math.abs(norm))*.1;card.style.transform=`translate3d(${pos}px,-50%,${depth}px) rotateY(${-norm*28}deg) scale(${scale})`;card.style.zIndex=String(1000+Math.round(depth));card.style.filter=`blur(${(Math.abs(norm)>0.72?2*Math.pow(Math.abs(norm),1.1):0).toFixed(2)}px)`;if(Math.abs(pos)<dist){dist=Math.abs(pos);closest=i;}});setActive(closest);
+        }
+        if(context&&canvas){const [w,h]=state.size;const t=Math.min(1,(time-state.gradientAt)/800);const c1=hexRgb(state.from[0]).map((v,i)=>v+(hexRgb(state.to[0])[i]-v)*t);const c2=hexRgb(state.from[1]).map((v,i)=>v+(hexRgb(state.to[1])[i]-v)*t);const rgb=(c)=>`rgb(${c.map(Math.round).join(',')})`;context.clearRect(0,0,w,h);const g=context.createLinearGradient(0,0,w,h);g.addColorStop(0,rgb(c1));g.addColorStop(1,rgb(c2));context.fillStyle=g;context.fillRect(0,0,w,h);const pulse=context.createRadialGradient(w*(.5+Math.sin(time*.00022)*.2),h*(.5+Math.cos(time*.00018)*.15),0,w*.5,h*.5,Math.max(w,h)*.72);pulse.addColorStop(0,'rgba(255,255,255,.34)');pulse.addColorStop(1,'rgba(255,255,255,0)');context.fillStyle=pulse;context.fillRect(0,0,w,h);}
+        state.raf=requestAnimationFrame(render);
+      };
+      const refresh = () => { state.cards=[...stage.querySelectorAll('.content-card')].filter((card)=>!card.hidden);state.active=-1;resize();if(state.cards.length){state.x=0;setActive(0);}else if(status)status.textContent='目前沒有這個分類的內容'; };
+      const turn=(direction)=>{if(state.track){state.velocity=0;state.x+=direction*state.step;}};
+      stage.addEventListener('wheel',(event)=>{if(!state.cards.length)return;event.preventDefault();state.velocity+=(Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY)*.6;},{passive:false});
+      stage.addEventListener('pointerdown',(event)=>{if(event.target.closest('a,button'))return;if(event.button!==undefined&&event.button!==0)return;state.pointerId=event.pointerId;state.pointerX=state.lastX=event.clientX;state.velocity=0;stage.setPointerCapture?.(event.pointerId);document.querySelector('.journal-carousel')?.classList.add('is-dragging');});
+      stage.addEventListener('pointermove',(event)=>{if(state.pointerId!==event.pointerId)return;const dx=event.clientX-state.lastX;state.x-=dx;state.velocity=-dx*60;state.lastX=event.clientX;});
+      const release=(event)=>{if(state.pointerId!==event.pointerId)return;state.pointerId=null;document.querySelector('.journal-carousel')?.classList.remove('is-dragging');};
+      stage.addEventListener('pointerup',release);stage.addEventListener('pointercancel',release);stage.addEventListener('keydown',(event)=>{if(event.target!==stage)return;if(event.key==='ArrowRight'){event.preventDefault();turn(1);}if(event.key==='ArrowLeft'){event.preventDefault();turn(-1);}});
+      document.querySelectorAll('[data-carousel-step]').forEach((button)=>button.addEventListener('click',()=>turn(button.dataset.carouselStep==='previous'?-1:1)));
+      document.querySelector('[data-journal-scroll]')?.addEventListener('click',()=>document.querySelector('#journal-cards')?.scrollIntoView({behavior:reduceMotion?'instant':'smooth',block:'start'}));
+      addEventListener('resize',resize);refresh();state.raf=requestAnimationFrame(render);return {refresh};
+    };
     renderContent();
     document.addEventListener('shuyi-content-ready', renderContent);
     if (window.SHU_YI_CONTENT_READY && typeof window.SHU_YI_CONTENT_READY.then === 'function') window.SHU_YI_CONTENT_READY.then(restoreListPosition);
