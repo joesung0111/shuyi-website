@@ -74,9 +74,16 @@
         vec2 fitUv(vec2 screenUv){ return screenUv*uCoverScale+(1.0-uCoverScale)*uCoverPosition; }
         float depthAt(vec2 uv){ return texture2D(uDepth,clamp(uv,vec2(0.001),vec2(0.999))).r; }
         float luminanceAt(vec2 uv){ vec3 c=texture2D(uImage,clamp(uv,vec2(0.001),vec2(0.999))).rgb; return dot(c,vec3(.2126,.7152,.0722)); }
+        vec3 softenedSkin(vec2 uv,vec3 color){
+          float skinMask=smoothstep(.035,.105,color.r-color.g)*smoothstep(.012,.075,color.g-color.b)*smoothstep(.18,.34,dot(color,vec3(.2126,.7152,.0722)));
+          vec2 radius=uTexel*1.35;
+          vec3 softened=(texture2D(uImage,uv+vec2(radius.x,0.0)).rgb+texture2D(uImage,uv-vec2(radius.x,0.0)).rgb+texture2D(uImage,uv+vec2(0.0,radius.y)).rgb+texture2D(uImage,uv-vec2(0.0,radius.y)).rgb)*.25;
+          return mix(color,softened,skinMask*.42);
+        }
         void main(){
           vec2 uv=fitUv(vUv);
-          vec3 base=texture2D(uImage,uv).rgb;
+          vec3 source=texture2D(uImage,uv).rgb;
+          vec3 base=softenedSkin(uv,source);
           vec2 depthStep=uTexel*3.0;
           float dl=depthAt(uv-vec2(depthStep.x,0.0));
           float dr=depthAt(uv+vec2(depthStep.x,0.0));
@@ -88,7 +95,7 @@
             luminanceAt(uv+vec2(detailStep.x,0.0))-luminanceAt(uv-vec2(detailStep.x,0.0)),
             luminanceAt(uv+vec2(0.0,detailStep.y))-luminanceAt(uv-vec2(0.0,detailStep.y))
           )*0.5;
-          vec3 normal=normalize(vec3(-depthSlope*24.0-detailSlope*2.6,1.0));
+          vec3 normal=normalize(vec3(-depthSlope*13.0-detailSlope*.45,1.0));
           float depth=depthAt(uv);
           vec3 surface=vec3(vUv-0.5,(depth-1.0)*0.22);
           vec3 lightPosition=vec3(uPointer-0.5,uLightHeight);
@@ -106,8 +113,8 @@
           }
           float visibility=1.0-occlusion*0.52;
           float attenuation=1.0/(1.0+distanceSquared*3.2);
-          float specular=pow(max(dot(reflect(-lightDirection,normal),vec3(0.0,0.0,1.0)),0.0),28.0)*0.16;
-          float illumination=0.54+diffuse*attenuation*1.32*visibility;
+          float specular=pow(max(dot(reflect(-lightDirection,normal),vec3(0.0,0.0,1.0)),0.0),34.0)*0.08;
+          float illumination=0.66+diffuse*attenuation*0.92*visibility;
           vec3 relit=base*illumination+vec3(1.0,.91,.76)*specular*attenuation*visibility;
           gl_FragColor=vec4(relit,1.0);
         }`;
