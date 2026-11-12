@@ -720,7 +720,7 @@ body:has(.journal-page)>.site-header{position:sticky;top:0;z-index:300;backgroun
 .journal-carousel .content-card .content-card__read-more{position:relative;z-index:3;margin-top:auto;padding:14px 1px 2px;font:10px var(--mono);pointer-events:none}
 .journal-carousel__stage.has-two-cards .content-card{transform-origin:center}
 .journal-carousel .content-grid:has(.journal-empty-state){position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
-.journal-empty-state{position:relative;display:grid;place-items:center;width:clamp(112px,17vw,172px);pointer-events:none}
+.journal-empty-state{position:absolute;top:50%;left:50%;display:grid;place-items:center;width:clamp(112px,17vw,172px);transform:translate(-50%,-50%);pointer-events:none}
 .journal-empty-state img{display:block;width:100%;height:auto;object-fit:contain}
 .journal-empty-state__bubble{position:absolute;top:9%;right:clamp(-55px,-13vw,-28px);padding:10px 14px;border:1px solid color-mix(in srgb,var(--ink) 13%,transparent);border-radius:18px 18px 18px 5px;background:color-mix(in srgb,var(--bg) 94%,white);box-shadow:0 8px 22px color-mix(in srgb,var(--ink) 10%,transparent);color:var(--ink);font-size:13px;letter-spacing:.04em;white-space:nowrap}
 .journal-empty-state__bubble::after{content:"";position:absolute;left:8px;bottom:-6px;width:10px;height:10px;border-left:1px solid color-mix(in srgb,var(--ink) 13%,transparent);border-bottom:1px solid color-mix(in srgb,var(--ink) 13%,transparent);background:inherit;transform:skewY(-35deg) rotate(-18deg)}
