@@ -763,6 +763,17 @@
           const w=innerWidth,h=innerHeight; source.width=w; source.height=h; canvas.width=w; canvas.height=h; gl.viewport(0,0,w,h);
           ctx.fillStyle=getComputedStyle(document.body).backgroundColor; ctx.fillRect(0,0,w,h);
           main.querySelectorAll('.offering-group--series').forEach(el=>{const r=el.getBoundingClientRect(); const color=getComputedStyle(el).backgroundColor; if(color !== 'rgba(0, 0, 0, 0)'){ctx.fillStyle=color;ctx.fillRect(r.left,r.top,r.width,r.height);}});
+          main.querySelectorAll('.button').forEach(button=>{
+            const rect=button.getBoundingClientRect(), style=getComputedStyle(button);
+            if(rect.bottom<0 || rect.top>h || style.visibility==='hidden') return;
+            const border=parseFloat(style.borderTopWidth) || 0;
+            const radius=Math.min(parseFloat(style.borderTopLeftRadius) || 0,rect.width/2,rect.height/2);
+            ctx.save(); ctx.beginPath();
+            ctx.roundRect(rect.left+border/2,rect.top+border/2,rect.width-border,rect.height-border,Math.max(0,radius-border/2));
+            ctx.fillStyle=style.backgroundColor; ctx.fill();
+            if(border && style.borderTopStyle!=='none'){ctx.lineWidth=border;ctx.strokeStyle=style.borderTopColor;ctx.stroke();}
+            ctx.restore();
+          });
           const walker=document.createTreeWalker(main,NodeFilter.SHOW_TEXT); let node;
           while((node=walker.nextNode())) { if(!node.nodeValue.trim()) continue; const parent=node.parentElement, style=getComputedStyle(parent); if(style.visibility==='hidden'||style.display==='none'||Number(style.opacity)===0) continue; ctx.font=`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`; ctx.fillStyle=style.color; ctx.textBaseline='top'; const range=document.createRange(); for(let i=0;i<node.length;i++){if(/\s/.test(node.data[i]))continue; range.setStart(node,i); range.setEnd(node,i+1); const r=range.getBoundingClientRect(); if(r.bottom<0||r.top>h||r.right<0||r.left>w)continue; ctx.fillText(node.data[i],r.left,r.top); } }
           gl.bindTexture(gl.TEXTURE_2D,texture); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source); dirty=false;
@@ -822,6 +833,9 @@
         window.addEventListener('pointercancel',()=>{if(touchGesture){touchGesture=null;hideTouchLens();}},{passive:true});
         window.addEventListener('scroll',()=>{dirty=true; if(touchMode){if(touchGesture) touchGesture.scrolling=true; hideTouchLens();}},{passive:true});
         window.addEventListener('resize',()=>{dirty=true;},{passive:true});
+        const refreshButton=event=>{if(event.target.closest('.button')){dirty=true;setTimeout(()=>{dirty=true;},240);}};
+        main.addEventListener('pointerover',refreshButton,{passive:true});
+        main.addEventListener('pointerout',refreshButton,{passive:true});
         new MutationObserver(()=>{dirty=true; setTimeout(()=>{dirty=true;},400);}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
         document.fonts.ready.then(()=>{dirty=true;}); render(); window.addEventListener('pagehide',()=>cancelAnimationFrame(frame),{once:true});
       } catch(error) { canvas.remove(); console.error('Lens unavailable',error); }
