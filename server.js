@@ -127,7 +127,7 @@ const cardHtml = (row) => {
   const title = escapeHtml(item.title);
   const cover = item.cover ? `<img class="card-cover" src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.imageAlt)}" loading="lazy">` : '';
   const visual = cover || (item.type === 'video' ? `<span>VIDEO</span>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`);
-  return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}"><a class="content-card__hit-area" href="${escapeHtml(item.href)}" aria-label="閱讀內容：${title}"></a><div class="card-art">${visual}</div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p><span class="content-card__read-more">閱讀內容 <span>→</span></span></article>`;
+  return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}"><a class="content-card__hit-area" href="${escapeHtml(item.href)}" aria-label="閱讀內容：${title}"></a><div class="card-art">${visual}</div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p></article>`;
 };
 function pageSeo(pathname) {
   const normalized = pathname === '/' ? '/' : `${pathname.replace(/\/+$/, '')}/`;

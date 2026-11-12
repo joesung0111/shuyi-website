@@ -689,7 +689,7 @@ body:has(.journal-page)>.site-header{position:sticky;top:0;z-index:300;backgroun
 .journal-carousel__stage{position:absolute;z-index:2;inset:0;overflow:hidden;perspective:1800px;touch-action:pan-y;cursor:grab}
 .journal-carousel.is-dragging .journal-carousel__stage{cursor:grabbing}
 .journal-carousel .content-grid{position:absolute;inset:0;display:block;margin:0;transform-style:preserve-3d}
-.journal-carousel .content-card{position:absolute;top:50%;left:50%;width:min(34vw,390px);height:clamp(370px,63svh,535px);min-height:0;padding:14px;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;border:1px solid color-mix(in srgb,var(--ink) 12%,transparent);border-radius:18px;background:color-mix(in srgb,var(--bg) 82%,var(--surface));box-shadow:0 24px 70px color-mix(in srgb,var(--ink) 20%,transparent);transform-origin:90% center;transform-style:preserve-3d;backface-visibility:hidden;will-change:transform,filter;transition:none;contain:layout paint}
+.journal-carousel .content-card{position:absolute;top:50%;left:50%;width:min(34vw,390px);height:clamp(370px,63svh,535px);min-height:0;padding:14px;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;border:1px solid color-mix(in srgb,var(--ink) 12%,transparent);border-radius:18px;background:color-mix(in srgb,var(--bg) 82%,var(--surface));box-shadow:0 24px 70px color-mix(in srgb,var(--ink) 20%,transparent);transform-origin:center center;transform-style:preserve-3d;backface-visibility:hidden;will-change:transform,filter;transition:none;contain:layout paint}
 .journal-carousel .content-card:hover{border-color:color-mix(in srgb,var(--ink) 12%,transparent);box-shadow:0 24px 70px color-mix(in srgb,var(--ink) 20%,transparent)}
 .journal-carousel .content-card::before{content:none;animation:none}
 .journal-carousel .content-card>*{position:relative;z-index:1}
@@ -719,7 +719,6 @@ body:has(.journal-page)>.site-header{position:sticky;top:0;z-index:300;backgroun
 .journal-carousel .content-card .card-art>span:not(.card-play){pointer-events:none}
 .journal-carousel .content-card .card-cover{pointer-events:none}
 .journal-carousel .content-card .card-play{position:relative;z-index:3;pointer-events:auto}
-.journal-carousel .content-card .content-card__read-more{position:relative;z-index:3;margin-top:auto;padding:14px 1px 2px;font:10px var(--mono);pointer-events:none}
 .journal-carousel__stage.has-two-cards .content-card{transform-origin:center}
 .journal-carousel .content-grid:has(.journal-empty-state){position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
 .journal-empty-state{position:absolute;top:50%;left:50%;display:grid;place-items:center;width:clamp(112px,17vw,172px);transform:translate(-50%,-50%);pointer-events:none}
