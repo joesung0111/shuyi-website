@@ -729,66 +729,56 @@
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article, .services-faq'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
   const offerings = document.querySelector('.offerings');
   if (offerings && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    // Codrops-style implementation: render the real DOM labels into textures,
-    // then bulge a finely subdivided plane in a vertex shader around the pointer.
-    import('https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js').then((THREE) => {
-      if (!offerings.isConnected) return;
-      const headings = [...offerings.querySelectorAll('.offering-group__label h2, .offering h3')];
-      if (!headings.length) return;
-      const renderer = new THREE.WebGLRenderer({ alpha:true, antialias:true, powerPreference:'low-power' });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.domElement.className = 'offering-bulge-canvas';
-      renderer.domElement.setAttribute('aria-hidden', 'true');
-      document.body.append(renderer.domElement);
-      const scene = new THREE.Scene();
-      const camera = new THREE.OrthographicCamera(-window.innerWidth / 2, window.innerWidth / 2, window.innerHeight / 2, -window.innerHeight / 2, .1, 100);
-      camera.position.z = 10;
-      const mouse = new THREE.Vector2(0, 0);
-      const material = new THREE.ShaderMaterial({
-        transparent:true,
-        uniforms:{ uMouse:{ value:mouse }, uColor:{ value:new THREE.Color('#ffffff') }, map:{ value:null } },
-        vertexShader:`varying vec2 vUv; varying float vBulge; uniform vec2 uMouse; void main(){ vUv=uv; float d=distance(uv,uMouse); vBulge=1.0-smoothstep(0.0,0.2,d); vec3 p=position; p.z += vBulge*42.0; gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0); }`,
-        fragmentShader:`uniform sampler2D map; uniform vec3 uColor; varying vec2 vUv; varying float vBulge; void main(){ vec4 tex=texture2D(map,vUv); float light=0.78+vBulge*0.5; gl_FragColor=vec4(tex.rgb*uColor*light,tex.a); }`
-      });
-      const entries = headings.map((heading) => {
-        const textureCanvas = document.createElement('canvas');
-        const context = textureCanvas.getContext('2d');
-        const bounds = heading.getBoundingClientRect();
-        const style = getComputedStyle(heading);
-        const ratio = Math.min(window.devicePixelRatio || 1, 2);
-        textureCanvas.width = Math.max(1, Math.ceil(bounds.width * ratio));
-        textureCanvas.height = Math.max(1, Math.ceil(bounds.height * ratio));
-        context.scale(ratio, ratio);
-        context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-        context.textBaseline = 'top';
-        context.fillStyle = style.color;
-        context.fillText(heading.textContent.trim(), 0, 0, bounds.width);
-        const texture = new THREE.CanvasTexture(textureCanvas);
-        texture.colorSpace = THREE.SRGBColorSpace;
-        const geometry = new THREE.PlaneGeometry(bounds.width, bounds.height, 254, 100);
-        const mesh = new THREE.Mesh(geometry, material.clone());
-        mesh.material.uniforms.map = { value:texture };
-        mesh.position.z = 0;
-        scene.add(mesh);
-        heading.classList.add('offering-bulge-source');
-        return { heading, mesh, texture, canvas:textureCanvas };
-      });
-      const position = () => {
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.left=-window.innerWidth/2; camera.right=window.innerWidth/2; camera.top=window.innerHeight/2; camera.bottom=-window.innerHeight/2; camera.updateProjectionMatrix();
-        entries.forEach(({heading,mesh}) => { const r=heading.getBoundingClientRect(); mesh.position.set(r.left+r.width/2-window.innerWidth/2, window.innerHeight/2-r.top-r.height/2, 0); });
-        renderer.render(scene,camera);
+    const hero = document.querySelector('.offerings-page main > .page-hero');
+    let snapTimer;
+    window.addEventListener('scroll', () => {
+      clearTimeout(snapTimer);
+      snapTimer = setTimeout(() => {
+        if (!hero) return;
+        const top = hero.getBoundingClientRect().top + window.scrollY;
+        const next = offerings.getBoundingClientRect().top + window.scrollY - (window.innerWidth <= 720 ? 68 : 88);
+        if (window.scrollY < top - 10 || window.scrollY > next + 40) return;
+        const target = Math.abs(window.scrollY - top) < Math.abs(window.scrollY - next) ? top : next;
+        if (Math.abs(window.scrollY - target) > 8) window.scrollTo({top:target, behavior:'smooth'});
+      }, 180);
+    }, {passive:true});
+  }
+  if (offerings && matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // Capture the real section and show it through a moving magnifying lens.
+    import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm').then(({ default: html2canvas }) => {
+      const lens = document.createElement('canvas');
+      lens.className = 'offering-lens';
+      lens.width = lens.height = 320;
+      lens.setAttribute('aria-hidden', 'true');
+      document.body.append(lens);
+      const ctx = lens.getContext('2d');
+      let snapshot = null, capturing = false, last = null;
+      const capture = async () => {
+        if (capturing) return;
+        capturing = true;
+        try { snapshot = await html2canvas(offerings, { backgroundColor:null, scale:1, useCORS:true }); }
+        finally { capturing = false; }
       };
-      let raf=0;
-      const render = () => { renderer.render(scene,camera); raf=requestAnimationFrame(render); };
-      const pointer = (event) => { entries.forEach(({heading,mesh}) => { const r=heading.getBoundingClientRect(); if(event && event.clientX>=r.left && event.clientX<=r.right && event.clientY>=r.top && event.clientY<=r.bottom){ const x=(event.clientX-r.left)/r.width; const y=1-(event.clientY-r.top)/r.height; mesh.material.uniforms.uMouse.value.set(x,y); } else mesh.material.uniforms.uMouse.value.set(-2,-2); }); };
-      offerings.addEventListener('pointermove',pointer,{passive:true});
-      offerings.addEventListener('pointerleave',()=>pointer(null),{passive:true});
-      window.addEventListener('resize',position,{passive:true});
-      window.addEventListener('scroll',position,{passive:true});
-      position(); render();
-      window.addEventListener('pagehide',()=>{ cancelAnimationFrame(raf); renderer.dispose(); renderer.domElement.remove(); },{once:true});
+      const draw = (event) => {
+        last = event;
+        if (!snapshot) { capture().then(() => { if (last && snapshot) draw(last); }); return; }
+        const rect = offerings.getBoundingClientRect();
+        const x = event.clientX - rect.left, y = event.clientY - rect.top;
+        const radius = 145, zoom = 1.32;
+        ctx.clearRect(0, 0, 320, 320);
+        ctx.save(); ctx.beginPath(); ctx.arc(160, 160, radius, 0, Math.PI * 2); ctx.clip();
+        ctx.drawImage(snapshot, x-radius/zoom, y-radius/zoom, radius*2/zoom, radius*2/zoom, 15, 15, radius*2, radius*2);
+        const sheen = ctx.createLinearGradient(40, 35, 270, 285);
+        sheen.addColorStop(0, 'rgba(255,255,255,.25)'); sheen.addColorStop(.45, 'rgba(255,255,255,0)'); sheen.addColorStop(1, 'rgba(255,255,255,.12)');
+        ctx.fillStyle = sheen; ctx.fillRect(15,15,290,290); ctx.restore();
+        ctx.beginPath(); ctx.arc(160,160,radius,0,Math.PI*2); ctx.strokeStyle='rgba(255,255,255,.8)'; ctx.lineWidth=3; ctx.stroke();
+        lens.style.transform = `translate(${event.clientX-160}px, ${event.clientY-160}px)`;
+        lens.classList.add('is-visible');
+      };
+      offerings.addEventListener('pointerenter', () => { snapshot=null; capture(); });
+      offerings.addEventListener('pointermove', draw, { passive:true });
+      offerings.addEventListener('pointerleave', () => { last=null; lens.classList.remove('is-visible'); });
+      window.addEventListener('resize', () => { snapshot=null; lens.classList.remove('is-visible'); }, { passive:true });
     }).catch(() => {});
   }
   if (currentPath === '/services' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
