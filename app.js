@@ -161,6 +161,17 @@
           sceneContext.globalAlpha = Number(labelStyle.opacity || 1);
           const bubbleBlur = Number(labelStyle.filter.match(/blur\(([\d.]+)px\)/)?.[1] || 0);
           sceneContext.filter = bubbleBlur ? `blur(${(bubbleBlur * quality).toFixed(2)}px)` : 'none';
+          // Paint the body first so its lower edge cannot cover the pale inner tail.
+          sceneContext.fillStyle = border;
+          sceneContext.beginPath();
+          sceneContext.roundRect(x, y, w, h, radius);
+          sceneContext.fill();
+          sceneContext.fillStyle = fill;
+          sceneContext.beginPath();
+          sceneContext.roundRect(x + borderWidth, y + borderWidth, w - borderWidth * 2, h - borderWidth * 2, Math.max(2, radius - borderWidth));
+          sceneContext.fill();
+          // Draw both tail layers last; this keeps the pale inset visible when
+          // the refracted bubble crosses the sphere edge in the rear half.
           sceneContext.fillStyle = border;
           sceneContext.beginPath();
           if (isBelow) {
@@ -186,14 +197,6 @@
             sceneContext.lineTo(x + tailX + 13 * quality, y + h - 3 * quality);
           }
           sceneContext.closePath();
-          sceneContext.fill();
-          sceneContext.fillStyle = border;
-          sceneContext.beginPath();
-          sceneContext.roundRect(x, y, w, h, radius);
-          sceneContext.fill();
-          sceneContext.fillStyle = fill;
-          sceneContext.beginPath();
-          sceneContext.roundRect(x + borderWidth, y + borderWidth, w - borderWidth * 2, h - borderWidth * 2, Math.max(2, radius - borderWidth));
           sceneContext.fill();
           sceneContext.fillStyle = style.color;
           sceneContext.font = getComputedStyle(bubble).font;
