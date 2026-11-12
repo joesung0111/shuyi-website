@@ -728,7 +728,7 @@
   }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = [...document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article, .services-faq')].filter((element) => !element.closest('.offerings-page')); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
   const offerings = document.querySelector('.offerings');
-  if (offerings && matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (offerings && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     // Render the visible DOM into a texture and refract it through a WebGL lens.
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl', { alpha:true, premultipliedAlpha:false });
@@ -749,6 +749,11 @@
         const source=document.createElement('canvas'), ctx=source.getContext('2d');
         const main=document.querySelector('.offerings-page main');
         let targetX=innerWidth*.65,targetY=innerHeight*.45,x=targetX,y=targetY, frame=0, dirty=true;
+        let touchMode=matchMedia('(pointer: coarse)').matches;
+        let lensOpacity=touchMode ? 0 : 1, desiredOpacity=lensOpacity;
+        let touchGesture=null, hideTimer=0;
+        const wake=()=>{if(!frame) frame=requestAnimationFrame(render);};
+        const hideTouchLens=()=>{clearTimeout(hideTimer); desiredOpacity=0; wake();};
         const header=document.querySelector('.site-header');
         const trails=Array.from({length:3},()=>({x,y}));
         let previousTime=0;
@@ -763,10 +768,12 @@
           gl.bindTexture(gl.TEXTURE_2D,texture); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source); dirty=false;
         };
         const render=(time=0)=>{
-          if(dirty) snapshot();
           const dt=previousTime ? Math.min((time-previousTime)/1000,.05) : 1/60;
           previousTime=time;
-          const radius=Math.min(innerWidth,innerHeight)*.14;
+          lensOpacity+=(desiredOpacity-lensOpacity)*(1-Math.exp(-14*dt));
+          if(touchMode && lensOpacity<.005 && desiredOpacity===0){gl.clear(gl.COLOR_BUFFER_BIT); frame=0; previousTime=0; return;}
+          if(dirty) snapshot();
+          const radius=touchMode ? Math.min(85,innerWidth*.2) : Math.min(innerWidth,innerHeight)*.14;
           const headerBottom=Math.max(0,header?.getBoundingClientRect().bottom || 0);
           const safeY=Math.max(headerBottom+radius+8,targetY);
           const follow=1-Math.exp(-9*dt);
@@ -777,13 +784,44 @@
           gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
           gl.uniform2f(gl.getUniformLocation(program,'size'),innerWidth,innerHeight);
           gl.uniform1f(gl.getUniformLocation(program,'headerBottom'),headerBottom);
-          const drawLens=(cx,cy,alpha,scale=1)=>{gl.uniform2f(gl.getUniformLocation(program,'center'),cx,innerHeight-cy); gl.uniform1f(gl.getUniformLocation(program,'radius'),radius*scale); gl.uniform1f(gl.getUniformLocation(program,'opacity'),alpha); gl.drawArrays(gl.TRIANGLES,0,6);};
+          const drawLens=(cx,cy,alpha,scale=1)=>{gl.uniform2f(gl.getUniformLocation(program,'center'),cx,innerHeight-cy); gl.uniform1f(gl.getUniformLocation(program,'radius'),radius*scale); gl.uniform1f(gl.getUniformLocation(program,'opacity'),alpha*lensOpacity); gl.drawArrays(gl.TRIANGLES,0,6);};
           for(let i=trails.length-1;i>=0;i--){const trail=trails[i]; const strength=Math.min(1,Math.hypot(trail.x-x,trail.y-y)/(radius*.75)); drawLens(trail.x,trail.y,strength*(.12-i*.035),1-i*.035);}
           drawLens(x,y,1);
           frame=requestAnimationFrame(render);
         };
-        window.addEventListener('pointermove',event=>{targetX=event.clientX;targetY=event.clientY;},{passive:true});
-        window.addEventListener('scroll',()=>{dirty=true;},{passive:true}); window.addEventListener('resize',()=>{dirty=true;},{passive:true});
+        const placeTouchLens=(event)=>{
+          const radius=Math.min(85,innerWidth*.2);
+          targetX=Math.max(radius+8,Math.min(innerWidth-radius-8,event.clientX));
+          targetY=event.clientY-radius-28;
+        };
+        main.addEventListener('pointerdown',event=>{
+          if(event.pointerType!=='touch') return;
+          if(touchGesture){touchGesture.scrolling=true; hideTouchLens(); return;}
+          if(event.target.closest('a, button, input, select, textarea, summary, [role="button"], [contenteditable]')) return;
+          touchMode=true; clearTimeout(hideTimer);
+          touchGesture={id:event.pointerId,startX:event.clientX,startY:event.clientY,scrolling:false};
+          placeTouchLens(event);
+          x=targetX; y=targetY; trails.forEach(trail=>{trail.x=x;trail.y=y;});
+          dirty=true; desiredOpacity=1; wake();
+        },{passive:true});
+        window.addEventListener('pointermove',event=>{
+          if(event.pointerType==='touch'){
+            if(!touchGesture || event.pointerId!==touchGesture.id || touchGesture.scrolling) return;
+            const dx=Math.abs(event.clientX-touchGesture.startX),dy=Math.abs(event.clientY-touchGesture.startY);
+            if(dy>10 && dy>dx){touchGesture.scrolling=true; hideTouchLens(); return;}
+            placeTouchLens(event);
+          } else if(event.pointerType==='mouse'){
+            clearTimeout(hideTimer); touchMode=false; desiredOpacity=1; targetX=event.clientX; targetY=event.clientY; wake();
+          }
+        },{passive:true});
+        window.addEventListener('pointerup',event=>{
+          if(event.pointerId!==touchGesture?.id) return;
+          const scrolling=touchGesture.scrolling; touchGesture=null;
+          if(scrolling) hideTouchLens(); else hideTimer=setTimeout(hideTouchLens,500);
+        },{passive:true});
+        window.addEventListener('pointercancel',()=>{if(touchGesture){touchGesture=null;hideTouchLens();}},{passive:true});
+        window.addEventListener('scroll',()=>{dirty=true; if(touchMode){if(touchGesture) touchGesture.scrolling=true; hideTouchLens();}},{passive:true});
+        window.addEventListener('resize',()=>{dirty=true;},{passive:true});
         new MutationObserver(()=>{dirty=true; setTimeout(()=>{dirty=true;},400);}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
         document.fonts.ready.then(()=>{dirty=true;}); render(); window.addEventListener('pagehide',()=>cancelAnimationFrame(frame),{once:true});
       } catch(error) { canvas.remove(); console.error('Lens unavailable',error); }
