@@ -963,7 +963,7 @@ body:has(.journal-page)>.site-header {
   height:44px; z-index:299; display:flex; justify-content:space-around;
   align-items:center; gap:12px; overflow:hidden; pointer-events:none;
   background:var(--surface); clip-path:inset(0 0 calc(44px - var(--pull)));
-  transition:clip-path .26s cubic-bezier(.2,.8,.2,1);
+  transition:clip-path .12s ease-out;
 }
 .pull-mascots.is-pulling { transition:none; }
 .pull-mascots img { flex:0 0 40px; width:40px; height:40px; object-fit:contain; }
@@ -983,12 +983,11 @@ body:has(.journal-page)>.site-header {
 .services-summary__intro h2 em { display:inline; font-style:normal; color:var(--accent); }
 .services-summary__copy { font-size:14px; line-height:1.95; }
 .services-summary__copy p { margin:0 0 16px; }
-.services-summary__index { margin:38px 0 0; font:10px var(--mono); letter-spacing:.13em; color:var(--muted); }
 .services-summary__details { min-width:0; padding-top:6px; }
-.services-summary__metrics { display:grid; grid-template-columns:1fr 1fr; gap:0; margin:0; border-top:1px solid var(--line); }
-.services-summary__metrics > div { padding:24px 0 26px; }
-.services-summary__metrics > div:nth-child(2) { padding-left:26px; border-left:1px solid var(--line); }
-.services-summary__metrics > div:last-child { grid-column:1 / -1; display:grid; grid-template-columns:1fr auto; align-items:center; column-gap:20px; border-top:1px solid var(--line); }
+.services-summary__metrics { display:grid; grid-template-columns:1fr 1fr; gap:26px 32px; margin:0 0 24px; padding:30px; border:0; border-radius:24px; background:var(--surface); }
+.services-summary__metrics > div { padding:0; }
+.services-summary__metrics > div:nth-child(2) { padding-left:0; border:0; }
+.services-summary__metrics > div:last-child { grid-column:1 / -1; display:grid; grid-template-columns:1fr auto; align-items:center; column-gap:20px; border:0; padding-top:6px; }
 .services-summary__metrics dt { color:var(--muted); font-size:12px; line-height:1.6; }
 .services-summary__metrics dd { display:flex; align-items:baseline; flex-wrap:wrap; gap:8px; margin:10px 0; }
 .services-summary__metrics dd strong { color:var(--ink); font:500 clamp(42px,4.4vw,66px)/1 var(--mono); letter-spacing:-.075em; font-variant-numeric:tabular-nums; }
@@ -998,13 +997,13 @@ body:has(.journal-page)>.site-header {
 .services-summary__metrics > div:last-child dd strong { font-size:clamp(35px,3.8vw,54px); }
 .services-summary__metrics > div:last-child .services-summary__metric-note { grid-column:1; }
 .services-page > .services-summary .services-facts { grid-template-columns:1fr 1fr; gap:0 26px; margin:0; }
-.services-page > .services-summary .services-facts > div { min-height:0; padding:18px 0!important; }
+.services-page > .services-summary .services-facts > div { min-height:0; padding:12px 0!important; border:0; }
 .services-summary .services-facts dt { font-size:11px; margin-bottom:7px; }
 .services-summary .services-facts dd { font-size:14px; line-height:1.7; }
 .services-summary .services-facts a { text-decoration:none; display:inline-flex; gap:16px; align-items:center; }
 .services-summary .services-facts a:hover { color:var(--accent); }
 .services-summary .services-facts a:focus-visible { outline:2px solid var(--accent); outline-offset:5px; }
-.services-summary__details > .services-boundary { margin:14px 0 0; padding:14px 0 0; border:0; border-top:1px solid var(--line); background:none; color:var(--muted); font-size:11px; line-height:1.8; }
+.services-summary__details > .services-boundary { margin:14px 0 0; padding:4px 0 0; border:0; background:none; color:var(--muted); font-size:11px; line-height:1.8; }
 @media(max-width:900px) {
   .services-page > .services-summary { gap:32px; padding-inline:28px; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); }
 }
@@ -1013,10 +1012,10 @@ body:has(.journal-page)>.site-header {
   .services-summary__intro { max-width:none; }
   .services-summary__intro .services-section-head h2 { font-size:36px; margin:18px 0 22px; }
   .services-summary__copy { max-width:36em; font-size:14px; }
-  .services-summary__index { display:none; }
   .services-summary__details { margin-top:30px; padding-top:0; }
   .services-summary__metrics dd strong { font-size:48px; }
-  .services-summary__metrics > div:nth-child(2) { padding-left:18px; }
+  .services-summary__metrics > div:nth-child(2) { padding-left:0; }
+  .services-summary__metrics { padding:24px 20px; gap:24px 16px; border-radius:20px; }
   .services-summary__metrics > div:last-child dd strong { font-size:38px; }
   .services-page > .services-summary .services-facts { gap:0 16px; }
   .services-summary .services-facts dd { font-size:13px; }

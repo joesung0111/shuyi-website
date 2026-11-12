@@ -19,7 +19,7 @@
     const pull=distance=>{clearTimeout(releaseTimer);amount=Math.min(44,distance*.25);strip.classList.add('is-pulling');strip.style.setProperty('--pull',`${amount}px`);};
     window.addEventListener('wheel',event=>{
       if(event.ctrlKey || event.target.closest('dialog, .site-nav, [role="listbox"]'))return;
-      if(window.scrollY<=1 && event.deltaY<0){pull(amount*4+Math.abs(event.deltaY));releaseTimer=setTimeout(release,60);}else release();
+      if(window.scrollY<=1 && event.deltaY<0){pull(amount*4+Math.abs(event.deltaY));releaseTimer=setTimeout(release,16);}else release();
     },{passive:true});
     window.addEventListener('touchstart',event=>{touchStart=window.scrollY<=1 && event.touches.length===1 ? event.touches[0].clientY : null;},{passive:true});
     window.addEventListener('touchmove',event=>{if(touchStart===null)return;if(event.touches.length!==1 || window.scrollY>1){touchStart=null;release();return;}pull(Math.max(0,event.touches[0].clientY-touchStart));},{passive:true});
