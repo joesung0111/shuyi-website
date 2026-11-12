@@ -726,60 +726,44 @@
       window.addEventListener('scroll', revealHomeMotion, { passive:true });
     }
   }
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article, .services-faq'); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = [...document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article, .services-faq')].filter((element) => !element.closest('.offerings-page')); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
   const offerings = document.querySelector('.offerings');
-  if (offerings && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const hero = document.querySelector('.offerings-page main > .page-hero');
-    let snapTimer;
-    window.addEventListener('scroll', () => {
-      clearTimeout(snapTimer);
-      snapTimer = setTimeout(() => {
-        if (!hero) return;
-        const top = hero.getBoundingClientRect().top + window.scrollY;
-        const next = offerings.getBoundingClientRect().top + window.scrollY - (window.innerWidth <= 720 ? 68 : 88);
-        if (window.scrollY < top - 10 || window.scrollY > next + 40) return;
-        const target = Math.abs(window.scrollY - top) < Math.abs(window.scrollY - next) ? top : next;
-        if (Math.abs(window.scrollY - target) > 8) window.scrollTo({top:target, behavior:'smooth'});
-      }, 180);
-    }, {passive:true});
-  }
   if (offerings && matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    // Capture the real section and show it through a moving magnifying lens.
-    import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm').then(({ default: html2canvas }) => {
-      const lens = document.createElement('canvas');
-      lens.className = 'offering-lens';
-      lens.width = lens.height = 320;
-      lens.setAttribute('aria-hidden', 'true');
-      document.body.append(lens);
-      const ctx = lens.getContext('2d');
-      let snapshot = null, capturing = false, last = null;
-      const capture = async () => {
-        if (capturing) return;
-        capturing = true;
-        try { snapshot = await html2canvas(offerings, { backgroundColor:null, scale:1, useCORS:true }); }
-        finally { capturing = false; }
-      };
-      const draw = (event) => {
-        last = event;
-        if (!snapshot) { capture().then(() => { if (last && snapshot) draw(last); }); return; }
-        const rect = offerings.getBoundingClientRect();
-        const x = event.clientX - rect.left, y = event.clientY - rect.top;
-        const radius = 145, zoom = 1.32;
-        ctx.clearRect(0, 0, 320, 320);
-        ctx.save(); ctx.beginPath(); ctx.arc(160, 160, radius, 0, Math.PI * 2); ctx.clip();
-        ctx.drawImage(snapshot, x-radius/zoom, y-radius/zoom, radius*2/zoom, radius*2/zoom, 15, 15, radius*2, radius*2);
-        const sheen = ctx.createLinearGradient(40, 35, 270, 285);
-        sheen.addColorStop(0, 'rgba(255,255,255,.25)'); sheen.addColorStop(.45, 'rgba(255,255,255,0)'); sheen.addColorStop(1, 'rgba(255,255,255,.12)');
-        ctx.fillStyle = sheen; ctx.fillRect(15,15,290,290); ctx.restore();
-        ctx.beginPath(); ctx.arc(160,160,radius,0,Math.PI*2); ctx.strokeStyle='rgba(255,255,255,.8)'; ctx.lineWidth=3; ctx.stroke();
-        lens.style.transform = `translate(${event.clientX-160}px, ${event.clientY-160}px)`;
-        lens.classList.add('is-visible');
-      };
-      offerings.addEventListener('pointerenter', () => { snapshot=null; capture(); });
-      offerings.addEventListener('pointermove', draw, { passive:true });
-      offerings.addEventListener('pointerleave', () => { last=null; lens.classList.remove('is-visible'); });
-      window.addEventListener('resize', () => { snapshot=null; lens.classList.remove('is-visible'); }, { passive:true });
-    }).catch(() => {});
+    // Render the visible DOM into a texture and refract it through a WebGL lens.
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl', { alpha:true, premultipliedAlpha:false });
+    if (gl) {
+      canvas.className = 'offering-lens-webgl';
+      canvas.setAttribute('aria-hidden', 'true');
+      document.body.append(canvas);
+      const compile = (type, source) => { const shader=gl.createShader(type); gl.shaderSource(shader,source); gl.compileShader(shader); if (!gl.getShaderParameter(shader,gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader)); return shader; };
+      try {
+        const program=gl.createProgram();
+        gl.attachShader(program,compile(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 uv; void main(){uv=p*.5+.5; gl_Position=vec4(p,0.,1.);}'));
+        gl.attachShader(program,compile(gl.FRAGMENT_SHADER, `precision highp float; varying vec2 uv; uniform sampler2D scene; uniform vec2 size; uniform vec2 center; uniform float radius; void main(){vec2 pixel=uv*size; vec2 d=(pixel-center)/radius; float r=length(d); if(r>=1.0) discard; float z=sqrt(max(0.0,1.0-r*r)); vec2 normal=d/(z+0.35); vec2 shift=normal*radius*0.13*(1.0-r*r); vec2 sampleUV=(pixel-shift)/size; float ca=1.0+0.025*r; vec4 c=texture2D(scene,sampleUV); c.r=texture2D(scene,(pixel-shift*ca)/size).r; c.b=texture2D(scene,(pixel-shift/ca)/size).b; float edge=smoothstep(.73,1.0,r); float shine=pow(max(0.0,1.0-length(d-vec2(-.35,.4))*2.1),3.0); c.rgb=mix(c.rgb,c.rgb*.55,edge*.65)+shine*.2; gl_FragColor=vec4(c.rgb,1.0); }`));
+        gl.linkProgram(program); if (!gl.getProgramParameter(program,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
+        gl.useProgram(program);
+        const buffer=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buffer); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+        const attr=gl.getAttribLocation(program,'p'); gl.enableVertexAttribArray(attr); gl.vertexAttribPointer(attr,2,gl.FLOAT,false,0,0);
+        const texture=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,texture); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+        const source=document.createElement('canvas'), ctx=source.getContext('2d');
+        const main=document.querySelector('.offerings-page main');
+        let targetX=innerWidth*.65,targetY=innerHeight*.45,x=targetX,y=targetY, frame=0, dirty=true;
+        const snapshot=()=>{
+          const w=innerWidth,h=innerHeight; source.width=w; source.height=h; canvas.width=w; canvas.height=h; gl.viewport(0,0,w,h);
+          ctx.fillStyle=getComputedStyle(document.body).backgroundColor; ctx.fillRect(0,0,w,h);
+          main.querySelectorAll('.offering-group--series').forEach(el=>{const r=el.getBoundingClientRect(); const color=getComputedStyle(el).backgroundColor; if(color !== 'rgba(0, 0, 0, 0)'){ctx.fillStyle=color;ctx.fillRect(r.left,r.top,r.width,r.height);}});
+          const walker=document.createTreeWalker(main,NodeFilter.SHOW_TEXT); let node;
+          while((node=walker.nextNode())) { if(!node.nodeValue.trim()) continue; const parent=node.parentElement, style=getComputedStyle(parent); if(style.visibility==='hidden'||style.display==='none'||Number(style.opacity)===0) continue; ctx.font=`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`; ctx.fillStyle=style.color; ctx.textBaseline='top'; const range=document.createRange(); for(let i=0;i<node.length;i++){if(/\s/.test(node.data[i]))continue; range.setStart(node,i); range.setEnd(node,i+1); const r=range.getBoundingClientRect(); if(r.bottom<0||r.top>h||r.right<0||r.left>w)continue; ctx.fillText(node.data[i],r.left,r.top); } }
+          gl.bindTexture(gl.TEXTURE_2D,texture); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source); dirty=false;
+        };
+        const render=()=>{ if(dirty) snapshot(); x+=(targetX-x)*.14; y+=(targetY-y)*.14; gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT); gl.uniform2f(gl.getUniformLocation(program,'size'),innerWidth,innerHeight); gl.uniform2f(gl.getUniformLocation(program,'center'),x,innerHeight-y); gl.uniform1f(gl.getUniformLocation(program,'radius'),Math.min(innerWidth,innerHeight)*.14); gl.drawArrays(gl.TRIANGLES,0,6); frame=requestAnimationFrame(render); };
+        window.addEventListener('pointermove',event=>{targetX=event.clientX;targetY=event.clientY;},{passive:true});
+        window.addEventListener('scroll',()=>{dirty=true;},{passive:true}); window.addEventListener('resize',()=>{dirty=true;},{passive:true});
+        new MutationObserver(()=>{dirty=true;}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+        document.fonts.ready.then(()=>{dirty=true;}); render(); window.addEventListener('pagehide',()=>cancelAnimationFrame(frame),{once:true});
+      } catch(error) { canvas.remove(); console.error('Lens unavailable',error); }
+    }
   }
   if (currentPath === '/services' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const openingPanels = [...document.querySelectorAll('.services-page > .page-hero--service, .services-page > .services-summary')];
