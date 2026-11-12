@@ -15,11 +15,11 @@
     for(let i=0;i<20;i++){const img=document.createElement('img');img.src=`/素材/人物/AI加工/${characters[i%characters.length]}.webp`;img.alt='';img.width=44;img.height=44;img.decoding='async';strip.append(img);}
     document.body.append(strip);
     let releaseTimer=0, touchStart=null, amount=0;
-    const release=()=>{amount=0;strip.style.setProperty('--pull','0px');};
-    const pull=distance=>{clearTimeout(releaseTimer);amount=Math.min(44,distance*.25);strip.style.setProperty('--pull',`${amount}px`);};
+    const release=()=>{amount=0;strip.classList.remove('is-pulling');strip.style.setProperty('--pull','0px');};
+    const pull=distance=>{clearTimeout(releaseTimer);amount=Math.min(44,distance*.25);strip.classList.add('is-pulling');strip.style.setProperty('--pull',`${amount}px`);};
     window.addEventListener('wheel',event=>{
       if(event.ctrlKey || event.target.closest('dialog, .site-nav, [role="listbox"]'))return;
-      if(window.scrollY<=1 && event.deltaY<0){pull(amount*4+Math.abs(event.deltaY));releaseTimer=setTimeout(release,140);}else release();
+      if(window.scrollY<=1 && event.deltaY<0){pull(amount*4+Math.abs(event.deltaY));releaseTimer=setTimeout(release,60);}else release();
     },{passive:true});
     window.addEventListener('touchstart',event=>{touchStart=window.scrollY<=1 && event.touches.length===1 ? event.touches[0].clientY : null;},{passive:true});
     window.addEventListener('touchmove',event=>{if(touchStart===null)return;if(event.touches.length!==1 || window.scrollY>1){touchStart=null;release();return;}pull(Math.max(0,event.touches[0].clientY-touchStart));},{passive:true});
