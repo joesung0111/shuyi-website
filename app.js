@@ -115,7 +115,9 @@
     if (!orbit || !items.length) return;
     const scene = document.createElement('canvas');
     const sceneContext = scene.getContext('2d', { willReadFrequently:true });
-    if (!sceneContext) return;
+    const tailMask = document.createElement('canvas');
+    const tailMaskContext = tailMask.getContext('2d', { willReadFrequently:true });
+    if (!sceneContext || !tailMaskContext) return;
     let frame = 0;
     let lastFrame = 0;
     const quality = Math.min(window.devicePixelRatio || 1, 1.1);
@@ -125,7 +127,9 @@
       const height = Math.max(1, Math.round(sphereBounds.height * quality));
       if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
       if (scene.width !== width || scene.height !== height) { scene.width = width; scene.height = height; }
+      if (tailMask.width !== width || tailMask.height !== height) { tailMask.width = width; tailMask.height = height; }
       sceneContext.clearRect(0, 0, width, height);
+      tailMaskContext.clearRect(0, 0, width, height);
       // Rasterize only mascots whose orbit depth places them behind the glass.
       // The canvas then bends those live pixels, instead of drawing a fake grid.
       items.forEach((item) => {
@@ -157,6 +161,7 @@
           const border = style.borderTopColor;
           const fill = style.backgroundColor;
           const isBelow = hoverLabel.classList.contains('is-below');
+          const tailFill = getComputedStyle(hoverLabel).getPropertyValue('--bubble-tail-fill').trim() || '#fff';
           sceneContext.save();
           sceneContext.globalAlpha = Number(labelStyle.opacity || 1);
           const bubbleBlur = Number(labelStyle.filter.match(/blur\(([\d.]+)px\)/)?.[1] || 0);
@@ -185,19 +190,32 @@
           }
           sceneContext.closePath();
           sceneContext.fill();
-          sceneContext.fillStyle = fill;
+          sceneContext.fillStyle = tailFill;
           sceneContext.beginPath();
           if (isBelow) {
-            sceneContext.moveTo(x + tailX, y - 16 * quality);
-            sceneContext.lineTo(x + tailX - 13 * quality, y + 3 * quality);
-            sceneContext.lineTo(x + tailX + 13 * quality, y + 3 * quality);
+            sceneContext.moveTo(x + tailX, y - 19 * quality);
+            sceneContext.lineTo(x + tailX - 15.5 * quality, y + 3 * quality);
+            sceneContext.lineTo(x + tailX + 15.5 * quality, y + 3 * quality);
           } else {
-            sceneContext.moveTo(x + tailX, y + h + 16 * quality);
-            sceneContext.lineTo(x + tailX - 13 * quality, y + h - 3 * quality);
-            sceneContext.lineTo(x + tailX + 13 * quality, y + h - 3 * quality);
+            sceneContext.moveTo(x + tailX, y + h + 19 * quality);
+            sceneContext.lineTo(x + tailX - 15.5 * quality, y + h - 3 * quality);
+            sceneContext.lineTo(x + tailX + 15.5 * quality, y + h - 3 * quality);
           }
           sceneContext.closePath();
           sceneContext.fill();
+          tailMaskContext.fillStyle = '#fff';
+          tailMaskContext.beginPath();
+          if (isBelow) {
+            tailMaskContext.moveTo(x + tailX, y - 19 * quality);
+            tailMaskContext.lineTo(x + tailX - 15.5 * quality, y + 3 * quality);
+            tailMaskContext.lineTo(x + tailX + 15.5 * quality, y + 3 * quality);
+          } else {
+            tailMaskContext.moveTo(x + tailX, y + h + 19 * quality);
+            tailMaskContext.lineTo(x + tailX - 15.5 * quality, y + h - 3 * quality);
+            tailMaskContext.lineTo(x + tailX + 15.5 * quality, y + h - 3 * quality);
+          }
+          tailMaskContext.closePath();
+          tailMaskContext.fill();
           sceneContext.fillStyle = style.color;
           sceneContext.font = getComputedStyle(bubble).font;
           sceneContext.textAlign = 'center';
@@ -207,6 +225,7 @@
         }
       }
       const pixels = sceneContext.getImageData(0, 0, width, height).data;
+      const tailPixels = tailMaskContext.getImageData(0, 0, width, height).data;
       const image = output.createImageData(width, height);
       const data = image.data;
       const radius = Math.min(width, height) / 2;
@@ -234,7 +253,8 @@
           data[targetIndex] = pixels[redIndex];
           data[targetIndex + 1] = pixels[sourceIndex + 1];
           data[targetIndex + 2] = pixels[blueIndex + 2];
-          data[targetIndex + 3] = Math.round(pixels[sourceIndex + 3] * .92 * edgeFade);
+          const isInnerTail = tailPixels[sourceIndex + 3] > 0;
+          data[targetIndex + 3] = Math.round(pixels[sourceIndex + 3] * .92 * (isInnerTail ? Math.max(edgeFade, .78) : edgeFade));
         }
       }
       output.putImageData(image, 0, 0);
@@ -356,7 +376,7 @@
       const labelY = height / 2 + selectedCosine * radius * planeY + height * .04;
       const itemHeight = selectedItem.offsetHeight * selectedScale;
       const bubbleWidth = hoverLabel.offsetWidth || 186;
-      const bubbleHeight = hoverLabel.offsetHeight || 62;
+      const bubbleHeight = hoverLabelText.offsetHeight || 62;
       const safeX = clamp(labelX, bubbleWidth / 2 + 10, width - bubbleWidth / 2 - 10);
       const tailX = clamp(bubbleWidth / 2 + labelX - safeX, 18, bubbleWidth - 18);
       const aboveTop = labelY - itemHeight / 2 - bubbleHeight - 20;
