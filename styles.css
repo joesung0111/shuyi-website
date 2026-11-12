@@ -852,7 +852,7 @@ html:has(.services-page) {
   transform:none;
   border-radius:24px;
   background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--accent) 17%,transparent),transparent 58%),color-mix(in srgb,var(--surface) 82%,transparent);
-  box-shadow:0 8px 24px color-mix(in srgb,var(--ink) 9%,transparent);
+  box-shadow:0 4px 12px color-mix(in srgb,var(--ink) 5%,transparent);
   backdrop-filter:blur(4px);
   /* Temporarily hidden; keep this animated spine component intact for later reuse. */
   visibility:hidden;

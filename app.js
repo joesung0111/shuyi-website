@@ -32,7 +32,7 @@
     typeNext();
   });
   document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '更懂自己'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
-  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-hero-type-20261112j`; }
+  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-relight-shadow-20261112k`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
   if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) { journalLead.classList.add('journal-typewriter'); journalLead.setAttribute('aria-label', journalText); journalLead.textContent = ''; let textIndex = 0; const typeNext = () => { if (textIndex >= journalText.length) return; const character = journalText[textIndex]; journalLead.textContent += character; textIndex += 1; window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30); }; typeNext(); } }
   if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; }
@@ -96,7 +96,7 @@
           float distanceSquared=dot(toLight,toLight);
           vec3 lightDirection=normalize(toLight);
           float diffuse=max(dot(normal,lightDirection),0.0);
-          vec2 rayOffset=lightDirection.xy/max(lightDirection.z,0.16)*(1.0-depth)*0.28*uCoverScale;
+          vec2 rayOffset=lightDirection.xy/max(lightDirection.z,0.16)*(1.0-depth)*0.14*uCoverScale;
           float occlusion=0.0;
           for(int i=0;i<10;i++){
             float progress=float(i+1)/10.0;
@@ -104,7 +104,7 @@
             float blocker=depthAt(uv+rayOffset*progress);
             occlusion=max(occlusion,smoothstep(rayDepth+0.018,rayDepth+0.12,blocker));
           }
-          float visibility=1.0-occlusion*0.76;
+          float visibility=1.0-occlusion*0.52;
           float attenuation=1.0/(1.0+distanceSquared*3.2);
           float specular=pow(max(dot(reflect(-lightDirection,normal),vec3(0.0,0.0,1.0)),0.0),28.0)*0.16;
           float illumination=0.54+diffuse*attenuation*1.32*visibility;
