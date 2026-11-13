@@ -1089,6 +1089,34 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
 .booking-guide-panel .booking-policy { margin-top:clamp(28px,4vh,48px); }
 .booking-guide-panel > .site-footer { margin:clamp(26px,4vh,44px) calc(clamp(22px,7vw,104px) * -1) calc(clamp(34px,5vh,62px) * -1); }
 
+/* Keep the full original care copy visible together on desktop and browsable horizontally on phones. */
+.journal-care__reader { display:block; }
+.journal-care__panels { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(12px,1.6vw,24px); height:100%; }
+.journal-care__panel { min-height:0; padding:clamp(20px,2.5vw,38px); }
+.journal-care__panel p { font-size:clamp(14px,1.2vw,17px); line-height:1.9; }
+
+/* The offerings footer keeps its original natural height inside the third panel. */
+.offering-panel--series > .site-footer { flex:0 0 auto; height:auto; min-height:0; margin:clamp(18px,2vh,28px) calc(clamp(22px,7vw,104px) * -1) calc(clamp(30px,5vh,64px) * -1); padding:28px clamp(20px,4vw,64px); }
+
+/* Studio's three information rows and footer are one second panel. */
+.studio-details { min-height:calc(100svh - var(--panel-header-height,88px)); }
+.studio-details .info-rows { display:grid; gap:0; }
+
+/* Booking panel 3 is one viewport tall, visually distinct from the guide panel. */
+.booking-policy-panel.snap-panel { height:calc(100svh - var(--panel-header-height,88px)); min-height:calc(100svh - var(--panel-header-height,88px)); display:flex; flex-direction:column; justify-content:space-between; gap:18px; overflow-y:auto; overflow-x:hidden; padding:clamp(20px,3vh,34px) 0 0; background:color-mix(in srgb,var(--accent) 7%,var(--surface)); }
+.booking-policy-panel > .booking-policy { width:calc(100% - clamp(40px,14vw,208px)); max-width:1200px; flex:0 0 auto; align-self:center; margin:auto; }
+.booking-policy-panel > .site-footer { flex:0 0 auto; width:100%; margin:0; }
+.booking-demo__scan-target { left:23%; }
+.booking-demo__scan-line { left:23%; }
+.booking-demo__phone { right:32%; }
+@keyframes booking-phone-scan-mobile {
+  0%,5% { transform:translate(8px,4px) rotate(6deg) scale(1); }
+  12%,22% { transform:translate(-6px,20px) rotate(-5deg) scale(1); }
+  56% { transform:translate(-10px,8px) rotate(0) scale(1.04); }
+  72% { transform:translate(-8px,-3px) rotate(0) scale(1.05); }
+  84%,100% { transform:translate(-8px,-12px) rotate(0) scale(1.05); }
+}
+
 @media(max-width:900px) {
   .booking-entry { grid-template-columns:minmax(0,1.7fr) minmax(220px,1fr); gap:24px; }
   .booking-demo { min-height:410px; padding:10px; }
@@ -1117,10 +1145,9 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
   .journal-care__heading h2 { font-size:30px; }
   .journal-care__heading > p:last-child { font-size:12px; }
   .journal-care__reader { grid-template-columns:1fr; gap:12px; }
-  .journal-care__tabs { grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
-  .journal-care__tabs button { padding:10px 7px; border:1px solid var(--line); border-radius:9px; text-align:center; font-size:11px; }
-  .journal-care__panel { min-height:210px; padding:23px 19px; border-radius:16px; }
-  .journal-care__panel p { margin-top:18px; font-size:16px; line-height:1.9; }
+  .journal-care__panels { display:flex; gap:10px; height:auto; overflow-x:auto; overflow-y:hidden; padding:0 0 8px; scroll-snap-type:x mandatory; scrollbar-width:thin; }
+  .journal-care__panel { flex:0 0 min(86vw,380px); min-height:210px; padding:23px 19px; border-radius:16px; scroll-snap-align:start; }
+  .journal-care__panel p { margin-top:18px; font-size:15px; line-height:1.9; }
   .journal-care__link { font-size:12px; }
   .journal-care > .site-footer { margin-inline:-20px; }
   .offerings-page > main > .offering-panel { min-height:calc(100svh - var(--panel-header-height)); padding:28px 20px; }
@@ -1139,8 +1166,6 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
   .studio-page__copy { padding:36px 24px; }
   .studio-page__copy h1 { font-size:48px; margin:14px 0 17px; }
   .studio-page__art { min-height:220px; }
-  .studio-location { min-height:calc(100svh - var(--panel-header-height)); padding:30px 22px; }
-  .studio-location .info-row { grid-template-columns:1fr; gap:15px; font-size:24px; }
   .studio-details { min-height:calc(100svh - var(--panel-header-height)); padding-top:24px; }
   .studio-details .info-rows { padding-inline:22px; }
   .studio-details .info-row { grid-template-columns:1fr; gap:10px; padding:20px 0; }
@@ -1162,4 +1187,13 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
   .booking-guide-panel { min-height:calc(100svh - var(--panel-header-height)); padding:30px 20px; }
   .booking-guide-panel .booking-policy { margin-top:24px; }
   .booking-guide-panel > .site-footer { margin-inline:-20px; }
+  .booking-demo__scan-target { left:24%; }
+  .booking-demo__scan-line { left:24%; }
+  .booking-demo .booking-demo__phone { right:30%; animation-name:booking-phone-scan-mobile; }
+  .booking-policy-panel.snap-panel { height:calc(100svh - var(--panel-header-height)); min-height:calc(100svh - var(--panel-header-height)); padding-top:12px; gap:10px; }
+  .booking-policy-panel > .booking-policy { width:calc(100% - 40px); gap:14px; padding:18px 16px; border-radius:15px; }
+  .booking-policy-panel .booking-policy__heading h2 { margin-top:10px; font-size:22px; }
+  .booking-policy-panel .booking-policy__list li { padding:9px 0; }
+  .booking-policy-panel .booking-policy__list p { font-size:11px; line-height:1.65; }
+  .booking-policy-panel > .site-footer { margin-inline:0; padding:15px 20px; }
 }
