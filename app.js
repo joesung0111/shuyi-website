@@ -973,8 +973,9 @@
             if(dy>10 && dy>dx){touchGesture.scrolling=true; hideTouchLens(); return;}
             placeTouchLens(event);
           } else if(event.pointerType==='mouse'){
+            targetX=event.clientX; targetY=event.clientY;
             if(!event.target.closest('.offering-panel')){desiredOpacity=0;wake();return;}
-            clearTimeout(hideTimer); touchMode=false; desiredOpacity=1; targetX=event.clientX; targetY=event.clientY; wake();
+            clearTimeout(hideTimer); touchMode=false; desiredOpacity=1; wake();
           }
         },{passive:true});
         window.addEventListener('pointerup',event=>{
