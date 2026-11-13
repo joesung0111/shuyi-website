@@ -2,9 +2,33 @@
   if (!document.querySelector('link[rel="icon"]')) { const favicon = document.createElement('link'); favicon.rel = 'icon'; favicon.type = 'image/jpeg'; favicon.href = '/素材/淺色系-1K.jpeg'; document.head.append(favicon); }
   const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
   const bookingGuide = document.querySelector('.booking-info');
-  if (bookingGuide && !bookingGuide.querySelector('.booking-policy')) {
+  if (bookingGuide && !bookingGuide.querySelector('.booking-policy') && !document.querySelector('.booking-policy-panel .booking-policy')) {
     bookingGuide.querySelector('.booking-guide__lead')?.remove();
     bookingGuide.insertAdjacentHTML('beforeend', '<section class="booking-policy" aria-labelledby="booking-policy-title"><div class="booking-policy__heading"><p class="eyebrow">A LITTLE NOTE BEFORE YOU COME</p><h2 id="booking-policy-title">💜 為了讓每位客人都能<br><em>順利安排調理時間</em></h2></div><ul class="booking-policy__list"><li><span aria-hidden="true">✓</span><p>請準時赴約，若遲到將依原預約時段安排，以免影響下一位客人的預約。</p></li><li><span aria-hidden="true">✓</span><p>如需取消或更改預約，請於 4 小時前通知我們。</p></li><li><span aria-hidden="true">✓</span><p>無故未到或臨時取消累積 2 次，未來預約可能需支付定金。</p></li></ul></section>');
+  }
+  const topicData = document.querySelector('.journal-topics-data');
+  const topicList = document.querySelector('.journal-topic-list');
+  if (topicData && topicList) {
+    let topics = [];
+    try { topics = JSON.parse(topicData.textContent); } catch (error) { console.error('Unable to load journal topics', error); }
+    const title = document.querySelector('[data-topic-title]');
+    const excerpt = document.querySelector('[data-topic-excerpt]');
+    const count = document.querySelector('[data-topic-count]');
+    topicList.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-topic]');
+      if (!button) return;
+      const index = Number(button.dataset.topic);
+      const topic = topics[index];
+      if (!topic) return;
+      topicList.querySelectorAll('[data-topic]').forEach((item) => {
+        const active = item === button;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-pressed', String(active));
+      });
+      title.textContent = topic.title;
+      excerpt.textContent = topic.excerpt;
+      count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(topics.length).padStart(2, '0')}`;
+    });
   }
   const root = document.documentElement;
   const switcher = document.querySelector('.theme-switch');
