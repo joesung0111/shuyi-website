@@ -18,6 +18,34 @@
   if (menuButton) menuButton.addEventListener('click', () => { const open = document.body.classList.toggle('menu-open'); menuButton.setAttribute('aria-expanded', String(open)); });
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
   const currentPath = normalizePath(window.location.pathname);
+  document.querySelectorAll('[role="tablist"]').forEach((tablist) => {
+    const tabs = [...tablist.querySelectorAll('[role="tab"]')];
+    if (!tabs.length || tabs.some((item) => !item.hasAttribute('aria-controls'))) return;
+    const activateTab = (tab, focus = false) => {
+      tabs.forEach((item) => {
+        const selected = item === tab;
+        item.classList.toggle('is-active', selected);
+        item.setAttribute('aria-selected', String(selected));
+        item.tabIndex = selected ? 0 : -1;
+        const panel = document.getElementById(item.getAttribute('aria-controls'));
+        if (panel) { panel.hidden = !selected; panel.classList.toggle('is-active', selected); }
+      });
+      if (focus) tab.focus();
+    };
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activateTab(tab));
+      tab.addEventListener('keydown', (event) => {
+        let nextIndex = index;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') nextIndex = (index + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') nextIndex = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') nextIndex = 0;
+        else if (event.key === 'End') nextIndex = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        activateTab(tabs[nextIndex], true);
+      });
+    });
+  });
   const typewrite = (element, text) => new Promise((resolve) => {
     element.classList.add('journal-typewriter');
     element.setAttribute('aria-label', text);
@@ -32,7 +60,7 @@
     typeNext();
   });
   document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '多多了解'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
-  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=services-relight-shadow-20261112k`; }
+  if (currentPath === '/services') { const serviceStyles = document.querySelector('link[href*="styles.css"]'); if (serviceStyles) serviceStyles.href = `${serviceStyles.href.split('?')[0]}?v=panel-layout-20261113`; }
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
   if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) { journalLead.classList.add('journal-typewriter'); journalLead.setAttribute('aria-label', journalText); journalLead.textContent = ''; let textIndex = 0; const typeNext = () => { if (textIndex >= journalText.length) return; const character = journalText[textIndex]; journalLead.textContent += character; textIndex += 1; window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30); }; typeNext(); } }
   if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; }
@@ -848,34 +876,6 @@
       } catch(error) { canvas.remove(); console.error('Lens unavailable',error); }
     }
   }
-  if (currentPath === '/services' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const openingPanels = [...document.querySelectorAll('.services-page > .page-hero--service, .services-page > .services-summary')];
-    let snapTimer = 0;
-    if (openingPanels.length === 2) window.addEventListener('scroll', () => {
-      window.clearTimeout(snapTimer);
-      snapTimer = window.setTimeout(() => {
-        const anchor = openingPanels[0].getBoundingClientRect().top + window.scrollY;
-        const nearest = openingPanels.map((panel) => ({ panel, distance: Math.abs(panel.getBoundingClientRect().top - anchor) })).reduce((best, panel) => panel.distance < best.distance ? panel : best);
-        if (nearest.distance > window.innerHeight * .48) return;
-        const target = Math.max(0, window.scrollY + nearest.panel.getBoundingClientRect().top - anchor);
-        if (Math.abs(target - window.scrollY) > 24) window.scrollTo({ top:target, behavior:'smooth' });
-      }, 140);
-    }, { passive:true });
-  }
-  if (currentPath === '/services' && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const openingPanels = [...document.querySelectorAll('.services-page > .page-hero--service, .services-page > .services-summary')];
-    let snapTimer = 0;
-    if (openingPanels.length === 2) window.addEventListener('scroll', () => {
-      window.clearTimeout(snapTimer);
-      snapTimer = window.setTimeout(() => {
-        const anchor = openingPanels[0].getBoundingClientRect().top + window.scrollY;
-        const nearest = openingPanels.map((panel) => ({ panel, distance: Math.abs(panel.getBoundingClientRect().top - anchor) })).reduce((best, panel) => panel.distance < best.distance ? panel : best);
-        if (nearest.distance > window.innerHeight * .48) return;
-        const target = Math.max(0, window.scrollY + nearest.panel.getBoundingClientRect().top - anchor);
-        if (Math.abs(target - window.scrollY) > 24) window.scrollTo({ top:target, behavior:'smooth' });
-      }, 140);
-    }, { passive:true });
-  }
   const serviceList = document.querySelector('.service-list');
   if (serviceList && !document.querySelector('[data-flow-progress]')) {
     serviceList.closest('section').insertAdjacentHTML('afterend', '<section class="service-flow section" data-flow-progress><div class="service-flow__intro"><p class="eyebrow">THE SHU YI WAY / 02</p><h2>從理解開始<br><em>慢慢找回活動</em></h2><p>每一次調理都從當下狀態出發，在過程裡感受身體，再把合適的照顧帶回日常。</p></div><div class="service-flow__track"><div class="service-flow__line" aria-hidden="true"><i></i></div><ol class="service-flow__steps"><li class="service-flow__step is-active"><span>01</span><div><h3>先理解狀態</h3><p>從今天的身體感受與日常活動開始，找到舒服的起點。</p></div></li><li class="service-flow__step"><span>02</span><div><h3>安排活化節奏</h3><p>依當下狀態安排調理，不套用每個人都一樣的固定流程。</p></div></li><li class="service-flow__step"><span>03</span><div><h3>留意身體變化</h3><p>在過程中保持感受，讓活動與舒適度成為調整的方向。</p></div></li><li class="service-flow__step"><span>04</span><div><h3>帶回日常裡</h3><p>留下能延續到生活中的身體照顧空間，慢慢找回自在。</p></div></li></ol></div></section>');
@@ -891,13 +891,14 @@
   const bookingCard = document.querySelector('.booking-card');
   if (bookingCard && !bookingCard.querySelector('[data-booking-entry]')) {
     bookingCard.classList.add('booking-card--ready');
+    bookingCard.querySelector('h1')?.remove();
     const intro = bookingCard.querySelector('p:not(.eyebrow)');
     const notice = bookingCard.querySelector('.booking-notice');
     if (intro) intro.remove();
     if (notice) notice.remove();
     const bookingPlatformUrl = document.querySelector('[data-booking-platform-outbound]')?.href || '/booking/';
-    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-browser" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__bar"><i></i><i></i><i></i><span>LINE → 舒逸線上預約平台</span></div><div class="booking-browser__body"><div class="booking-demo"><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="" aria-hidden="true"></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted autoplay playsinline webkit-playsinline preload="auto" poster="../素材/預約流程登入介面.jpg"><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div></div></div><div class="booking-entry__copy"><a class="booking-qr-card" href="https://lin.ee/5lABDTv" target="_blank" rel="noopener" data-analytics-target="line_official"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描或點擊加入舒逸 LINE 官方帳號"><span>掃描或點擊加入 LINE@</span></a><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" data-booking-cta="true" data-booking-platform-outbound="true" href="' + escapeHtml(bookingPlatformUrl) + '" target="_blank" rel="noopener">前往舒逸線上預約 <span>↗</span></a></div></div>');
-    const bookingSteps = bookingCard.querySelector('.booking-browser__bar span');
+    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-demo" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__steps"></div><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="" aria-hidden="true"></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted autoplay playsinline webkit-playsinline preload="auto" poster="../素材/預約流程登入介面.jpg"><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div><div class="booking-entry__copy"><h1>把時間<br>留給<em>自己。</em></h1><a class="booking-qr-card" href="https://lin.ee/5lABDTv" target="_blank" rel="noopener" data-analytics-target="line_official"><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="掃描或點擊加入舒逸 LINE 官方帳號"><span>掃描或點擊加入 LINE@</span></a><p>加入 LINE@，可以先詢問服務內容；需要預約時，再前往舒逸預約平台選擇時間。</p><a class="button button--primary" data-booking-cta="true" data-booking-platform-outbound="true" href="' + escapeHtml(bookingPlatformUrl) + '" target="_blank" rel="noopener">前往舒逸線上預約 <span>↗</span></a></div></div>');
+    const bookingSteps = bookingCard.querySelector('.booking-demo .booking-browser__steps');
     if (bookingSteps) bookingSteps.className = 'booking-browser__steps';
     if (bookingSteps) bookingSteps.innerHTML = '<b class="booking-browser__step booking-browser__step--scan">01 / 掃 QR Code 或點連結</b><b class="booking-browser__step booking-browser__step--login">02 / 登入 LINE</b><b class="booking-browser__step booking-browser__step--time">03 / 選日期與時間</b><b class="booking-browser__step booking-browser__step--service">04 / 選服務項目</b><b class="booking-browser__step booking-browser__step--confirm">05 / 確認預約</b>';
     const bookingVideo = bookingCard.querySelector('.booking-demo__video');
@@ -965,11 +966,6 @@
     };
     syncBookingDemo();
     window.setInterval(syncBookingDemo, 120);
-    const bookingCopy = bookingCard.querySelector('.booking-entry__copy > p');
-    if (bookingCopy) bookingCopy.remove();
-    const bookingButton = bookingCard.querySelector('.booking-entry__copy .button');
-    const bookingQrCard = bookingCard.querySelector('.booking-entry__copy .booking-qr-card');
-    if (bookingButton && bookingQrCard) bookingQrCard.before(bookingButton);
   }
   const grid = document.querySelector('#content-grid');
   if (grid) {
