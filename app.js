@@ -848,7 +848,7 @@
         let touchMode=matchMedia('(pointer: coarse)').matches;
         let lensOpacity=touchMode ? 0 : 1, desiredOpacity=lensOpacity;
         let touchGesture=null, hideTimer=0, sectionTransition=null;
-        const offeringPanels=[...main.querySelectorAll('.offering-panel')];
+        const offeringPanels=[...main.querySelectorAll('.page-hero, .offering-panel--care')];
         const panelAtCenter=()=>{
           const focusY=innerHeight*.52;
           let bestIndex=-1,bestDistance=Infinity;
@@ -1175,7 +1175,6 @@
       const release=(event)=>{if(state.pointerId!==event.pointerId)return;state.pointerId=null;if(state.cards.length<=2&&reduceMotion){state.tugX=0;state.tugV=0;}document.querySelector('.journal-carousel')?.classList.remove('is-dragging');};
       window.addEventListener('pointerup',release);window.addEventListener('pointercancel',release);stage.addEventListener('keydown',(event)=>{if(event.target!==stage)return;if(event.key==='ArrowRight'){event.preventDefault();turn(1);}if(event.key==='ArrowLeft'){event.preventDefault();turn(-1);}});
       document.querySelectorAll('[data-carousel-step]').forEach((button)=>button.addEventListener('click',()=>turn(button.dataset.carouselStep==='previous'?-1:1)));
-      document.querySelector('[data-journal-scroll]')?.addEventListener('click',()=>document.querySelector('#journal-cards')?.scrollIntoView({behavior:reduceMotion?'instant':'smooth',block:'start'}));
       addEventListener('resize',resize);refresh();state.raf=requestAnimationFrame(render);return {refresh};
     };
     renderContent();
