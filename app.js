@@ -801,7 +801,42 @@
       try {
         const program=gl.createProgram();
         gl.attachShader(program,compile(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 uv; void main(){uv=p*.5+.5; gl_Position=vec4(p,0.,1.);}'));
-        gl.attachShader(program,compile(gl.FRAGMENT_SHADER, `precision highp float; varying vec2 uv; uniform sampler2D scene; uniform vec2 size; uniform vec2 center; uniform float radius; uniform float opacity; uniform float headerBottom; void main(){vec2 pixel=uv*size; if(pixel.y > size.y-headerBottom) discard; vec2 d=(pixel-center)/radius; float r=length(d); if(r>=1.0) discard; float z=sqrt(max(0.0,1.0-r*r)); vec2 normal=d/(z+0.35); vec2 shift=normal*radius*0.13*(1.0-r*r); vec2 sampleUV=(pixel-shift)/size; float ca=1.0+0.025*r; vec4 c=texture2D(scene,sampleUV); c.r=texture2D(scene,(pixel-shift*ca)/size).r; c.b=texture2D(scene,(pixel-shift/ca)/size).b; float edge=smoothstep(.73,1.0,r); float shine=pow(max(0.0,1.0-length(d-vec2(-.35,.4))*2.1),3.0); c.rgb=mix(c.rgb,c.rgb*.55,edge*.65)+shine*.2; gl_FragColor=vec4(c.rgb,opacity); }`));
+        gl.attachShader(program,compile(gl.FRAGMENT_SHADER, `precision highp float;
+          varying vec2 uv;
+          uniform sampler2D scene; uniform vec2 size; uniform vec2 center;
+          uniform float radius; uniform float opacity; uniform float headerBottom;
+          uniform float bubbleMode; uniform float bubblePhase; uniform float pinch;
+          void main(){
+            vec2 pixel=uv*size;
+            if(pixel.y > size.y-headerBottom) discard;
+            vec2 d=(pixel-center)/radius;
+            float angle=atan(d.y,d.x);
+            vec2 contactPoint=.86*vec2(cos(bubblePhase),sin(bubblePhase));
+            float contact=exp(-dot(d-contactPoint,d-contactPoint)*76.0)*pinch;
+            vec2 membrane=d+normalize(d-contactPoint+vec2(.0001))*contact*.045;
+            float r=length(membrane);
+            float ripple=(sin(angle*3.0+bubblePhase*1.8)*.014+sin(angle*7.0-bubblePhase*1.1)*.005)*smoothstep(.55,1.0,r)*bubbleMode;
+            float surfaceR=r+ripple+contact*.12;
+            if(surfaceR>=1.0) discard;
+            float z=sqrt(max(0.0,1.0-surfaceR*surfaceR));
+            vec2 normal=membrane/(z+0.35);
+            vec2 shift=normal*radius*0.13*(1.0-surfaceR*surfaceR);
+            vec2 sampleUV=(pixel-shift)/size;
+            float ca=1.0+0.025*surfaceR;
+            vec4 c=texture2D(scene,sampleUV);
+            c.r=texture2D(scene,(pixel-shift*ca)/size).r;
+            c.b=texture2D(scene,(pixel-shift/ca)/size).b;
+            float edge=smoothstep(.73,1.0,surfaceR);
+            float shine=pow(max(0.0,1.0-length(membrane-vec2(-.35,.4))*2.1),3.0);
+            c.rgb=mix(c.rgb,c.rgb*.55,edge*.65)+shine*.2;
+            float rim=exp(-pow((1.0-surfaceR)*48.0,2.0))*bubbleMode;
+            float gleam=pow(max(0.0,1.0-length((membrane-vec2(-.3,.55))*vec2(1.65,2.3))),3.0)*bubbleMode;
+            vec3 pearl=.5+.5*cos(vec3(0.0,2.1,4.2)+angle*1.7+bubblePhase);
+            c.rgb=mix(c.rgb,pearl,rim*.48)+vec3(1.0)*gleam*.34;
+            float pinchGlint=exp(-dot(d-contactPoint,d-contactPoint)*180.0)*pinch*bubbleMode;
+            c.rgb+=vec3(1.0,.9,.82)*pinchGlint*.25;
+            gl_FragColor=vec4(c.rgb,opacity);
+          }`));
         gl.linkProgram(program); if (!gl.getProgramParameter(program,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
         gl.useProgram(program);
         const buffer=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buffer); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
@@ -824,7 +859,7 @@
         const startSectionTransition=(direction)=>{
           const radius=touchMode?Math.min(85,innerWidth*.2):Math.min(innerWidth,innerHeight)*.14;
           const headerBottom=Math.max(0,header?.getBoundingClientRect().bottom||0);
-          sectionTransition={direction,started:performance.now(),duration:direction==='grow'?760:680,x:innerWidth*.5,y:Math.max(headerBottom+radius+8,headerBottom+(innerHeight-headerBottom)*.52)};
+          sectionTransition={direction,started:performance.now(),duration:direction==='grow'?300:480,x:innerWidth*.5,y:Math.max(headerBottom+radius+8,headerBottom+(innerHeight-headerBottom)*.52)};
           desiredOpacity=1;dirty=true;wake();
         };
         const wake=()=>{if(!frame) frame=requestAnimationFrame(render);};
@@ -864,27 +899,33 @@
           gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
           gl.uniform2f(gl.getUniformLocation(program,'size'),innerWidth,innerHeight);
           gl.uniform1f(gl.getUniformLocation(program,'headerBottom'),headerBottom);
-          const drawLens=(cx,cy,alpha,scale=1)=>{gl.uniform2f(gl.getUniformLocation(program,'center'),cx,innerHeight-cy); gl.uniform1f(gl.getUniformLocation(program,'radius'),radius*scale); gl.uniform1f(gl.getUniformLocation(program,'opacity'),alpha*lensOpacity); gl.drawArrays(gl.TRIANGLES,0,6);};
+          const drawLens=(cx,cy,alpha,scale=1,bubbleMode=0,bubblePhase=0,pinch=0)=>{gl.uniform2f(gl.getUniformLocation(program,'center'),cx,innerHeight-cy); gl.uniform1f(gl.getUniformLocation(program,'radius'),radius*scale); gl.uniform1f(gl.getUniformLocation(program,'opacity'),alpha*lensOpacity); gl.uniform1f(gl.getUniformLocation(program,'bubbleMode'),bubbleMode); gl.uniform1f(gl.getUniformLocation(program,'bubblePhase'),bubblePhase); gl.uniform1f(gl.getUniformLocation(program,'pinch'),pinch); gl.drawArrays(gl.TRIANGLES,0,6);};
           if(sectionTransition){
             const elapsed=(time-sectionTransition.started)/sectionTransition.duration;
             const t=Math.min(1,Math.max(0,elapsed));
             const easeOut=t=>1-Math.pow(1-t,3);
             const {direction,x:cx,y:cy}=sectionTransition;
             if(direction==='grow'){
-              const scale=.08+1.34*easeOut(t);
-              drawLens(cx,cy,1,scale);
+              const curve=t*t*(3-2*t);
+              const breath=.045*Math.sin(Math.PI*t);
+              const shell=1-Math.max(0,Math.min(1,(t-.82)/.18));
+              drawLens(cx,cy,1,.055+.945*curve+breath,shell,t*5.2,0);
             }else{
-              const pop=Math.min(1,t/.22);
-              const mainScale=1+.3*(1-Math.pow(1-pop,3));
-              const fade=Math.max(0,1-Math.max(0,(t-.16)/.54));
-              drawLens(cx,cy,fade,mainScale*(1-.36*easeOut(Math.max(0,(t-.22)/.78))));
-              const fragmentProgress=Math.max(0,Math.min(1,(t-.08)/.76));
+              const press=Math.max(0,Math.min(1,t/.68));
+              const pressCurve=press*press*(3-2*press);
+              const rupture=Math.max(0,Math.min(1,(t-.68)/.16));
+              const bubbleAlpha=1-easeOut(rupture);
+              const squeeze=1+.035*Math.sin(press*Math.PI);
+              drawLens(cx,cy,bubbleAlpha,squeeze,1,-.62+pressCurve*.9,pressCurve);
+              const fragmentProgress=Math.max(0,Math.min(1,(t-.68)/.32));
               if(fragmentProgress>0){
-                for(let i=0;i<8;i++){
-                  const angle=(Math.PI*2*i/8)-Math.PI/2;
-                  const distance=radius*(.28+1.1*easeOut(fragmentProgress));
-                  const drift=Math.sin(t*10+i*1.7)*radius*.08*fragmentProgress;
-                  drawLens(cx+Math.cos(angle)*distance+drift,cy+Math.sin(angle)*distance,.42*(1-fragmentProgress),.2*(1-fragmentProgress*.62));
+                const burst=easeOut(fragmentProgress);
+                for(let i=0;i<6;i++){
+                  const angle=-.62+.9+(i-2.5)*.58;
+                  const distance=radius*(.24+1.15*burst);
+                  const drift=Math.sin(fragmentProgress*Math.PI+i*1.7)*radius*.12*fragmentProgress;
+                  const dropScale=[.18,.12,.2,.14,.16,.11][i]*(1-.52*fragmentProgress);
+                  drawLens(cx+Math.cos(angle)*distance+drift,cy+Math.sin(angle)*distance,.78*Math.pow(1-fragmentProgress,1.35),dropScale,1,angle,0);
                 }
               }
             }
