@@ -1134,7 +1134,7 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
 .journal-flow-steps li > span { color:var(--accent); font:10px var(--mono); }
 .journal-flow-steps h4 { margin:9px 0 7px; font-size:15px; }
 .journal-flow-steps li p { margin:0; font-size:11px; line-height:1.7; }
-.journal-next-cue { position:absolute; z-index:5; right:clamp(20px,4vw,58px); bottom:clamp(18px,3vh,34px); display:grid; place-items:center; width:72px; height:48px; border:1px solid var(--line); border-radius:15px; background:color-mix(in srgb,var(--surface) 88%,transparent); color:var(--ink); cursor:pointer; text-decoration:none; transition:background .2s; }
+.journal-next-cue { position:absolute; z-index:40; right:clamp(20px,4vw,58px); bottom:clamp(18px,3vh,34px); display:grid; place-items:center; width:72px; height:48px; border:1px solid var(--line); border-radius:15px; background:color-mix(in srgb,var(--surface) 88%,transparent); color:var(--ink); cursor:pointer; pointer-events:auto; text-decoration:none; transition:background .2s; }
 .journal-next-cue::before { position:absolute; inset:-5px; border:1px solid color-mix(in srgb,var(--accent) 65%,transparent); border-radius:19px; content:""; pointer-events:none; animation:journal-cue-pulse 2.3s ease-out infinite; }
 .journal-next-cue:hover { transform:translateY(3px); background:var(--surface); }
 .journal-next-cue span { position:relative; z-index:1; width:0; height:0; border-top:8px solid currentColor; border-right:6px solid transparent; border-left:6px solid transparent; }

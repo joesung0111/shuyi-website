@@ -812,9 +812,23 @@
         let targetX=innerWidth*.65,targetY=innerHeight*.45,x=targetX,y=targetY, frame=0, dirty=true;
         let touchMode=matchMedia('(pointer: coarse)').matches;
         let lensOpacity=touchMode ? 0 : 1, desiredOpacity=lensOpacity;
-        let touchGesture=null, hideTimer=0;
+        let touchGesture=null, hideTimer=0, sectionTransition=null;
+        const offeringPanels=[...main.querySelectorAll('.offering-panel')];
+        const panelAtCenter=()=>{
+          const focusY=innerHeight*.52;
+          let bestIndex=-1,bestDistance=Infinity;
+          offeringPanels.forEach((panel,index)=>{const rect=panel.getBoundingClientRect();const distance=Math.abs((rect.top+rect.bottom)/2-focusY);if(distance<bestDistance){bestDistance=distance;bestIndex=index;}});
+          return bestIndex;
+        };
+        let activeOfferingPanel=panelAtCenter();
+        const startSectionTransition=(direction)=>{
+          const radius=touchMode?Math.min(85,innerWidth*.2):Math.min(innerWidth,innerHeight)*.14;
+          const headerBottom=Math.max(0,header?.getBoundingClientRect().bottom||0);
+          sectionTransition={direction,started:performance.now(),duration:direction==='grow'?760:680,x:innerWidth*.5,y:Math.max(headerBottom+radius+8,headerBottom+(innerHeight-headerBottom)*.52)};
+          desiredOpacity=1;dirty=true;wake();
+        };
         const wake=()=>{if(!frame) frame=requestAnimationFrame(render);};
-        const hideTouchLens=()=>{clearTimeout(hideTimer); desiredOpacity=0; wake();};
+        const hideTouchLens=()=>{clearTimeout(hideTimer); if(sectionTransition){desiredOpacity=1;wake();return;} desiredOpacity=0; wake();};
         const header=document.querySelector('.site-header');
         const trails=Array.from({length:3},()=>({x,y}));
         let previousTime=0;
@@ -847,18 +861,48 @@
           if(dirty) snapshot();
           const radius=touchMode ? Math.min(85,innerWidth*.2) : Math.min(innerWidth,innerHeight)*.14;
           const headerBottom=Math.max(0,header?.getBoundingClientRect().bottom || 0);
-          const safeY=Math.max(headerBottom+radius+8,targetY);
-          const follow=1-Math.exp(-9*dt);
-          x+=(targetX-x)*follow; y+=(safeY-y)*follow;
-          y=Math.max(headerBottom+radius+8,y);
-          let leader={x,y};
-          trails.forEach(trail=>{const damping=1-Math.exp(-13*dt); trail.x+=(leader.x-trail.x)*damping; trail.y+=(leader.y-trail.y)*damping; trail.y=Math.max(headerBottom+radius+8,trail.y); leader=trail;});
           gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
           gl.uniform2f(gl.getUniformLocation(program,'size'),innerWidth,innerHeight);
           gl.uniform1f(gl.getUniformLocation(program,'headerBottom'),headerBottom);
           const drawLens=(cx,cy,alpha,scale=1)=>{gl.uniform2f(gl.getUniformLocation(program,'center'),cx,innerHeight-cy); gl.uniform1f(gl.getUniformLocation(program,'radius'),radius*scale); gl.uniform1f(gl.getUniformLocation(program,'opacity'),alpha*lensOpacity); gl.drawArrays(gl.TRIANGLES,0,6);};
-          for(let i=trails.length-1;i>=0;i--){const trail=trails[i]; const strength=Math.min(1,Math.hypot(trail.x-x,trail.y-y)/(radius*.75)); drawLens(trail.x,trail.y,strength*(.12-i*.035),1-i*.035);}
-          drawLens(x,y,1);
+          if(sectionTransition){
+            const elapsed=(time-sectionTransition.started)/sectionTransition.duration;
+            const t=Math.min(1,Math.max(0,elapsed));
+            const easeOut=t=>1-Math.pow(1-t,3);
+            const {direction,x:cx,y:cy}=sectionTransition;
+            if(direction==='grow'){
+              const scale=.08+1.34*easeOut(t);
+              drawLens(cx,cy,1,scale);
+            }else{
+              const pop=Math.min(1,t/.22);
+              const mainScale=1+.3*(1-Math.pow(1-pop,3));
+              const fade=Math.max(0,1-Math.max(0,(t-.16)/.54));
+              drawLens(cx,cy,fade,mainScale*(1-.36*easeOut(Math.max(0,(t-.22)/.78))));
+              const fragmentProgress=Math.max(0,Math.min(1,(t-.08)/.76));
+              if(fragmentProgress>0){
+                for(let i=0;i<8;i++){
+                  const angle=(Math.PI*2*i/8)-Math.PI/2;
+                  const distance=radius*(.28+1.1*easeOut(fragmentProgress));
+                  const drift=Math.sin(t*10+i*1.7)*radius*.08*fragmentProgress;
+                  drawLens(cx+Math.cos(angle)*distance+drift,cy+Math.sin(angle)*distance,.42*(1-fragmentProgress),.2*(1-fragmentProgress*.62));
+                }
+              }
+            }
+            if(t>=1){
+              if(direction==='grow'){targetX=x=cx;targetY=y=cy;trails.forEach(trail=>{trail.x=cx;trail.y=cy;});desiredOpacity=touchMode?0:1;}
+              else desiredOpacity=0;
+              sectionTransition=null;
+            }
+          }else{
+            const safeY=Math.max(headerBottom+radius+8,targetY);
+            const follow=1-Math.exp(-9*dt);
+            x+=(targetX-x)*follow; y+=(safeY-y)*follow;
+            y=Math.max(headerBottom+radius+8,y);
+            let leader={x,y};
+            trails.forEach(trail=>{const damping=1-Math.exp(-13*dt); trail.x+=(leader.x-trail.x)*damping; trail.y+=(leader.y-trail.y)*damping; trail.y=Math.max(headerBottom+radius+8,trail.y); leader=trail;});
+            for(let i=trails.length-1;i>=0;i--){const trail=trails[i]; const strength=Math.min(1,Math.hypot(trail.x-x,trail.y-y)/(radius*.75)); drawLens(trail.x,trail.y,strength*(.12-i*.035),1-i*.035);}
+            drawLens(x,y,1);
+          }
           frame=requestAnimationFrame(render);
         };
         const placeTouchLens=(event)=>{
@@ -894,7 +938,13 @@
           if(scrolling) hideTouchLens(); else hideTimer=setTimeout(hideTouchLens,500);
         },{passive:true});
         window.addEventListener('pointercancel',()=>{if(touchGesture){touchGesture=null;hideTouchLens();}},{passive:true});
-        window.addEventListener('scroll',()=>{dirty=true; if(touchMode){if(touchGesture) touchGesture.scrolling=true; hideTouchLens();}},{passive:true});
+        window.addEventListener('scroll',()=>{
+          dirty=true;
+          const nextPanel=panelAtCenter();
+          if(nextPanel>=0&&activeOfferingPanel>=0&&nextPanel!==activeOfferingPanel){startSectionTransition(nextPanel>activeOfferingPanel?'grow':'pop');activeOfferingPanel=nextPanel;}
+          if(touchMode){if(touchGesture) touchGesture.scrolling=true;if(!sectionTransition)hideTouchLens();}
+          else if(sectionTransition)wake();
+        },{passive:true});
         window.addEventListener('resize',()=>{dirty=true;},{passive:true});
         const refreshButton=event=>{if(event.target.closest('.button')){dirty=true;setTimeout(()=>{dirty=true;},240);}};
         main.addEventListener('pointerover',refreshButton,{passive:true});
