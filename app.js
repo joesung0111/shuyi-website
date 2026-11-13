@@ -859,7 +859,10 @@
         const startSectionTransition=(direction)=>{
           const radius=touchMode?Math.min(85,innerWidth*.2):Math.min(innerWidth,innerHeight)*.14;
           const headerBottom=Math.max(0,header?.getBoundingClientRect().bottom||0);
-          sectionTransition={direction,started:performance.now(),duration:direction==='grow'?300:480,x:innerWidth*.5,y:Math.max(headerBottom+radius+8,headerBottom+(innerHeight-headerBottom)*.52)};
+          const cx=Math.max(radius+8,Math.min(innerWidth-radius-8,targetX));
+          const cy=Math.max(headerBottom+radius+8,Math.min(innerHeight-radius-8,targetY));
+          x=targetX=cx; y=targetY=cy; trails.forEach(trail=>{trail.x=cx;trail.y=cy;});
+          sectionTransition={direction,started:performance.now(),duration:direction==='grow'?300:720,x:cx,y:cy};
           desiredOpacity=1;dirty=true;wake();
         };
         const wake=()=>{if(!frame) frame=requestAnimationFrame(render);};
@@ -930,8 +933,9 @@
               }
             }
             if(t>=1){
-              if(direction==='grow'){targetX=x=cx;targetY=y=cy;trails.forEach(trail=>{trail.x=cx;trail.y=cy;});desiredOpacity=touchMode?0:1;}
-              else desiredOpacity=0;
+              targetX=x=cx;targetY=y=cy;trails.forEach(trail=>{trail.x=cx;trail.y=cy;});
+              if(direction==='grow')desiredOpacity=touchMode?0:1;
+              else {desiredOpacity=0;lensOpacity=0;}
               sectionTransition=null;
             }
           }else{
