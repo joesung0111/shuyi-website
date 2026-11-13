@@ -780,7 +780,7 @@
     }
   }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = [...document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .service-list article, .services-faq')].filter((element) => !element.closest('.offerings-page')); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
-  const offerings = document.querySelector('.offerings');
+  const offerings = document.querySelector('.offerings-page main');
   if (offerings && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     // Render the visible DOM into a texture and refract it through a WebGL lens.
     const canvas = document.createElement('canvas');
@@ -860,6 +860,7 @@
         };
         main.addEventListener('pointerdown',event=>{
           if(event.pointerType!=='touch') return;
+          if(!event.target.closest('.offering-panel')) return;
           if(touchGesture){touchGesture.scrolling=true; hideTouchLens(); return;}
           if(event.target.closest('a, button, input, select, textarea, summary, [role="button"], [contenteditable]')) return;
           touchMode=true; clearTimeout(hideTimer);
@@ -875,6 +876,7 @@
             if(dy>10 && dy>dx){touchGesture.scrolling=true; hideTouchLens(); return;}
             placeTouchLens(event);
           } else if(event.pointerType==='mouse'){
+            if(!event.target.closest('.offering-panel')){desiredOpacity=0;wake();return;}
             clearTimeout(hideTimer); touchMode=false; desiredOpacity=1; targetX=event.clientX; targetY=event.clientY; wake();
           }
         },{passive:true});

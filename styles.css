@@ -1055,12 +1055,13 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
 /* Offerings panels split the two existing groups across full viewport sections. */
 .offerings-page > main > .offering-panel { min-height:calc(100svh - var(--panel-header-height,88px)); display:flex; flex-direction:column; justify-content:center; padding:clamp(30px,5vh,64px) clamp(22px,7vw,104px); }
 .offering-panel--care .offering-group { padding:0; }
-.offering-panel--series { background:color-mix(in srgb,var(--surface) 30%,var(--bg)); justify-content:flex-start !important; }
-.offering-panel--series .offering-group--series { width:100%; max-width:1320px; align-self:center; margin:0; padding:clamp(22px,3vw,44px); }
+.offering-panel--series { background:color-mix(in srgb,var(--surface) 30%,var(--bg)); justify-content:flex-start !important; padding-top:clamp(48px,8vh,82px) !important; }
+.offering-panel--series .offering-group--series { width:100%; max-width:1320px; align-self:center; margin:0; padding:clamp(22px,3vw,44px); background:var(--bg); }
 .offering-panel--series .offering-list { gap:clamp(14px,2vh,24px); }
 .offering-panel--series .offering { padding:0 0 12px; }
+.offering-series__actions { width:100%; max-width:1320px; align-self:center; }
 .offering-panel--series .offerings__note { margin:clamp(16px,2vh,24px) 0 8px; }
-.offering-panel--series > .button { align-self:flex-start; }
+.offering-panel--series .offering-series__actions > .button { align-self:flex-start; }
 .offering-panel--series > .site-footer { margin:clamp(20px,3vh,36px) calc(clamp(22px,7vw,104px) * -1) calc(clamp(30px,5vh,64px) * -1); }
 
 /* Studio: location gets its own panel; visit details and footer share the close. */
@@ -1203,6 +1204,7 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
   .offering-panel--care .offering { grid-template-columns:minmax(0,1fr) auto; gap:10px; }
   .offering-panel--care .offering p { line-height:1.55; }
   .offering-panel--care .offering:nth-child(4) p { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .offering-panel--series { padding-top:clamp(34px,6vh,58px) !important; }
   .offering-panel--series .offering-group--series { padding:21px 16px; }
   .offering-panel--series .offering-list { gap:12px; }
   .offering-panel--series .offering { grid-template-columns:minmax(0,1fr) auto; gap:10px; padding-bottom:9px; }
