@@ -24,6 +24,14 @@
       });
     });
   }
+  const journalNextButton = document.querySelector('[data-journal-next]');
+  if (journalNextButton) journalNextButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    const target = document.querySelector('#journal-care');
+    if (!target) return;
+    const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+    target.scrollIntoView({ behavior, block:'start' });
+  });
   const root = document.documentElement;
   const switcher = document.querySelector('.theme-switch');
   if (switcher) {
@@ -1077,7 +1085,6 @@
       window.addEventListener('pointerup',release);window.addEventListener('pointercancel',release);stage.addEventListener('keydown',(event)=>{if(event.target!==stage)return;if(event.key==='ArrowRight'){event.preventDefault();turn(1);}if(event.key==='ArrowLeft'){event.preventDefault();turn(-1);}});
       document.querySelectorAll('[data-carousel-step]').forEach((button)=>button.addEventListener('click',()=>turn(button.dataset.carouselStep==='previous'?-1:1)));
       document.querySelector('[data-journal-scroll]')?.addEventListener('click',()=>document.querySelector('#journal-cards')?.scrollIntoView({behavior:reduceMotion?'instant':'smooth',block:'start'}));
-      document.querySelector('[data-journal-next]')?.addEventListener('click',()=>document.querySelector('#journal-care')?.scrollIntoView({behavior:reduceMotion?'instant':'smooth',block:'start'}));
       addEventListener('resize',resize);refresh();state.raf=requestAnimationFrame(render);return {refresh};
     };
     renderContent();

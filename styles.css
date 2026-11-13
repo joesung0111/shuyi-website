@@ -711,6 +711,7 @@ body:has(.journal-page)>.site-header{position:fixed;inset:0 0 auto;z-index:300}
 .journal-carousel__controls [data-carousel-status]{max-width:min(60vw,440px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:10px var(--mono);letter-spacing:.05em}
 @media(max-width:720px){html:has(.journal-page){--journal-header-height:68px}.journal-page>.journal-intro,.journal-page>.journal-carousel{height:calc(100svh - var(--journal-header-height))}.journal-page>.journal-intro{padding-top:70px}.journal-intro .page-hero__lead{margin-left:0}.journal-scroll-cue{right:18px;bottom:15px;font-size:8px}.journal-scroll-cue span{width:30px;height:30px}.journal-carousel{padding:14px 12px 12px}.journal-carousel__top{align-items:flex-start;flex-direction:column;gap:11px}.journal-carousel__top .eyebrow{font-size:9px}.journal-carousel .content-tabs{gap:5px}.journal-carousel .content-tabs button{padding:6px 11px;font-size:10px}.journal-carousel .content-card{width:min(78vw,360px);height:clamp(330px,61svh,470px);padding:11px;border-radius:15px}.journal-carousel .content-card .card-art{min-height:94px;height:33%}.journal-carousel .card-meta{margin:12px 1px 7px}.journal-carousel .content-card h3{font-size:18px}.journal-carousel .content-card>p{font-size:11px;-webkit-line-clamp:3}.journal-carousel__controls{min-height:34px;gap:15px}.journal-carousel__controls button{width:31px;height:31px}}
 @media(prefers-reduced-motion:reduce){html:has(.journal-page){scroll-behavior:auto;scroll-snap-type:none}.journal-scroll-cue span{animation:none}.journal-carousel__controls button{transition:none}}
+@media(prefers-reduced-motion:reduce){.journal-next-cue::before{animation:none}}
 .journal-carousel__controls [hidden]{display:none!important}
 .journal-carousel .content-card{cursor:grab}
 .journal-carousel.is-dragging .content-card{cursor:grabbing}
@@ -1133,9 +1134,11 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
 .journal-flow-steps li > span { color:var(--accent); font:10px var(--mono); }
 .journal-flow-steps h4 { margin:9px 0 7px; font-size:15px; }
 .journal-flow-steps li p { margin:0; font-size:11px; line-height:1.7; }
-.journal-next-cue { position:absolute; z-index:5; right:clamp(20px,4vw,58px); bottom:clamp(18px,3vh,34px); display:grid; place-items:center; width:48px; height:48px; border:1px solid var(--line); border-radius:15px; background:color-mix(in srgb,var(--surface) 88%,transparent); color:var(--ink); cursor:pointer; transition:transform .2s,background .2s; }
+.journal-next-cue { position:absolute; z-index:5; right:clamp(20px,4vw,58px); bottom:clamp(18px,3vh,34px); display:grid; place-items:center; width:72px; height:48px; border:1px solid var(--line); border-radius:15px; background:color-mix(in srgb,var(--surface) 88%,transparent); color:var(--ink); cursor:pointer; text-decoration:none; transition:background .2s; }
+.journal-next-cue::before { position:absolute; inset:-5px; border:1px solid color-mix(in srgb,var(--accent) 65%,transparent); border-radius:19px; content:""; pointer-events:none; animation:journal-cue-pulse 2.3s ease-out infinite; }
 .journal-next-cue:hover { transform:translateY(3px); background:var(--surface); }
-.journal-next-cue span { width:0; height:0; border-top:8px solid currentColor; border-right:6px solid transparent; border-left:6px solid transparent; }
+.journal-next-cue span { position:relative; z-index:1; width:0; height:0; border-top:8px solid currentColor; border-right:6px solid transparent; border-left:6px solid transparent; }
+@keyframes journal-cue-pulse { 0% { opacity:.75; transform:scale(.94); } 75%,100% { opacity:0; transform:scale(1.15); } }
 
 /* Studio's three information rows and footer are one second panel. */
 .studio-details { min-height:calc(100svh - var(--panel-header-height,88px)); }
@@ -1196,7 +1199,8 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
   .journal-flow-steps li { display:grid; grid-template-columns:28px 1fr; gap:0 8px; padding:10px 12px; }
   .journal-flow-steps li > span { grid-row:1 / 3; padding-top:2px; }
   .journal-flow-steps h4 { margin:0 0 3px; }
-  .journal-next-cue { right:12px; bottom:12px; width:42px; height:42px; border-radius:13px; }
+  .journal-next-cue { right:12px; bottom:12px; width:63px; height:42px; border-radius:13px; }
+  .journal-next-cue::before { border-radius:17px; }
   .journal-care > .site-footer { margin-inline:-20px; }
   .offerings-page > main > .offering-panel { min-height:calc(100svh - var(--panel-header-height)); padding:28px 20px; }
   .offering-panel--care .offering-group { gap:20px; padding-bottom:0; }
