@@ -21,6 +21,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
 const lookTarget = new THREE.Vector3(0, .7, 0);
 const root = new THREE.Group();
+root.position.y = .2;
 scene.add(root);
 
 scene.add(new THREE.AmbientLight(0xffffff, .62));
@@ -276,3 +277,5 @@ visual.classList.add('has-three-wheel');
 window.shuyiHomeOrbit3D = true;
 resize();
 syncTheme();
+orbit.removeAttribute('data-orbit-3d-pending');
+window.dispatchEvent(new Event('shuyi:home-orbit-ready'));

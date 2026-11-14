@@ -504,6 +504,20 @@
     const orbitTurns = [...(orbit?.querySelectorAll('[data-orbit-step]') || [])];
     const downCue = orbit?.querySelector('.hero-orbit__down-cue');
     if (!orbit || !interaction || items.length !== 5) return;
+    if (orbit.dataset.orbit3dPending === 'true' && !window.shuyiHomeOrbit3D) {
+      const initialize = () => {
+        orbit.removeAttribute('data-orbit-3d-pending');
+        window.removeEventListener('shuyi:home-orbit-ready', initialize);
+        window.removeEventListener('shuyi:home-orbit-failed', initialize);
+        setupHeroOrbit(hero, reduceMotion);
+      };
+      window.addEventListener('shuyi:home-orbit-ready', initialize, { once:true });
+      window.addEventListener('shuyi:home-orbit-failed', initialize, { once:true });
+      return () => {
+        window.removeEventListener('shuyi:home-orbit-ready', initialize);
+        window.removeEventListener('shuyi:home-orbit-failed', initialize);
+      };
+    }
     const step = Math.PI * 2 / items.length;
     const state = { angle:0, target:0, velocity:0, lastInput:0, lastMove:performance.now(), lastFrame:performance.now(), lean:0, leanTarget:0, dragging:false, hover:-1 };
     const drag = { x:0, y:0, start:0, time:0, moved:false, down:false };

@@ -1252,3 +1252,4 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
   .booking-policy-panel .booking-policy__list p { font-size:11px; line-height:1.65; }
   .booking-policy-panel > .site-footer { margin-inline:0; padding:15px 20px; }
 }
+.hero-orbit[data-orbit-3d-pending="true"] .hero-orbit__disc,.hero-orbit[data-orbit-3d-pending="true"] .hero-orbit__item{visibility:hidden}
