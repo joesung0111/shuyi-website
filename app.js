@@ -759,23 +759,22 @@
     window.addEventListener('resize', () => render());
     render();
     if (!reduceMotion) {
-      requestAnimationFrame(() => {
-        const order = items.map((item, index) => ({ item, index, depth:Math.cos(index * step) })).sort((a, b) => Math.abs(b.depth) - Math.abs(a.depth));
-        order.forEach(({ item, index }, rank) => {
-          const destination = item.style.transform;
-          const opacity = item.style.opacity;
-          const filter = item.style.filter;
-          const from = { opacity:0, filter:'blur(14px)' };
-          const to = { opacity, filter };
-          if (!window.shuyiHomeOrbit3D) {
-            from.transform = destination.replace(/scale\([^)]+\)$/, 'scale(.05)');
-            to.transform = destination;
-          }
-          const animation = item.animate([from, to], { duration:820, delay:240 + rank * 115, easing:'cubic-bezier(.2,.8,.2,1)', fill:'both' });
-          introAnimations.push(animation);
-          animation.onfinish = () => { animation.cancel(); introAnimations = introAnimations.filter((activeAnimation) => activeAnimation !== animation); render(); };
+      if (!window.shuyiHomeOrbit3D) {
+        requestAnimationFrame(() => {
+          const order = items.map((item, index) => ({ item, index, depth:Math.cos(index * step) })).sort((a, b) => Math.abs(b.depth) - Math.abs(a.depth));
+          order.forEach(({ item, index }, rank) => {
+            const destination = item.style.transform;
+            const opacity = item.style.opacity;
+            const filter = item.style.filter;
+            const animation = item.animate([
+              { transform:destination.replace(/scale\([^)]+\)$/, 'scale(.05)'), opacity:0, filter:'blur(14px)' },
+              { transform:destination, opacity, filter }
+            ], { duration:820, delay:240 + rank * 115, easing:'cubic-bezier(.2,.8,.2,1)', fill:'both' });
+            introAnimations.push(animation);
+            animation.onfinish = () => { animation.cancel(); introAnimations = introAnimations.filter((activeAnimation) => activeAnimation !== animation); render(); };
+          });
         });
-      });
+      }
       frame = requestAnimationFrame(update);
     }
     return () => { cancelAnimationFrame(frame); cancelIntro(); };
