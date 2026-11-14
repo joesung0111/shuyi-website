@@ -120,7 +120,7 @@ function makeNeonBand(innerRadius, outerRadius) {
   const color = new THREE.Color();
   for (let i = 0; i < positions.count; i += 1) {
     const hue = (Math.atan2(positions.getY(i), positions.getX(i)) / (Math.PI * 2) + 1) % 1;
-    color.setHSL(hue, .9, .64);
+    color.setHSL(hue, .98, .56);
     colors[i * 3] = color.r;
     colors[i * 3 + 1] = color.g;
     colors[i * 3 + 2] = color.b;
@@ -129,18 +129,18 @@ function makeNeonBand(innerRadius, outerRadius) {
   return geometry;
 }
 const neonRingGlow = new THREE.Mesh(
-  makeNeonBand(5.98, 6.2),
-  new THREE.MeshBasicMaterial({ vertexColors:true, transparent:true, opacity:.25, blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false, side:THREE.DoubleSide })
+  makeNeonBand(5.96, 6.2),
+  new THREE.MeshBasicMaterial({ vertexColors:true, transparent:true, opacity:.42, blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false, side:THREE.DoubleSide })
 );
 neonRingGlow.rotation.x = -Math.PI / 2;
-neonRingGlow.position.y = .237;
+neonRingGlow.position.y = .247;
 base.add(neonRingGlow);
 const neonRingCore = new THREE.Mesh(
-  makeNeonBand(6.105, 6.17),
+  makeNeonBand(6.09, 6.18),
   new THREE.MeshBasicMaterial({ vertexColors:true, toneMapped:false, side:THREE.DoubleSide })
 );
 neonRingCore.rotation.x = -Math.PI / 2;
-neonRingCore.position.y = .245;
+neonRingCore.position.y = .256;
 base.add(neonRingCore);
 
 function makeGroundShadowTexture() {
