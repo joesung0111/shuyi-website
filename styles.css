@@ -667,6 +667,43 @@ html:has(body.home-page){--home-header-height:88px;scroll-snap-type:y mandatory;
 .hero.home-intro .hero-orbit__visual{position:absolute;inset:0;z-index:2;transform:translateY(calc(-1 * clamp(22px,2.145vw,34px)));pointer-events:none}
 @media(max-width:720px){.hero.home-intro .hero-orbit__visual{transform:translateY(calc(-1 * min(6.08vw,23.6px)))}.home-page .home-intro-copy .motion-feature.section{grid-template-rows:minmax(120px,1fr) auto}.home-page .home-intro-copy .motion-video{width:100%;height:100%;aspect-ratio:auto}.home-final-panel .home-links.section{height:clamp(148px,24svh,204px)}}
 
+/* The wheel face, grid, and mascot anchors share the same rotating plane. */
+.hero-orbit__disc{
+  transform-style:preserve-3d;
+  transform:translate(-50%,-50%) rotateX(72deg) rotateZ(var(--orbit-platform-angle,0deg));
+  box-shadow:0 12px 34px color-mix(in srgb,var(--ink) 20%,transparent),inset 0 1px 9px color-mix(in srgb,var(--ink) 19%,transparent),0 7px 0 color-mix(in srgb,var(--ink) 10%,transparent),0 13px 12px color-mix(in srgb,var(--ink) 8%,transparent);
+}
+.hero-orbit__disc::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);
+  border-radius:inherit;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 76%,var(--ink)),color-mix(in srgb,var(--surface) 42%,var(--ink)));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent);
+  transform:translate3d(0,14px,-2px);
+  pointer-events:none;
+}
+.hero-orbit__disc::after{transform:none}
+.hero-orbit__item::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  left:50%;
+  bottom:8%;
+  width:52%;
+  height:18%;
+  border-radius:50%;
+  background:radial-gradient(ellipse, color-mix(in srgb,var(--ink) 30%,transparent), transparent 72%);
+  opacity:var(--mascot-shadow-opacity,.24);
+  transform:translate3d(calc(-50% + var(--mascot-shadow-x,0px)),var(--mascot-shadow-y,0px),0) scaleX(var(--mascot-shadow-scale,1));
+  filter:blur(7px);
+  pointer-events:none;
+}
+.hero-orbit__item img{position:relative;z-index:1;filter:none}
+.hero-orbit__label{z-index:2}
+
 /* Journal landing: two full-height panels with the infinite gradient 3D carousel. */
 html:has(.journal-page){--journal-header-height:88px;scroll-padding-top:var(--journal-header-height);scroll-snap-type:y mandatory;scroll-behavior:smooth}
 body:has(.journal-page)>.site-header{position:fixed;inset:0 0 auto;z-index:300}

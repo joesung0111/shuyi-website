@@ -526,31 +526,54 @@
       const width = Math.max(1, orbit.clientWidth);
       const height = Math.max(1, orbit.clientHeight);
       const mobile = matchMedia('(max-width:720px)').matches;
-      const radius = Math.min(width * (mobile ? .31 : .39), mobile ? 160 : 280);
+      const mascotWidth = mobile ? Math.min(width * .341, 181.5) : Math.min(width * .209, 258.5);
+      const discDiameter = mobile ? width * 1.1 : Math.min(width * .75, 880);
+      const wheelRadius = Math.max(0, discDiameter / 2 - mascotWidth / 2 - (mobile ? 10 : 14));
+      const radius = Math.min(width * (mobile ? .31 : .39), mobile ? 160 : 280, wheelRadius);
       const planeY = Math.cos(72 * Math.PI / 180);
+      const platformAngle = state.angle + state.lean;
       const speedBlur = clamp(Math.abs(state.velocity) * .09, 0, .9);
       const active = nearest(state.angle + state.lean);
       items.forEach((item, index) => {
-        const angle = index * step + state.angle + state.lean;
+        // Each mascot has a fixed home coordinate on the wheel. Rotate that
+        // coordinate with the platform instead of treating the mascot as a
+        // free-floating point on an unrelated ellipse.
+        const homeAngle = index * step;
+        const angle = homeAngle + platformAngle;
         const cosine = Math.cos(angle);
-        const x = Math.sin(angle) * radius;
-        const y = cosine * radius * planeY + height * .04;
+        const homeX = Math.sin(homeAngle) * radius;
+        const homeZ = Math.cos(homeAngle) * radius;
+        const x = homeX * Math.cos(platformAngle) + homeZ * Math.sin(platformAngle);
+        const wheelY = homeZ * Math.cos(platformAngle) - homeX * Math.sin(platformAngle);
+        const y = wheelY * planeY + height * .04;
         const scale = .56 + (cosine + 1) * .27;
         const opacity = .34 + (.66 * (cosine + 1) / 2);
         const depthBlur = clamp(1 - cosine, 0, 2);
         const blur = clamp(depthBlur + speedBlur, 0, 2.6);
+        const shadowOpacity = .13 + ((cosine + 1) / 2) * .17;
+        const shadowScale = .82 + ((cosine + 1) / 2) * .28;
+        const shadowX = Math.cos(angle) * 5;
+        const shadowY = 3 + ((1 - cosine) / 2) * 3;
         item.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) translate(-50%,-50%) scale(${scale.toFixed(3)})`;
         item.style.opacity = String(opacity.toFixed(3));
-        item.style.filter = `blur(${blur.toFixed(2)}px) drop-shadow(0px 12px 9px color-mix(in srgb,var(--ink) 25%,transparent))`;
-        // All mascots sit above the disk surface; depth remains expressed by
-        // their scale, opacity, and blur rather than disk lines crossing them.
+        item.style.filter = `blur(${blur.toFixed(2)}px) drop-shadow(${shadowX.toFixed(1)}px ${shadowY.toFixed(1)}px 8px color-mix(in srgb,var(--ink) ${Math.round(shadowOpacity * 100)}%,transparent))`;
+        item.style.setProperty('--mascot-shadow-opacity', shadowOpacity.toFixed(3));
+        item.style.setProperty('--mascot-shadow-scale', shadowScale.toFixed(3));
+        item.style.setProperty('--mascot-shadow-x', `${shadowX.toFixed(1)}px`);
+        item.style.setProperty('--mascot-shadow-y', `${shadowY.toFixed(1)}px`);
+        // Keep the mascot above the wheel face while depth ordering determines
+        // which mascots pass in front of the unchanged center logo.
         item.style.zIndex = String(cosine < 0 ? 81 + Math.round((cosine + 1) * 2) : 85 + Math.round(cosine * 4));
         item.dataset.active = String(index === active);
         item.dataset.depth = cosine > .35 ? 'front' : cosine < -.35 ? 'back' : 'middle';
         item.setAttribute('aria-label', item.dataset.label || item.textContent.trim());
       });
       const disc = orbit.querySelector('.hero-orbit__disc');
-      if (disc) disc.style.setProperty('--orbit-neon-angle', `${(-state.angle - state.lean) * 180 / Math.PI}deg`);
+      if (disc) {
+        const wheelRotation = `${(-platformAngle * 180 / Math.PI).toFixed(3)}deg`;
+        disc.style.setProperty('--orbit-platform-angle', wheelRotation);
+        disc.style.setProperty('--orbit-neon-angle', wheelRotation);
+      }
       const logo = orbit.querySelector('.hero-stage');
       if (logo) logo.style.zIndex = '84';
       const currentName = items[active]?.querySelector('.hero-orbit__label')?.textContent.trim() || '';
