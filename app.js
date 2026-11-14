@@ -534,7 +534,7 @@
         const angle = index * step + platformAngle;
         const cosine = Math.cos(angle);
         const scale = .56 + (cosine + 1) * .27;
-        const opacity = .34 + (.66 * (cosine + 1) / 2);
+        const depthBrightness = .76 + ((cosine + 1) / 2) * .24;
         const depthBlur = clamp(1 - cosine, 0, 2);
         const blur = clamp(depthBlur + speedBlur, 0, 2.6);
         const shadowX = Math.cos(angle) * 5;
@@ -546,8 +546,8 @@
           const y = Math.cos(angle) * fallbackRadius * Math.cos(72 * Math.PI / 180) + height * .04;
           item.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) translate(-50%,-50%) scale(${scale.toFixed(3)})`;
         }
-        item.style.opacity = String(opacity.toFixed(3));
-        item.style.filter = `blur(${blur.toFixed(2)}px) drop-shadow(${shadowX.toFixed(1)}px ${shadowY.toFixed(1)}px 8px color-mix(in srgb,var(--ink) ${shadowAlpha}%,transparent))`;
+        item.style.opacity = '1';
+        item.style.filter = `blur(${blur.toFixed(2)}px) brightness(${depthBrightness.toFixed(3)}) drop-shadow(${shadowX.toFixed(1)}px ${shadowY.toFixed(1)}px 8px color-mix(in srgb,var(--ink) ${shadowAlpha}%,transparent))`;
         item.style.zIndex = String(cosine < 0 ? 81 + Math.round((cosine + 1) * 2) : 85 + Math.round(cosine * 4));
         item.dataset.active = String(index === active);
         item.dataset.depth = cosine > .35 ? 'front' : cosine < -.35 ? 'back' : 'middle';
@@ -595,13 +595,12 @@
       hoverLabel.classList.add('is-visible');
       const selectedAngle = state.hover * step + state.angle + state.lean;
       const selectedCosine = Math.cos(selectedAngle);
-      const selectedScale = .56 + (selectedCosine + 1) * .27;
       const fallbackRadius = Math.min(width * (mobile ? .31 : .39), mobile ? 160 : 280);
       const projectedX = Number(selectedItem.dataset.orbitScreenX);
       const projectedY = Number(selectedItem.dataset.orbitScreenY);
       const labelX = Number.isFinite(projectedX) ? projectedX : width / 2 + Math.sin(selectedAngle) * fallbackRadius;
       const labelY = Number.isFinite(projectedY) ? projectedY : height / 2 + selectedCosine * fallbackRadius * Math.cos(72 * Math.PI / 180) + height * .04;
-      const itemHeight = selectedItem.offsetHeight * selectedScale;
+      const itemHeight = selectedItem.offsetHeight * (window.shuyiHomeOrbit3D ? 1 : .56 + (selectedCosine + 1) * .27);
       const bubbleWidth = hoverLabel.offsetWidth || 186;
       const bubbleHeight = hoverLabelText.offsetHeight || 62;
       const safeX = clamp(labelX, bubbleWidth / 2 + 10, width - bubbleWidth / 2 - 10);

@@ -49,10 +49,10 @@ const wheelSideMaterial = new THREE.MeshPhysicalMaterial({ color:0x897d80, rough
 const wheelTopMaterial = new THREE.MeshPhysicalMaterial({ color:0xe7dbd6, roughness:.62, metalness:.06, clearcoat:.22, clearcoatRoughness:.5 });
 const wheelBottomMaterial = new THREE.MeshStandardMaterial({ color:0x81777a, roughness:.72, metalness:.1 });
 const cylinder = new THREE.Mesh(
-  new THREE.CylinderGeometry(6.2, 6.2, .42, 160, 1, false),
+  new THREE.CylinderGeometry(6.2, 6.2, .72, 160, 1, false),
   [wheelSideMaterial, wheelTopMaterial, wheelBottomMaterial]
 );
-cylinder.position.y = -.01;
+cylinder.position.y = -.155;
 cylinder.castShadow = true;
 cylinder.receiveShadow = true;
 base.add(cylinder);
@@ -113,6 +113,43 @@ innerRim.rotation.x = Math.PI / 2;
 innerRim.position.y = .225;
 base.add(innerRim);
 
+function makeNeonRingTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 32;
+  const ctx = canvas.getContext('2d');
+  // TorusGeometry maps its long circumference to the texture's V axis.
+  const gradient = ctx.createLinearGradient(0, 0, 0, 32);
+  gradient.addColorStop(0, '#78e0ff');
+  gradient.addColorStop(.2, '#9c81ff');
+  gradient.addColorStop(.4, '#ff84be');
+  gradient.addColorStop(.6, '#ffcf7e');
+  gradient.addColorStop(.8, '#77ebcf');
+  gradient.addColorStop(1, '#78e0ff');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+  return texture;
+}
+const neonRingTexture = makeNeonRingTexture();
+const neonRingGlow = new THREE.Mesh(
+  new THREE.TorusGeometry(6.18, .11, 10, 192),
+  new THREE.MeshBasicMaterial({ map:neonRingTexture, transparent:true, opacity:.3, blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false, side:THREE.DoubleSide })
+);
+neonRingGlow.rotation.x = Math.PI / 2;
+neonRingGlow.position.y = .222;
+base.add(neonRingGlow);
+const neonRingCore = new THREE.Mesh(
+  new THREE.TorusGeometry(6.18, .032, 8, 192),
+  new THREE.MeshBasicMaterial({ map:neonRingTexture, toneMapped:false, side:THREE.DoubleSide })
+);
+neonRingCore.rotation.x = Math.PI / 2;
+neonRingCore.position.y = .23;
+base.add(neonRingCore);
+
 function makeGroundShadowTexture() {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = 256;
@@ -129,7 +166,7 @@ const groundShadow = new THREE.Mesh(
   new THREE.MeshBasicMaterial({ map:makeGroundShadowTexture(), transparent:true, depthWrite:false, opacity:.5, toneMapped:false })
 );
 groundShadow.rotation.x = -Math.PI / 2;
-groundShadow.position.y = -.222;
+groundShadow.position.y = -.53;
 base.add(groundShadow);
 
 function syncTheme() {
