@@ -113,41 +113,34 @@ innerRim.rotation.x = Math.PI / 2;
 innerRim.position.y = .225;
 base.add(innerRim);
 
-function makeNeonRingTexture() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1024;
-  canvas.height = 32;
-  const ctx = canvas.getContext('2d');
-  // TorusGeometry maps its long circumference to the texture's V axis.
-  const gradient = ctx.createLinearGradient(0, 0, 0, 32);
-  gradient.addColorStop(0, '#78e0ff');
-  gradient.addColorStop(.2, '#9c81ff');
-  gradient.addColorStop(.4, '#ff84be');
-  gradient.addColorStop(.6, '#ffcf7e');
-  gradient.addColorStop(.8, '#77ebcf');
-  gradient.addColorStop(1, '#78e0ff');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-  return texture;
+function makeNeonBand(innerRadius, outerRadius) {
+  const geometry = new THREE.RingGeometry(innerRadius, outerRadius, 256);
+  const positions = geometry.getAttribute('position');
+  const colors = new Float32Array(positions.count * 3);
+  const color = new THREE.Color();
+  for (let i = 0; i < positions.count; i += 1) {
+    const hue = (Math.atan2(positions.getY(i), positions.getX(i)) / (Math.PI * 2) + 1) % 1;
+    color.setHSL(hue, .9, .64);
+    colors[i * 3] = color.r;
+    colors[i * 3 + 1] = color.g;
+    colors[i * 3 + 2] = color.b;
+  }
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  return geometry;
 }
-const neonRingTexture = makeNeonRingTexture();
 const neonRingGlow = new THREE.Mesh(
-  new THREE.TorusGeometry(6.18, .11, 10, 192),
-  new THREE.MeshBasicMaterial({ map:neonRingTexture, transparent:true, opacity:.3, blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false, side:THREE.DoubleSide })
+  makeNeonBand(5.98, 6.2),
+  new THREE.MeshBasicMaterial({ vertexColors:true, transparent:true, opacity:.25, blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false, side:THREE.DoubleSide })
 );
-neonRingGlow.rotation.x = Math.PI / 2;
-neonRingGlow.position.y = .222;
+neonRingGlow.rotation.x = -Math.PI / 2;
+neonRingGlow.position.y = .237;
 base.add(neonRingGlow);
 const neonRingCore = new THREE.Mesh(
-  new THREE.TorusGeometry(6.18, .032, 8, 192),
-  new THREE.MeshBasicMaterial({ map:neonRingTexture, toneMapped:false, side:THREE.DoubleSide })
+  makeNeonBand(6.105, 6.17),
+  new THREE.MeshBasicMaterial({ vertexColors:true, toneMapped:false, side:THREE.DoubleSide })
 );
-neonRingCore.rotation.x = Math.PI / 2;
-neonRingCore.position.y = .23;
+neonRingCore.rotation.x = -Math.PI / 2;
+neonRingCore.position.y = .245;
 base.add(neonRingCore);
 
 function makeGroundShadowTexture() {
