@@ -275,7 +275,7 @@ async function staticFile(req, res, pathname) {
   if (clean.includes('\0') || clean.includes('\\') || clean.split('/').some((part) => part.startsWith('.') || part === '..')) return json(res, 404, { error: 'Not found' });
   if (clean === '/') clean = '/index.html';
   if (clean.endsWith('/')) clean += 'index.html';
-  const publicFiles = new Set(['/index.html', '/app.js', '/content.js', '/styles.css', '/services/index.html', '/offerings/index.html', '/journal/index.html', '/studio/index.html', '/booking/index.html', '/journal/first-breath/index.html', '/journal/activate-after-sitting/index.html', '/journal/studio-in-progress/index.html']);
+  const publicFiles = new Set(['/index.html', '/app.js', '/content.js', '/styles.css', '/home-orbit-3d.js', '/services/index.html', '/offerings/index.html', '/journal/index.html', '/studio/index.html', '/booking/index.html', '/journal/first-breath/index.html', '/journal/activate-after-sitting/index.html', '/journal/studio-in-progress/index.html']);
   const managedFiles = { '/manage-center/index.html': '/admin/index.html', '/manage-center/analytics/index.html': '/admin/analytics.html', '/manage-center/admin.css': '/admin/admin.css', '/manage-center/admin.js': '/admin/admin.js', '/manage-center/analytics.css': '/admin/analytics.css', '/manage-center/analytics.js': '/admin/analytics.js', '/manage-center/favicon.svg': '/admin/favicon.svg', '/analytics.js': '/public/analytics.js' };
   const media = clean.startsWith('/素材/') && /\.(?:jpe?g|png|gif|svg|webp|ico|mp4|webm|woff2?|ttf)$/i.test(clean);
   if (!publicFiles.has(clean) && !Object.hasOwn(managedFiles, clean) && !media) return json(res, 404, { error: 'Not found' });
