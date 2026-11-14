@@ -504,7 +504,7 @@
     const orbitTurns = [...(orbit?.querySelectorAll('[data-orbit-step]') || [])];
     const downCue = orbit?.querySelector('.hero-orbit__down-cue');
     if (!orbit || !interaction || items.length !== 5) return;
-    if (orbit.dataset.orbit3dPending === 'true' && !window.shuyiHomeOrbit3D) {
+    if (orbit.getAttribute('data-orbit-3d-pending') === 'true' && !window.shuyiHomeOrbit3D) {
       const initialize = () => {
         orbit.removeAttribute('data-orbit-3d-pending');
         window.removeEventListener('shuyi:home-orbit-ready', initialize);
