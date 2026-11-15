@@ -670,37 +670,6 @@ html:has(body.home-page){--home-header-height:88px;scroll-snap-type:y mandatory;
 .hero-orbit__3d-wheel{position:absolute;inset:0;z-index:80;width:100%;height:100%;pointer-events:none}
 .hero-orbit__visual.has-three-wheel .hero-orbit__disc{visibility:hidden}
 
-/* Shared mobile and desktop adjustments requested across the site. */
-body .site-footer.site-footer{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:'brand copy links';align-items:center;gap:8px 16px;width:100%;height:auto;min-height:64px;padding:12px clamp(20px,4vw,64px);font-size:10px;box-sizing:border-box}
-body .site-footer.site-footer>.brand{grid-area:brand;justify-self:start;gap:9px}
-body .site-footer.site-footer>.brand span{font-size:16px}
-body .site-footer.site-footer>.brand small{font:9px var(--mono)}
-body .site-footer.site-footer>p{grid-area:copy;justify-self:center;order:0;margin:0;font-size:inherit;white-space:nowrap}
-body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;gap:18px;font:10px var(--mono)}
-.services-summary__details{position:relative;padding-bottom:86px}
-.services-summary__booking>a{position:absolute;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:76px;height:76px;padding:8px;border:1px solid color-mix(in srgb,var(--accent) 58%,var(--line));border-radius:50%;background:color-mix(in srgb,var(--accent) 10%,var(--surface));color:var(--ink);font-size:11px;line-height:1.35;text-align:center;text-underline-offset:3px;transition:background .2s,color .2s,transform .2s}
-.services-summary__booking>a:hover{background:var(--accent);color:var(--bg);text-decoration:none;transform:translateY(-2px)}
-.services-summary__booking>a span{font-size:15px;line-height:1}
-.services-summary__booking>a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
-@media(max-width:720px){
-  body .site-footer.site-footer{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'brand links' 'copy copy';min-height:68px;padding:9px 20px;gap:5px 12px;font-size:9px}
-  body .site-footer.site-footer>.brand{gap:7px}
-  body .site-footer.site-footer>.brand .brand-logo{width:25px;height:25px}
-  body .site-footer.site-footer>.brand span{font-size:14px}
-  body .site-footer.site-footer>.brand small{font-size:8px}
-  body .site-footer.site-footer>p{justify-self:start;white-space:normal;font-size:8px}
-  body .site-footer.site-footer>div{gap:12px;font-size:9px}
-  body .journal-page>.journal-care{height:calc(100svh - var(--journal-header-height));min-height:calc(100svh - var(--journal-header-height));grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}
-  body .journal-page .journal-care__reader{min-height:0;height:100%;grid-template-rows:clamp(190px,25svh,220px) minmax(0,1fr);align-content:stretch;gap:12px}
-  body .journal-page .journal-topic-list{height:100%;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(7,minmax(0,1fr));align-content:stretch}
-  body .journal-page .journal-topic-view{height:100%;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain}
-  body .journal-page .journal-topic-detail{min-height:100%}
-  body .journal-page>.journal-care>.site-footer{align-self:end}
-  body .journal-carousel>.journal-next-cue{position:relative;inset:auto;order:2;align-self:center;flex:none;margin:0}
-  body .journal-carousel>.journal-carousel__controls{order:3;flex:none}
-  .offering-lens-webgl{display:none!important}
-}
-
 /* Journal landing: two full-height panels with the infinite gradient 3D carousel. */
 html:has(.journal-page){--journal-header-height:88px;scroll-padding-top:var(--journal-header-height);scroll-snap-type:y mandatory;scroll-behavior:smooth}
 body:has(.journal-page)>.site-header{position:fixed;inset:0 0 auto;z-index:300}
@@ -1284,3 +1253,34 @@ body.snap-page main > .snap-panel,main.snap-page > .snap-panel { scroll-snap-ali
   .booking-policy-panel > .site-footer { margin-inline:0; padding:15px 20px; }
 }
 .hero-orbit[data-orbit-3d-pending="true"] .hero-orbit__disc,.hero-orbit[data-orbit-3d-pending="true"] .hero-orbit__item{visibility:hidden}
+
+/* Shared mobile and desktop adjustments requested across the site. */
+body .site-footer.site-footer{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:'brand copy links';align-items:center;gap:8px 16px;width:100%;height:auto;min-height:64px;padding:12px clamp(20px,4vw,64px);font-size:10px;box-sizing:border-box}
+body .site-footer.site-footer>.brand{grid-area:brand;justify-self:start;gap:9px}
+body .site-footer.site-footer>.brand span{font-size:16px}
+body .site-footer.site-footer>.brand small{font:9px var(--mono)}
+body .site-footer.site-footer>p{grid-area:copy;justify-self:center;order:0;margin:0;font-size:inherit;white-space:nowrap}
+body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;gap:18px;font:10px var(--mono)}
+.services-summary__details{position:relative;padding-bottom:86px}
+.services-summary__booking>a{position:absolute;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:76px;height:76px;padding:8px;border:1px solid color-mix(in srgb,var(--accent) 58%,var(--line));border-radius:50%;background:color-mix(in srgb,var(--accent) 10%,var(--surface));color:var(--ink);font-size:11px;line-height:1.35;text-align:center;text-underline-offset:3px;transition:background .2s,color .2s,transform .2s}
+.services-summary__booking>a:hover{background:var(--accent);color:var(--bg);text-decoration:none;transform:translateY(-2px)}
+.services-summary__booking>a span{font-size:15px;line-height:1}
+.services-summary__booking>a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+@media(max-width:720px){
+  body .site-footer.site-footer{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'brand links' 'copy copy';min-height:68px;padding:9px 20px;gap:5px 12px;font-size:9px}
+  body .site-footer.site-footer>.brand{gap:7px}
+  body .site-footer.site-footer>.brand .brand-logo{width:25px;height:25px}
+  body .site-footer.site-footer>.brand span{font-size:14px}
+  body .site-footer.site-footer>.brand small{font-size:8px}
+  body .site-footer.site-footer>p{justify-self:start;white-space:normal;font-size:8px}
+  body .site-footer.site-footer>div{gap:12px;font-size:9px}
+  body .journal-page>.journal-care{height:calc(100svh - var(--journal-header-height));min-height:calc(100svh - var(--journal-header-height));grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}
+  body .journal-page .journal-care__reader{min-height:0;height:100%;grid-template-rows:clamp(190px,25svh,220px) minmax(0,1fr);align-content:stretch;gap:12px}
+  body .journal-page .journal-topic-list{height:100%;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(7,minmax(0,1fr));align-content:stretch}
+  body .journal-page .journal-topic-view{height:100%;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain}
+  body .journal-page .journal-topic-detail{min-height:100%}
+  body .journal-page>.journal-care>.site-footer{align-self:end}
+  body .journal-carousel>.journal-next-cue{position:relative;inset:auto;order:2;align-self:center;flex:none;margin:0}
+  body .journal-carousel>.journal-carousel__controls{order:3;flex:none}
+  .offering-lens-webgl{display:none!important}
+}
