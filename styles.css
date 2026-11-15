@@ -1373,12 +1373,13 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
   justify-content:flex-start;
 }
 .services-page .services-activities > .site-footer {
-  width:auto;
+  width:calc(100% + clamp(44px,10vw,152px));
+  max-width:none;
   flex:0 0 auto;
   margin-top:auto;
-  margin-right:-clamp(22px,5vw,76px);
+  margin-right:calc(-1 * clamp(22px,5vw,76px));
   margin-bottom:0;
-  margin-left:-clamp(22px,5vw,76px);
+  margin-left:calc(-1 * clamp(22px,5vw,76px));
 }
 .services-activities .activity-disclaimer { margin:0; }
 @media(max-width:720px) {
