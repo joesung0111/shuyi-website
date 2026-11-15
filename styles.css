@@ -1421,6 +1421,7 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
   /* Restore the original phone layout from the activities panel. */
   .services-page > .services-activities.snap-panel {
     position:relative;
+    width:100vw;
     justify-content:center;
     gap:19px;
     padding:26px 20px;
