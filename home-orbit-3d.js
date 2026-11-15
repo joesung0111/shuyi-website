@@ -21,7 +21,6 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
 const lookTarget = new THREE.Vector3(0, .7, 0);
 const root = new THREE.Group();
-root.position.y = .2;
 scene.add(root);
 
 scene.add(new THREE.AmbientLight(0xffffff, .62));
@@ -231,12 +230,32 @@ function resize() {
   camera.updateMatrixWorld(true);
   keyLight.shadow.mapSize.set(mobile ? 768 : 1024, mobile ? 768 : 1024);
   keyLight.shadow.camera.updateProjectionMatrix();
+  setPlatformLift(50, width, height);
   renderWheel(0);
 }
 
 function project(vector, width, height) {
   const point = vector.clone().project(camera);
   return { x:(point.x * .5 + .5) * width, y:(-.5 * point.y + .5) * height };
+}
+
+function setPlatformLift(pixels, width, height) {
+  const center = new THREE.Vector3(0, .205, 0);
+  base.position.y = 0;
+  root.updateMatrixWorld(true);
+  const initialY = project(base.localToWorld(center.clone()), width, height).y;
+  let low = 0;
+  let high = 4;
+  for (let i = 0; i < 28; i += 1) {
+    const middle = (low + high) / 2;
+    base.position.y = middle;
+    root.updateMatrixWorld(true);
+    const currentY = project(base.localToWorld(center.clone()), width, height).y;
+    if (initialY - currentY < pixels) low = middle;
+    else high = middle;
+  }
+  base.position.y = (low + high) / 2;
+  root.updateMatrixWorld(true);
 }
 
 function renderWheel(angle) {
