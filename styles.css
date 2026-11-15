@@ -1426,24 +1426,6 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
     gap:19px;
     padding:26px 20px;
   }
-  .services-activities .services-section-head { gap:8px!important; }
-  .services-activities .services-section-head .eyebrow { font-size:10px; }
-  .services-activities .services-section-head h2 { margin:16px 0 0; font-size:30px; }
-  .services-activities .services-section-head > p:last-child { font-size:14px; }
-  .activity-browser { gap:14px; }
-  .activity-cards { gap:7px; }
-  .activity-card { min-height:96px; gap:5px; padding:10px 9px; }
-  .activity-card > span,.activity-card small { font-size:8px; }
-  .activity-card strong { font-size:12px; line-height:1.45; }
-  .activity-details { padding:17px; }
-  .activity-detail > .eyebrow { font-size:9px; }
-  .activity-detail h3 { margin:10px 0 7px; font-size:23px; }
-  .activity-detail > p:not(.eyebrow) { margin-bottom:10px; font-size:12px; line-height:1.7; }
-  .activity-detail dl { gap:8px; margin:13px 0 8px; }
-  .activity-detail dt { font-size:9px; }
-  .activity-detail dd { font-size:10px; line-height:1.5; }
-  .activity-detail .text-link { font-size:11px; }
-  .activity-disclaimer { font-size:9px; }
   .services-page .services-activities > .site-footer {
     position:absolute;
     right:0;
