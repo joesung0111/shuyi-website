@@ -596,18 +596,20 @@
           frontInfo.classList.add('is-transitioning');
         }
       }
-      const selectedItem = state.hover >= 0 ? items[state.hover] : null;
+      const mobileBubbleIndex = mobile && Math.cos(active * step + platformAngle) >= .84 ? active : -1;
+      const bubbleIndex = mobile ? mobileBubbleIndex : state.hover;
+      const selectedItem = bubbleIndex >= 0 ? items[bubbleIndex] : null;
       if (!hoverLabel || !hoverLabelText || !selectedItem) {
         labelItem = -1;
         hideHoverLabel();
         return;
       }
-      if (labelItem !== state.hover) {
+      if (labelItem !== bubbleIndex) {
         hoverLabelText.textContent = selectedItem.querySelector('.hero-orbit__label')?.textContent.trim() || selectedItem.getAttribute('aria-label') || '';
-        labelItem = state.hover;
+        labelItem = bubbleIndex;
       }
       hoverLabel.classList.add('is-visible');
-      const selectedAngle = state.hover * step + state.angle + state.lean;
+      const selectedAngle = bubbleIndex * step + platformAngle;
       const selectedCosine = Math.cos(selectedAngle);
       const fallbackRadius = Math.min(width * (mobile ? .31 : .39), mobile ? 160 : 280);
       const projectedX = Number(selectedItem.dataset.orbitScreenX);
