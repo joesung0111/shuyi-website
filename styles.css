@@ -1579,3 +1579,16 @@ body .site-footer.site-footer{position:relative;left:50%;transform:translateX(-5
 }
 @keyframes service-mobile-light{from{--service-light-y:34%}to{--service-light-y:66%}}
 @property --service-light-y{syntax:'<percentage>';inherits:false;initial-value:34%}
+
+/* Restore full-bleed footer gutters per panel while sharing the booking footer geometry. */
+body .site-footer.site-footer{position:static;left:auto;right:auto;transform:none;width:100%;max-width:none;margin:0;}
+body .home-final-panel>.site-footer{width:auto;margin-inline:calc(clamp(22px,5vw,72px) * -1)}
+body .journal-page>.journal-care>.site-footer{width:auto;margin-inline:calc(clamp(22px,8vw,120px) * -1)}
+body .offering-panel--series>.site-footer{width:auto;margin-inline:calc(clamp(22px,7vw,104px) * -1)}
+body .services-page>.services-activities>.site-footer{width:auto;margin-inline:calc(clamp(22px,5vw,76px) * -1)}
+@media(max-width:720px){
+ body .home-final-panel>.site-footer{margin-inline:-18px}
+ body .journal-page>.journal-care>.site-footer{margin-inline:-20px}
+ body .offering-panel--series>.site-footer{margin-inline:-20px}
+ body .services-page>.services-activities>.site-footer{position:absolute;left:0;right:0;bottom:0;width:auto;margin:0}
+}
