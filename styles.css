@@ -1505,11 +1505,6 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
 }
 .services-summary__details > .services-boundary { margin:0; }
 
-/* Extend only the footer into the desktop panel's existing bottom padding. */
-.services-page .services-activities > .site-footer {
-  margin-bottom:calc(-1 * clamp(28px,5vw,76px));
-}
-
 @media(max-width:720px) {
   .services-page > .services-summary {
     display:grid;
@@ -1558,7 +1553,6 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
   }
   .services-summary__details > .services-boundary { font-size:9px; line-height:1.35; }
 
-  .services-page .services-activities > .site-footer { margin-bottom:0; }
 }
 
 /* Keep the final Services panel and its footer visible during section snapping. */
