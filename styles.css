@@ -1444,7 +1444,7 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
     min-height:0;
     gap:8px;
     overflow:visible;
-    padding:0 2px;
+    padding:0 2px 18px;
   }
   .home-final-panel .home-link,
   .home-final-panel .home-link:nth-child(1),
