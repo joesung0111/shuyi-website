@@ -1286,3 +1286,86 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
   body .journal-carousel>.journal-carousel__controls{order:3;flex:none}
   .offering-lens-webgl{display:none!important}
 }
+
+/* Follow-up: keep the Services page to its three intended panels. */
+.services-page > .services-summary {
+  box-sizing:border-box;
+}
+@media(max-width:720px) {
+  .services-page > .services-summary {
+    height:calc(100svh - var(--services-header-height));
+    min-height:0;
+    overflow:hidden;
+    padding:14px 18px 12px;
+    gap:0;
+  }
+  .services-summary__intro .services-section-head h2 {
+    margin:8px 0 10px;
+    font-size:clamp(26px,7vw,34px);
+    line-height:1.18;
+  }
+  .services-summary__copy { font-size:12px; line-height:1.55; }
+  .services-summary__copy p { margin-bottom:7px; }
+  .services-summary__details {
+    min-height:0;
+    margin-top:6px;
+    padding:0 0 62px!important;
+  }
+  .services-summary__metrics {
+    gap:10px 12px;
+    margin-bottom:6px;
+    padding:12px 13px;
+    border-radius:14px;
+  }
+  .services-summary__metrics dt,.services-summary__metrics .services-summary__metric-note { font-size:9px; }
+  .services-summary__metrics dd { gap:4px; margin:5px 0; }
+  .services-summary__metrics dd strong { font-size:36px; }
+  .services-summary__metrics dd span { font-size:9px; }
+  .services-page > .services-summary .services-facts { gap:0 12px; }
+  .services-page > .services-summary .services-facts > div { padding:5px 0!important; }
+  .services-summary .services-facts dt { margin-bottom:2px; font-size:9px; }
+  .services-summary .services-facts dd { font-size:11px; line-height:1.45; }
+  .services-summary__booking { margin-top:5px; }
+  .services-summary__price dt { font-size:9px; }
+  .services-summary__price dd { margin-top:3px; font-size:16px; }
+  .services-page .services-summary__details .services-summary__booking>a {
+    width:54px;
+    height:54px;
+    min-width:54px;
+    padding:5px;
+    font-size:10px;
+  }
+  .services-summary__booking>a span { display:none; }
+  .services-summary__details > .services-boundary { margin-top:5px; font-size:9px; line-height:1.45; }
+
+  /* The cue occupies its own row between the carousel and its controls. */
+  .journal-carousel { justify-content:flex-start; gap:0; }
+  .journal-carousel__top { order:1; flex:0 0 auto; }
+  .journal-carousel__stage {
+    position:relative;
+    inset:auto;
+    order:2;
+    flex:1 1 auto;
+    width:100%;
+    min-height:0;
+    overflow:hidden;
+  }
+  .journal-carousel .content-card {
+    height:clamp(230px,46svh,360px);
+    min-height:0;
+  }
+  body .journal-carousel>.journal-next-cue {
+    position:relative;
+    order:3;
+    inset:auto;
+    align-self:center;
+    flex:0 0 auto;
+    margin:7px auto;
+  }
+  body .journal-carousel>.journal-carousel__controls {
+    position:relative;
+    order:4;
+    flex:0 0 auto;
+    margin-top:0;
+  }
+}
