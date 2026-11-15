@@ -21,7 +21,8 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
 const lookTarget = new THREE.Vector3(0, .7, 0);
 const root = new THREE.Group();
-root.position.y = .2;
+const rootHomePosition = new THREE.Vector3(0, .2, 0);
+root.position.copy(rootHomePosition);
 scene.add(root);
 
 scene.add(new THREE.AmbientLight(0xffffff, .62));
@@ -229,10 +230,33 @@ function resize() {
   camera.lookAt(lookTarget);
   camera.updateProjectionMatrix();
   camera.updateMatrixWorld(true);
+  setWheelScreenOffset(mobile ? 100 : 50, width, height);
   keyLight.shadow.mapSize.set(mobile ? 768 : 1024, mobile ? 768 : 1024);
   keyLight.shadow.camera.updateProjectionMatrix();
   setPlatformLift(50, width, height);
   renderWheel(0);
+}
+
+function setWheelScreenOffset(pixels, width, height) {
+  const cameraUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+  const reference = new THREE.Vector3(0, .205, 0);
+  root.position.copy(rootHomePosition);
+  root.updateMatrixWorld(true);
+  const initialY = project(root.localToWorld(reference.clone()), width, height).y;
+  let low = 0;
+  let high = 8;
+  for (let i = 0; i < 28; i += 1) {
+    const middle = (low + high) / 2;
+    root.position.copy(rootHomePosition).addScaledVector(cameraUp, -middle);
+    root.updateMatrixWorld(true);
+    const currentY = project(root.localToWorld(reference.clone()), width, height).y;
+    if (currentY - initialY < pixels) low = middle;
+    else high = middle;
+  }
+  root.position.copy(rootHomePosition).addScaledVector(cameraUp, -(low + high) / 2);
+  root.updateMatrixWorld(true);
+  const interaction = orbit.querySelector('.hero-orbit__interaction');
+  if (interaction) interaction.style.top = `calc(50% + ${pixels}px)`;
 }
 
 function project(vector, width, height) {
