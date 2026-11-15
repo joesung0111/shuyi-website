@@ -230,7 +230,7 @@ function resize() {
   camera.lookAt(lookTarget);
   camera.updateProjectionMatrix();
   camera.updateMatrixWorld(true);
-  setWheelScreenOffset(mobile ? 100 : 50, width, height);
+  setWheelScreenOffset(mobile ? 80 : 50, width, height);
   keyLight.shadow.mapSize.set(mobile ? 768 : 1024, mobile ? 768 : 1024);
   keyLight.shadow.camera.updateProjectionMatrix();
   setPlatformLift(50, width, height);
