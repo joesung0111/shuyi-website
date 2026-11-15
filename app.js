@@ -918,7 +918,7 @@
           const dt=previousTime ? Math.min((time-previousTime)/1000,.05) : 1/60;
           previousTime=time;
           lensOpacity+=(desiredOpacity-lensOpacity)*(1-Math.exp(-14*dt));
-          if(touchMode && lensOpacity<.005 && desiredOpacity===0){gl.clear(gl.COLOR_BUFFER_BIT); frame=0; previousTime=0; return;}
+          if(lensOpacity<.005 && desiredOpacity===0 && !sectionTransition){gl.clear(gl.COLOR_BUFFER_BIT); frame=0; previousTime=0; return;}
           if(dirty) snapshot();
           const radius=touchMode ? Math.min(85,innerWidth*.2) : Math.min(innerWidth,innerHeight)*.14;
           const headerBottom=Math.max(0,header?.getBoundingClientRect().bottom || 0);
@@ -1020,8 +1020,8 @@
         main.addEventListener('pointerout',refreshButton,{passive:true});
         new MutationObserver(()=>{dirty=true; setTimeout(()=>{dirty=true;},400);}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
         document.fonts.ready.then(()=>{dirty=true;}); render();
-        window.addEventListener('pagehide',()=>{cancelAnimationFrame(frame);frame=0;previousTime=0;desiredOpacity=0;gl.clear(gl.COLOR_BUFFER_BIT);},{once:true});
-        window.addEventListener('pageshow',()=>{frame=0;previousTime=0;touchGesture=null;sectionTransition=null;clearTimeout(hideTimer);x=targetX=innerWidth*.65;y=targetY=Math.max((header?.getBoundingClientRect().bottom||0)+90,innerHeight*.45);trails.forEach(trail=>{trail.x=x;trail.y=y;});activeOfferingPanel=panelAtCenter();dirty=true;desiredOpacity=touchMode?0:1;wake();},{passive:true});
+        window.addEventListener('pagehide',()=>{cancelAnimationFrame(frame);frame=0;previousTime=0;desiredOpacity=0;gl.clear(gl.COLOR_BUFFER_BIT);});
+        window.addEventListener('pageshow',()=>{frame=0;previousTime=0;touchGesture=null;sectionTransition=null;clearTimeout(hideTimer);x=targetX=innerWidth*.65;y=targetY=Math.max((header?.getBoundingClientRect().bottom||0)+90,innerHeight*.45);trails.forEach(trail=>{trail.x=x;trail.y=y;});activeOfferingPanel=panelAtCenter();dirty=true;desiredOpacity=0;lensOpacity=0;wake();},{passive:true});
       } catch(error) { canvas.remove(); console.error('Lens unavailable',error); }
     }
   }

@@ -1551,7 +1551,7 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
 /* Keep the final Services panel and its footer visible during section snapping. */
 body .services-page > .services-activities.reveal-on-scroll { opacity:1; transform:none; }
 
-/* Homepage refinements: true frame-centering, shared animated scroll cue, quiet card imagery. */
+/* Homepage refinements: frame-centered title, shared scroll cue, quiet card imagery. */
 .hero-orbit__front-info{position:relative;display:grid;grid-template-columns:48px minmax(0,1fr);justify-items:stretch}
 .hero-orbit__front-number{position:relative;z-index:2}
 .hero-orbit__front-copy{position:absolute;inset:0;display:grid;place-items:center;text-align:center;pointer-events:none}
@@ -1559,48 +1559,22 @@ body .services-page > .services-activities.reveal-on-scroll { opacity:1; transfo
 .hero-orbit__down-cue.journal-next-cue{position:absolute;right:clamp(20px,4vw,58px);bottom:clamp(18px,3vh,34px);display:grid;place-items:center;width:72px;height:48px;min-width:0;min-height:0;padding:0;border:1px solid color-mix(in srgb,var(--accent) 38%,var(--line));border-radius:15px;background:color-mix(in srgb,var(--surface) 92%,var(--bg));color:var(--ink);box-shadow:0 5px 18px color-mix(in srgb,var(--accent) 12%,transparent);animation:journal-cue-nudge 2.8s ease-in-out infinite}
 .hero-orbit__down-cue.journal-next-cue::before{inset:-5px;border-radius:19px}
 .hero-orbit__down-cue.journal-next-cue span{width:0;height:0;border-top:8px solid currentColor;border-right:6px solid transparent;border-left:6px solid transparent;animation:journal-cue-arrow 2.8s ease-in-out infinite}
-.home-final-panel .home-link{background-image:linear-gradient(180deg,color-mix(in srgb,var(--surface) 88%,transparent),color-mix(in srgb,var(--bg) 83%,transparent)),var(--home-card-image);background-size:cover;background-position:center;background-blend-mode:normal,luminosity}
+.home-final-panel .home-link{background-image:linear-gradient(180deg,color-mix(in srgb,var(--surface) 96%,transparent),color-mix(in srgb,var(--bg) 94%,transparent)),var(--home-card-image);background-size:cover;background-position:center;background-blend-mode:normal,luminosity}
 .home-final-panel .home-link::before{opacity:.2}
 .home-final-panel .home-link::after{opacity:.28}
-/* Booking footer layout is the shared site footer geometry on every route. */
-body .site-footer.site-footer{position:relative;left:50%;transform:translateX(-50%);width:calc(100vw - 15px);max-width:calc(100vw - 15px);min-width:0;flex:0 0 auto;margin:0!important;align-self:stretch;box-sizing:border-box}
 @media(max-width:720px){
  .hero-orbit__down-cue.journal-next-cue{right:12px;bottom:12px;width:63px;height:42px;border-radius:13px}
  .hero-orbit__down-cue.journal-next-cue::before{border-radius:17px}
  .home-final-panel .home-links.section{gap:14px}
  .home-final-panel .home-link,.home-final-panel .home-link:nth-child(1),.home-final-panel .home-link:nth-child(2),.home-final-panel .home-link:nth-child(3){min-height:0;height:100%}
- .services-page .site-footer{left:0;transform:none}
- .services-page .services-summary__details .services-summary__booking>a{width:69px!important;height:69px!important;min-width:69px!important;left:0!important;right:auto!important;font-size:12px}
- .services-page .services-summary__details{padding-bottom:78px!important}
- .services-page>.services-summary>.services-boundary{grid-column:auto;grid-row:auto;margin-top:8px}
- .services-page>.services-summary>.services-boundary{grid-column:2;grid-row:2;margin-top:8px}
+ .services-page > .services-summary{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);align-content:stretch;align-items:stretch;gap:0;padding:18px 22px;overflow:hidden}
+ .services-summary__intro{grid-column:1;grid-row:1;max-width:none}
+ .services-summary__details{grid-column:1;grid-row:2;min-height:0;justify-content:space-between;gap:8px;margin:0;padding:12px 0 0!important}
+ .services-summary__details>.services-boundary{margin:0;padding:0;font-size:9px;line-height:1.35}
+ .services-page .services-summary__details .services-summary__booking>a{flex-basis:69px;width:69px!important;height:69px!important;min-width:69px!important;margin-right:12px;padding:6px!important;font-size:12px!important}
  .services-page .page-hero{position:relative;isolation:isolate}
- .services-page .page-hero::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:radial-gradient(ellipse 38% 22% at 50% var(--service-light-y,35%),color-mix(in srgb,var(--accent) 13%,transparent),transparent 100%);animation:service-mobile-light 5s ease-in-out infinite alternate}
+ .services-page .page-hero::before{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;background:radial-gradient(ellipse 38% 22% at 72% var(--service-light-y,35%),color-mix(in srgb,var(--accent) 16%,transparent),transparent 100%);animation:service-mobile-light 5s ease-in-out infinite alternate}
+ .services-page .page-hero>*{position:relative;z-index:2}
 }
 @keyframes service-mobile-light{from{--service-light-y:34%}to{--service-light-y:66%}}
 @property --service-light-y{syntax:'<percentage>';inherits:false;initial-value:34%}
-
-/* Restore full-bleed footer gutters per panel while sharing the booking footer geometry. */
-body .site-footer.site-footer{position:static;left:auto;right:auto;transform:none;width:100%;max-width:none;margin:0;}
-body .home-final-panel>.site-footer{width:auto;margin-inline:calc(clamp(22px,5vw,72px) * -1)}
-body .journal-page>.journal-care>.site-footer{width:auto;margin-inline:calc(clamp(22px,8vw,120px) * -1)}
-body .offering-panel--series>.site-footer{width:auto;margin-inline:calc(clamp(22px,7vw,104px) * -1)}
-body .services-page>.services-activities>.site-footer{width:auto;margin-inline:calc(clamp(22px,5vw,76px) * -1)}
-@media(max-width:720px){
- body .home-final-panel>.site-footer{margin-inline:-18px}
- body .journal-page>.journal-care>.site-footer{margin-inline:-20px}
- body .offering-panel--series>.site-footer{margin-inline:-20px}
- body .services-page>.services-activities>.site-footer{position:absolute;left:0;right:0;bottom:0;width:auto;margin:0}
-}
-
-/* Panel gutters override the generic footer reset so each footer reaches the same viewport edge. */
-body .home-final-panel>.site-footer{width:auto!important;margin-inline:calc(clamp(22px,5vw,72px) * -1)!important}
-body .journal-page>.journal-care>.site-footer{width:auto!important;margin-inline:calc(clamp(22px,8vw,120px) * -1)!important}
-body .offering-panel--series>.site-footer{width:auto!important;margin-inline:calc(clamp(22px,7vw,104px) * -1)!important}
-body .services-page>.services-activities>.site-footer{width:auto!important;margin-inline:calc(clamp(22px,5vw,76px) * -1)!important}
-@media(max-width:720px){
- body .home-final-panel>.site-footer{margin-inline:-18px!important}
- body .journal-page>.journal-care>.site-footer{margin-inline:-20px!important}
- body .offering-panel--series>.site-footer{margin-inline:-20px!important}
- body .services-page>.services-activities>.site-footer{position:absolute!important;left:0!important;right:auto!important;bottom:0!important;width:calc(100vw - 15px)!important;max-width:calc(100vw - 15px)!important;margin:0!important}
-}
