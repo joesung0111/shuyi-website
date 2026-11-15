@@ -1369,3 +1369,102 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
     margin-top:0;
   }
 }
+
+/* Keep the Services summary readable on one mobile screen and anchor its footer to panel three. */
+.services-page > .services-activities.snap-panel {
+  height:calc(100svh - var(--services-header-height));
+  min-height:calc(100svh - var(--services-header-height));
+  box-sizing:border-box;
+  justify-content:flex-start;
+}
+.services-page .services-activities > .site-footer {
+  width:auto;
+  flex:0 0 auto;
+  margin-top:auto;
+  margin-right:-clamp(22px,5vw,76px);
+  margin-bottom:0;
+  margin-left:-clamp(22px,5vw,76px);
+}
+.services-activities .activity-disclaimer { margin:0; }
+@media(max-width:720px) {
+  .services-page > .services-summary {
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    gap:0;
+    padding:10px 16px 8px;
+    overflow:visible;
+  }
+  .services-summary__intro .services-section-head h2 {
+    margin:5px 0 7px;
+    font-size:clamp(24px,6.4vw,30px);
+    line-height:1.12;
+  }
+  .services-summary__copy { font-size:10.5px; line-height:1.4; }
+  .services-summary__copy p { margin-bottom:5px; }
+  .services-summary__details { margin-top:4px; padding-bottom:52px!important; }
+  .services-summary__metrics { gap:7px 10px; margin-bottom:4px; padding:8px 10px; }
+  .services-summary__metrics dt,.services-summary__metrics .services-summary__metric-note { font-size:8px; line-height:1.35; }
+  .services-summary__metrics dd { margin:3px 0; }
+  .services-summary__metrics dd strong { font-size:31px; }
+  .services-summary__metrics dd span { font-size:8px; }
+  .services-page > .services-summary .services-facts { gap:0 10px; }
+  .services-page > .services-summary .services-facts > div { padding:3px 0!important; }
+  .services-summary .services-facts dt { margin-bottom:1px; font-size:8px; }
+  .services-summary .services-facts dd { font-size:10px; line-height:1.35; }
+  .services-summary__booking { margin-top:3px; }
+  .services-summary__price dt { font-size:8px; }
+  .services-summary__price dd { margin-top:1px; font-size:14px; }
+  .services-page .services-summary__details .services-summary__booking>a { width:46px; height:46px; min-width:46px; padding:4px; font-size:9px; }
+  .services-summary__details > .services-boundary { margin-top:3px; font-size:8px; line-height:1.3; }
+
+  .services-page > .services-activities.snap-panel {
+    padding:12px 16px 0;
+    gap:7px;
+  }
+  .services-activities .services-section-head { gap:4px!important; }
+  .services-activities .services-section-head .eyebrow { font-size:8px; }
+  .services-activities .services-section-head h2 { margin:3px 0 0; font-size:24px; }
+  .services-activities .services-section-head > p:last-child { font-size:10px; }
+  .activity-browser { gap:6px; }
+  .activity-cards { gap:5px; }
+  .activity-card { min-height:58px; gap:2px; padding:6px 7px; }
+  .activity-card > span,.activity-card small { font-size:7px; }
+  .activity-card strong { font-size:10px; line-height:1.25; }
+  .activity-details { padding:11px 13px; }
+  .activity-detail > .eyebrow { font-size:7px; }
+  .activity-detail h3 { margin:5px 0 4px; font-size:18px; }
+  .activity-detail > p:not(.eyebrow) { margin-bottom:5px; font-size:10px; line-height:1.45; }
+  .activity-detail dl { gap:5px; margin:7px 0 5px; }
+  .activity-detail dt { font-size:8px; }
+  .activity-detail dd { font-size:9px; line-height:1.35; }
+  .activity-detail .text-link { font-size:9px; }
+  .activity-disclaimer { font-size:8px; line-height:1.3; }
+  .services-page .services-activities > .site-footer { margin-inline:-16px; }
+}
+
+@media(max-width:720px) {
+  /* Homepage panel three stacks all destinations; no sideways swipe is needed. */
+  .home-final-panel .home-links.section {
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:repeat(3,minmax(0,1fr));
+    align-self:stretch;
+    width:100%;
+    height:100%;
+    min-height:0;
+    gap:8px;
+    overflow:visible;
+    padding:0 2px;
+  }
+  .home-final-panel .home-link,
+  .home-final-panel .home-link:nth-child(1),
+  .home-final-panel .home-link:nth-child(2),
+  .home-final-panel .home-link:nth-child(3) {
+    width:100%;
+    min-width:0;
+    height:100%;
+    flex:none;
+    scroll-snap-align:none;
+  }
+}
