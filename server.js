@@ -327,7 +327,9 @@ async function staticFile(req, res, pathname) {
       if (!clean.startsWith('/manage-center/')) html = addSeo(html, clean.endsWith('/index.html') ? clean.slice(0, -'index.html'.length) : clean);
       html = html.replace('</head>', `${headEnhancements(clean.startsWith('/manage-center/'))}</head>`);
       if (!clean.startsWith('/manage-center/')) html = html.replace('</body>', '<script src="/analytics.js" defer></script></body>');
-      res.writeHead(200, { 'content-type': contentType });
+      const headers = { 'content-type': contentType };
+      if (clean === '/services/index.html') headers['cache-control'] = 'no-store';
+      res.writeHead(200, headers);
       return res.end(withoutSloganStops(html));
     }
     const file = await readFile(filePath);

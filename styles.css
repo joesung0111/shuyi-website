@@ -1560,3 +1560,6 @@ body .site-footer.site-footer>div{grid-area:links;justify-self:end;display:flex;
 
   .services-page .services-activities > .site-footer { margin-bottom:0; }
 }
+
+/* Keep the final Services panel and its footer visible during section snapping. */
+body .services-page > .services-activities.reveal-on-scroll { opacity:1; transform:none; }
