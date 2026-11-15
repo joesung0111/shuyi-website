@@ -1020,7 +1020,9 @@
         main.addEventListener('pointerover',refreshButton,{passive:true});
         main.addEventListener('pointerout',refreshButton,{passive:true});
         new MutationObserver(()=>{dirty=true; setTimeout(()=>{dirty=true;},400);}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-        document.fonts.ready.then(()=>{dirty=true;}); render(); window.addEventListener('pagehide',()=>cancelAnimationFrame(frame),{once:true});
+        document.fonts.ready.then(()=>{dirty=true;}); render();
+        window.addEventListener('pagehide',()=>{cancelAnimationFrame(frame);frame=0;previousTime=0;desiredOpacity=0;gl.clear(gl.COLOR_BUFFER_BIT);},{once:true});
+        window.addEventListener('pageshow',()=>{frame=0;previousTime=0;touchGesture=null;sectionTransition=null;clearTimeout(hideTimer);x=targetX=innerWidth*.65;y=targetY=Math.max((header?.getBoundingClientRect().bottom||0)+90,innerHeight*.45);trails.forEach(trail=>{trail.x=x;trail.y=y;});activeOfferingPanel=panelAtCenter();dirty=true;desiredOpacity=touchMode?0:1;wake();},{passive:true});
       } catch(error) { canvas.remove(); console.error('Lens unavailable',error); }
     }
   }
