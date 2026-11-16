@@ -574,6 +574,7 @@ h1,.page-hero h1,.studio-page__copy h1,.article h1,.booking-card--ready > h1 { f
 
 .hero.home-intro .hero-crystal__shine{z-index:5}
 .hero-orbit__bottom-ui{position:absolute;z-index:190;left:50%;bottom:clamp(8px,1.6vh,18px);display:flex;flex-direction:column;align-items:center;gap:5px;width:max-content;max-width:calc(100% - 18px);transform:translateX(-50%);pointer-events:none}
+.hero-orbit__gesture-hint{display:none}
 .hero-orbit__switcher{display:flex;align-items:center;justify-content:center;gap:clamp(8px,1.3vw,18px);pointer-events:auto}
 .hero-orbit__front-info{position:relative;inset:auto;left:auto;bottom:auto;transform:none;pointer-events:auto;transition:border-color .25s ease,box-shadow .25s ease,background .25s ease}
 .hero-orbit__front-info:hover{border-color:color-mix(in srgb,var(--accent) 60%,var(--ink));box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent),0 14px 36px color-mix(in srgb,var(--ink) 20%,transparent)}
@@ -1599,6 +1600,9 @@ body .offering-panel--series>.site-footer{width:auto}
   }
   .home-page main>.home-intro-copy{overflow:hidden}
   .hero-orbit__interaction{touch-action:none}
+  .hero-orbit__interaction{top:54%;width:min(110vw,460px);height:min(110vw,460px)}
+  .hero-orbit__item{touch-action:none}
+  .hero-orbit__gesture-hint{display:block;max-width:calc(100vw - 32px);margin:0;color:color-mix(in srgb,var(--ink) 76%,var(--muted));font-size:9px;line-height:1.45;text-align:center;letter-spacing:.01em;text-shadow:0 1px 8px var(--bg)}
   .hero-orbit__down-cue{display:none!important}
   .home-final-panel .home-link::before{
     inset:0;width:100%;height:100%;aspect-ratio:auto;right:auto;top:auto;
@@ -1614,7 +1618,7 @@ body .offering-panel--series>.site-footer{width:auto}
   }
   .services-page>.services-activities{justify-content:flex-start!important}
   .services-page>.services-activities .activity-browser{flex:1;min-height:0;grid-template-rows:auto minmax(0,1fr);align-content:stretch}
-  .services-page>.services-activities .activity-details{position:relative;min-height:0;height:100%;overflow-y:auto;overscroll-behavior:contain}
+  .services-page>.services-activities .activity-details{position:relative;min-height:0;height:100%;overflow-y:auto;overscroll-behavior-y:auto}
   .services-page>.services-activities>.site-footer{margin-top:10px}
   .journal-page>.journal-intro,
   .journal-page>.journal-carousel,
@@ -1623,7 +1627,7 @@ body .offering-panel--series>.site-footer{width:auto}
     max-height:calc(100svh - var(--journal-header-height,68px));overflow:hidden;box-sizing:border-box
   }
   .journal-page>.journal-care{grid-template-rows:auto minmax(0,1fr) auto;align-content:stretch}
-  .journal-page .journal-topic-view{position:relative;touch-action:pan-y}
+  .journal-page .journal-topic-view{position:relative;touch-action:pan-y;overscroll-behavior-y:auto}
   .journal-page .journal-topic-detail{overflow-wrap:anywhere;animation:mobile-topic-enter .3s cubic-bezier(.2,.8,.2,1) both}
   .studio-page.snap-panel,.studio-details.snap-panel,
   .booking-card.snap-panel,.booking-guide-panel.snap-panel,.booking-policy-panel.snap-panel{
@@ -1632,6 +1636,23 @@ body .offering-panel--series>.site-footer{width:auto}
   }
   body .site-footer.site-footer>div{align-items:center;line-height:1}
   body .site-footer.site-footer>div>a{display:inline-flex;align-items:center;line-height:1;min-height:20px}
+  .snap-page main>section,main.snap-page>section,.offerings-page>section{
+    height:calc(100svh - 68px);min-height:calc(100svh - 68px);max-height:calc(100svh - 68px);
+    box-sizing:border-box;scroll-snap-align:start;scroll-snap-stop:always;overflow-x:clip
+  }
+  .home-page main>.home-intro-copy.reveal-on-scroll,
+  .snap-page main>section.reveal-on-scroll,main.snap-page>section.reveal-on-scroll,.offerings-page>section.reveal-on-scroll{
+    opacity:1!important;transform:none!important;filter:none!important;transition:none!important
+  }
+  .services-page>section,.journal-page>section,.studio-page>section,.booking-page>section,.offerings-page>section{overflow-y:auto;overscroll-behavior-y:auto}
+  .home-page main>.hero.home-intro,.home-page main>.home-intro-copy,.home-page main>.home-final-panel{overflow:hidden}
+  .home-page main>.home-intro-copy,.home-page main>.hero.home-intro{overflow:clip}
+  .home-page main>.home-final-panel{overflow-x:hidden;overflow-y:clip}
+  .services-page>section:nth-child(-n+3){overflow:clip}
+  .journal-page>.journal-intro,.journal-page>.journal-carousel,.journal-page>.journal-care{overflow:clip}
+  .services-page>.services-summary{overflow:clip}
+  .studio-page.snap-panel,.studio-details.snap-panel,.booking-card.snap-panel,.booking-guide-panel.snap-panel,.booking-policy-panel.snap-panel{overflow-y:auto}
+  .hero.home-intro,.services-page>section,.journal-page>section,.snap-page main>section,.main.snap-page>section,.offerings-page>section{scroll-margin-block:0}
 }
 @keyframes mobile-topic-enter{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 @media(max-width:720px) and (prefers-reduced-motion:reduce){

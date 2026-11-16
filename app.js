@@ -76,7 +76,7 @@
     if (!view || !tablist) return;
     let start = null;
     view.addEventListener('pointerdown', (event) => {
-      if (event.pointerType !== 'touch' || !matchMedia('(max-width:720px)').matches) return;
+      if (!matchMedia('(max-width:720px)').matches || (event.button !== undefined && event.button !== 0)) return;
       start = { id:event.pointerId, x:event.clientX, y:event.clientY };
     }, { passive:true });
     const finish = (event) => {
@@ -110,8 +110,8 @@
         { opacity:1, transform:'translateX(0)' }
       ], { duration:300, easing:'cubic-bezier(.2,.8,.2,1)' });
     };
-    view.addEventListener('pointerup', finish, { passive:true });
-    view.addEventListener('pointercancel', () => { start = null; }, { passive:true });
+    window.addEventListener('pointerup', finish, { passive:true });
+    window.addEventListener('pointercancel', () => { start = null; }, { passive:true });
   };
   enableSwipeTabs(document.querySelector('.activity-details'), document.querySelector('.activity-cards'), '[role="tab"]');
   enableSwipeTabs(document.querySelector('.journal-topic-view'), document.querySelector('.journal-topic-list'), '[data-topic]');
@@ -585,7 +585,7 @@
     }
     const step = Math.PI * 2 / items.length;
     const state = { angle:0, target:0, velocity:0, lastInput:0, lastMove:performance.now(), lastFrame:performance.now(), lean:0, leanTarget:0, dragging:false, hover:-1 };
-    const drag = { x:0, y:0, start:0, time:0, moved:false, down:false };
+    const drag = { x:0, y:0, start:0, baseTarget:0, axis:0, mobileTouch:false, time:0, moved:false, down:false };
     let frame = 0;
     let introAnimations = [];
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -740,6 +740,7 @@
     });
     const pointerDown = (event) => {
       if (event.button !== undefined && event.button !== 0) return;
+      if (event.target.closest?.('button')) return;
       cancelIntro();
       hideHoverLabel();
       state.hover = -1;
@@ -748,6 +749,9 @@
       drag.x = event.clientX;
       drag.y = event.clientY;
       drag.start = state.target;
+      drag.baseTarget = state.target;
+      drag.axis = 0;
+      drag.mobileTouch = matchMedia('(max-width:720px)').matches;
       drag.time = performance.now();
       state.dragging = true;
       interaction.classList.add('is-grabbing');
@@ -760,16 +764,23 @@
         const dt = clamp((now - drag.time) / 1000, .008, .1);
         const deltaX = event.clientX - drag.x;
         const deltaY = event.clientY - drag.y;
-        const mobileTouch = event.pointerType === 'touch' && matchMedia('(max-width:720px)').matches;
-        const delta = mobileTouch ? (Math.abs(deltaX) >= Math.abs(deltaY) ? deltaX : -deltaY) : deltaX;
-        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) drag.moved = true;
-        const next = drag.start + (mobileTouch ? -1 : 1) * delta / Math.max(1, window.innerWidth) * 2;
-        state.velocity = clamp((next - state.target) / dt, -7, 7);
-        state.target = next;
+        if (drag.mobileTouch) {
+          drag.axis = Math.abs(deltaX) >= Math.abs(deltaY) ? deltaX : -deltaY;
+          const distance = Math.hypot(deltaX, deltaY);
+          if (distance > 10) drag.moved = true;
+          const progress = clamp(drag.axis / Math.max(58, window.innerWidth * .22), -1, 1);
+          state.target = drag.baseTarget - progress * step * .72;
+          state.velocity = 0;
+        } else {
+          if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) drag.moved = true;
+          const next = drag.start + deltaX / Math.max(1, window.innerWidth) * 2;
+          state.velocity = clamp((next - state.target) / dt, -7, 7);
+          state.target = next;
+          drag.start = next;
+          drag.x = event.clientX;
+        }
         state.lastInput = now;
         drag.time = now;
-        drag.start = next;
-        drag.x = event.clientX;
         state.leanTarget = 0;
       } else if (interaction.contains(event.target) || orbit.contains(event.target)) {
         const x = (event.clientX / Math.max(1, window.innerWidth) - .5) * 2;
@@ -784,13 +795,20 @@
       interaction.classList.remove('is-grabbing');
       const hoveredItem = event?.target.closest?.('.hero-orbit__item');
       state.hover = hoveredItem && orbit.contains(hoveredItem) ? items.indexOf(hoveredItem) : -1;
-      const reach = clamp(state.velocity * .20, -step, step);
-      const bias = Math.abs(state.velocity) > .04 ? Math.sign(state.velocity) * .4 : 0;
-      state.target = Math.round((state.target + reach) / step + bias) * step;
+      if (drag.mobileTouch) {
+        state.velocity = 0;
+        state.target = Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 28 && Math.abs(drag.axis) > 24
+          ? drag.baseTarget - Math.sign(drag.axis) * step
+          : drag.baseTarget;
+      } else {
+        const reach = clamp(state.velocity * .20, -step, step);
+        const bias = Math.abs(state.velocity) > .04 ? Math.sign(state.velocity) * .4 : 0;
+        state.target = Math.round((state.target + reach) / step + bias) * step;
+      }
       state.lastInput = 0;
       if (drag.moved) window.setTimeout(() => { drag.moved = false; }, 320);
     };
-    interaction.addEventListener('pointerdown', pointerDown);
+    orbit.addEventListener('pointerdown', pointerDown);
     orbit.addEventListener('pointerleave', () => { state.hover = -1; hideHoverLabel(); });
     orbit.addEventListener('focusin', (event) => {
       const focusedItem = event.target.closest?.('.hero-orbit__item');
