@@ -72,6 +72,72 @@
       });
     });
   });
+  const enableSwipeTabs = (view, tablist, selector) => {
+    if (!view || !tablist) return;
+    let start = null;
+    view.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'touch' || !matchMedia('(max-width:720px)').matches) return;
+      start = { id:event.pointerId, x:event.clientX, y:event.clientY };
+    }, { passive:true });
+    const finish = (event) => {
+      if (!start || start.id !== event.pointerId) return;
+      const dx = event.clientX - start.x;
+      const dy = event.clientY - start.y;
+      start = null;
+      if (Math.abs(dx) < 44 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+      const tabs = [...tablist.querySelectorAll(selector)];
+      const active = Math.max(0, tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true' || tab.getAttribute('aria-pressed') === 'true'));
+      const next = (active + (dx < 0 ? 1 : -1) + tabs.length) % tabs.length;
+      const oldPanel = view.querySelector('.is-active');
+      const outgoing = oldPanel?.cloneNode(true);
+      if (outgoing) {
+        outgoing.removeAttribute('id');
+        outgoing.removeAttribute('data-topic-panel');
+        outgoing.removeAttribute('aria-labelledby');
+        outgoing.setAttribute('aria-hidden','true');
+        outgoing.style.cssText += ';position:absolute;inset:0;z-index:3;pointer-events:none';
+      }
+      tabs[next]?.click();
+      if (outgoing) {
+        view.append(outgoing);
+        outgoing.animate([
+          { opacity:1, transform:'translateX(0)' },
+          { opacity:0, transform:`translateX(${dx < 0 ? '-28px' : '28px'})` }
+        ], { duration:280, easing:'cubic-bezier(.2,.8,.2,1)' }).finished.finally(() => outgoing.remove());
+      }
+      view.querySelector('.is-active')?.animate?.([
+        { opacity:0, transform:`translateX(${dx < 0 ? '28px' : '-28px'})` },
+        { opacity:1, transform:'translateX(0)' }
+      ], { duration:300, easing:'cubic-bezier(.2,.8,.2,1)' });
+    };
+    view.addEventListener('pointerup', finish, { passive:true });
+    view.addEventListener('pointercancel', () => { start = null; }, { passive:true });
+  };
+  enableSwipeTabs(document.querySelector('.activity-details'), document.querySelector('.activity-cards'), '[role="tab"]');
+  enableSwipeTabs(document.querySelector('.journal-topic-view'), document.querySelector('.journal-topic-list'), '[data-topic]');
+  const homeCards = [...document.querySelectorAll('.home-final-panel .home-link')];
+  if (homeCards.length === 3 && matchMedia('(max-width:720px)').matches && 'IntersectionObserver' in window) {
+    let timer = 0;
+    let index = 0;
+    let visible = false;
+    const clearActive = () => homeCards.forEach((card) => card.classList.remove('is-image-clear'));
+    const cycle = () => {
+      if (!visible || document.hidden) { timer = window.setTimeout(cycle, 500); return; }
+      clearActive();
+      homeCards[index].classList.add('is-image-clear');
+      index = (index + 1) % homeCards.length;
+      timer = window.setTimeout(() => {
+        clearActive();
+        timer = window.setTimeout(cycle, index === 0 ? 2000 : 450);
+      }, 950);
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      window.clearTimeout(timer);
+      if (visible) cycle(); else clearActive();
+    }, { threshold:.35 });
+    observer.observe(document.querySelector('.home-final-panel'));
+  }
   const typewrite = (element, text) => new Promise((resolve) => {
     element.classList.add('journal-typewriter');
     element.setAttribute('aria-label', text);
@@ -692,9 +758,12 @@
       if (drag.down) {
         const now = performance.now();
         const dt = clamp((now - drag.time) / 1000, .008, .1);
-        const delta = event.clientX - drag.x;
-        if (Math.abs(delta) > 5 || Math.abs(event.clientY - drag.y) > 5) drag.moved = true;
-        const next = drag.start + delta / Math.max(1, window.innerWidth) * 2;
+        const deltaX = event.clientX - drag.x;
+        const deltaY = event.clientY - drag.y;
+        const mobileTouch = event.pointerType === 'touch' && matchMedia('(max-width:720px)').matches;
+        const delta = mobileTouch ? (Math.abs(deltaX) >= Math.abs(deltaY) ? deltaX : -deltaY) : deltaX;
+        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) drag.moved = true;
+        const next = drag.start + (mobileTouch ? -1 : 1) * delta / Math.max(1, window.innerWidth) * 2;
         state.velocity = clamp((next - state.target) / dt, -7, 7);
         state.target = next;
         state.lastInput = now;
