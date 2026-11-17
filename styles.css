@@ -1658,3 +1658,48 @@ body .offering-panel--series>.site-footer{width:auto}
 @media(max-width:720px) and (prefers-reduced-motion:reduce){
   .home-final-panel .home-link::before,.journal-page .journal-topic-detail{transition:none;animation:none}
 }
+
+/* Samsung/Chrome mobile viewport and touch-panel fixes. Desktop rules stay intact. */
+@media(max-width:720px){
+  html:has(body.home-page),html:has(.services-page),html:has(.journal-page),
+  html:has(.offerings-page),html:has(.studio-page),html:has(.booking-page),html:has(.snap-page){
+    scroll-snap-type:y proximity;scroll-snap-stop:normal;scroll-behavior:smooth;
+    scroll-padding-top:68px;overscroll-behavior-y:auto
+  }
+  .home-page main>.hero.home-intro,.home-page main>.home-intro-copy,.home-page main>.home-final-panel,
+  .services-page>section:nth-child(-n+3),
+  .journal-page>.journal-intro,.journal-page>.journal-carousel,.journal-page>.journal-care,
+  .snap-page main>section,main.snap-page>section,.offerings-page>section,
+  .studio-page.snap-panel,.studio-details.snap-panel,
+  .booking-card.snap-panel,.booking-guide-panel.snap-panel,.booking-policy-panel.snap-panel{
+    height:calc(100dvh - 68px);min-height:calc(100dvh - 68px);max-height:calc(100dvh - 68px);
+    scroll-snap-align:start;scroll-snap-stop:normal
+  }
+  .hero.home-intro{height:calc(100dvh - 68px);min-height:calc(100dvh - 68px)}
+  .snap-page main>.snap-panel,main.snap-page>.snap-panel,.offerings-page>.snap-panel,
+  body .studio-page.snap-panel,body .studio-details.snap-panel,
+  body .booking-card.snap-panel,body .booking-guide-panel.snap-panel,body .booking-policy-panel.snap-panel{
+    height:calc(100dvh - 68px)!important;min-height:calc(100dvh - 68px)!important;max-height:calc(100dvh - 68px)!important;
+    overscroll-behavior-y:auto!important
+  }
+  .hero.home-intro .hero-orbit{transform:translateY(-48px)}
+  .hero-orbit__disc{top:51%}
+  .hero.home-intro .hero-stage__move{top:51%}
+  .hero-orbit__bottom-ui{transform:translateY(-18px)}
+  .hero-orbit__gesture-hint{display:none!important}
+  .hero-orbit__interaction{top:51%;height:min(100vw,390px);touch-action:none}
+  .services-page>.services-activities .activity-details,
+  body .journal-page .journal-topic-view{touch-action:pan-y;overscroll-behavior-y:auto!important}
+  .services-page>section:nth-child(-n+3),.journal-page>.journal-intro,
+  .journal-page>.journal-carousel,.journal-page>.journal-care{overflow:clip}
+  .services-page>.services-activities .activity-details{overflow-y:auto;overflow-x:hidden}
+  .journal-page .journal-topic-view{overflow-y:auto;overflow-x:hidden}
+  .home-final-panel .home-link::before{transform-origin:center;will-change:transform,background-position}
+  .home-final-panel .home-link.is-image-clear::before{animation:home-mobile-card-photo 1.4s cubic-bezier(.22,.7,.25,1) both}
+  .home-final-panel .home-link:nth-child(2).is-image-clear::before{animation-name:home-mobile-card-photo-alt}
+  .home-final-panel .home-link:nth-child(3).is-image-clear::before{animation-name:home-mobile-card-photo-third}
+}
+@keyframes home-mobile-card-photo{from{transform:scale(1);background-position:48% 54%}to{transform:scale(1.12);background-position:54% 42%}}
+@keyframes home-mobile-card-photo-alt{from{transform:scale(1);background-position:50% 52%}to{transform:scale(1.1);background-position:45% 43%}}
+@keyframes home-mobile-card-photo-third{from{transform:scale(1);background-position:52% 50%}to{transform:scale(1.09);background-position:47% 44%}}
+@media(max-width:720px) and (prefers-reduced-motion:reduce){.home-final-panel .home-link.is-image-clear::before{animation:none}}

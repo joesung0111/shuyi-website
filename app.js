@@ -769,7 +769,7 @@
           const distance = Math.hypot(deltaX, deltaY);
           if (distance > 10) drag.moved = true;
           const progress = clamp(drag.axis / Math.max(58, window.innerWidth * .22), -1, 1);
-          state.target = drag.baseTarget - progress * step * .72;
+          state.target = drag.baseTarget + progress * step * .72;
           state.velocity = 0;
         } else {
           if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) drag.moved = true;
@@ -798,7 +798,7 @@
       if (drag.mobileTouch) {
         state.velocity = 0;
         state.target = Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 28 && Math.abs(drag.axis) > 24
-          ? drag.baseTarget - Math.sign(drag.axis) * step
+          ? drag.baseTarget + Math.sign(drag.axis) * step
           : drag.baseTarget;
       } else {
         const reach = clamp(state.velocity * .20, -step, step);
