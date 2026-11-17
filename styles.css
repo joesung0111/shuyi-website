@@ -1663,7 +1663,7 @@ body .offering-panel--series>.site-footer{width:auto}
 @media(max-width:720px){
   html:has(body.home-page),html:has(.services-page),html:has(.journal-page),
   html:has(.offerings-page),html:has(.studio-page),html:has(.booking-page),html:has(.snap-page){
-    scroll-snap-type:y proximity;scroll-snap-stop:normal;scroll-behavior:smooth;
+    scroll-snap-type:none!important;scroll-behavior:auto!important;
     scroll-padding-top:68px;overscroll-behavior-y:auto
   }
   .home-page main>.hero.home-intro,.home-page main>.home-intro-copy,.home-page main>.home-final-panel,
@@ -1673,7 +1673,7 @@ body .offering-panel--series>.site-footer{width:auto}
   .studio-page.snap-panel,.studio-details.snap-panel,
   .booking-card.snap-panel,.booking-guide-panel.snap-panel,.booking-policy-panel.snap-panel{
     height:calc(100dvh - 68px);min-height:calc(100dvh - 68px);max-height:calc(100dvh - 68px);
-    scroll-snap-align:start;scroll-snap-stop:normal
+    scroll-snap-align:none!important;scroll-snap-stop:normal
   }
   .hero.home-intro{height:calc(100dvh - 68px);min-height:calc(100dvh - 68px)}
   .snap-page main>.snap-panel,main.snap-page>.snap-panel,.offerings-page>.snap-panel,
@@ -1685,7 +1685,7 @@ body .offering-panel--series>.site-footer{width:auto}
   .hero.home-intro .hero-orbit{transform:translateY(-48px)}
   .hero-orbit__disc{top:51%}
   .hero.home-intro .hero-stage__move{top:51%}
-  .hero-orbit__bottom-ui{transform:translateY(-18px)}
+  .hero-orbit__bottom-ui{transform:translate(-50%,-18px)}
   .hero-orbit__gesture-hint{display:none!important}
   .hero-orbit__interaction{top:51%;height:min(100vw,390px);touch-action:none}
   .services-page>.services-activities .activity-details,
@@ -1694,12 +1694,28 @@ body .offering-panel--series>.site-footer{width:auto}
   .journal-page>.journal-carousel,.journal-page>.journal-care{overflow:clip}
   .services-page>.services-activities .activity-details{overflow-y:auto;overflow-x:hidden}
   .journal-page .journal-topic-view{overflow-y:auto;overflow-x:hidden}
-  .home-final-panel .home-link::before{transform-origin:center;will-change:transform,background-position}
-  .home-final-panel .home-link.is-image-clear::before{animation:home-mobile-card-photo 1.4s cubic-bezier(.22,.7,.25,1) both}
+  .home-final-panel .home-link::before{transform:none!important;will-change:background-position}
+  .home-final-panel .home-link.is-image-clear::before{animation:home-mobile-card-photo 1.4s ease-in-out both}
   .home-final-panel .home-link:nth-child(2).is-image-clear::before{animation-name:home-mobile-card-photo-alt}
   .home-final-panel .home-link:nth-child(3).is-image-clear::before{animation-name:home-mobile-card-photo-third}
+  .home-final-panel .home-link:first-child::after{
+    content:"";position:absolute;inset:0;z-index:0;width:auto;height:auto;aspect-ratio:auto;right:auto;top:auto;
+    border:0;border-radius:inherit;background-image:url("./素材/網站插圖/home-stretch-motion-sprite.webp");
+    background-repeat:no-repeat;background-size:auto 300%;background-position:center 0%;opacity:0;pointer-events:none;
+    transition:opacity .24s ease
+  }
+  .home-final-panel .home-link:first-child.is-image-clear::after{opacity:.96;animation:home-stretch-continuation 1.35s linear infinite}
+  .home-final-panel .home-link.is-image-clear{transform:none!important}
 }
-@keyframes home-mobile-card-photo{from{transform:scale(1);background-position:48% 54%}to{transform:scale(1.12);background-position:54% 42%}}
-@keyframes home-mobile-card-photo-alt{from{transform:scale(1);background-position:50% 52%}to{transform:scale(1.1);background-position:45% 43%}}
-@keyframes home-mobile-card-photo-third{from{transform:scale(1);background-position:52% 50%}to{transform:scale(1.09);background-position:47% 44%}}
-@media(max-width:720px) and (prefers-reduced-motion:reduce){.home-final-panel .home-link.is-image-clear::before{animation:none}}
+@keyframes home-mobile-card-photo{from{background-position:48% 52%}to{background-position:54% 44%}}
+@keyframes home-mobile-card-photo-alt{from{background-position:50% 52%}to{background-position:46% 45%}}
+@keyframes home-mobile-card-photo-third{from{background-position:50% 50%}to{background-position:50% 44%}}
+@keyframes home-stretch-continuation{
+  0%,33%{background-position:center 0%}
+  33.1%,66%{background-position:center 50%}
+  66.1%,99%{background-position:center 100%}
+  99.1%,100%{background-position:center 0%}
+}
+@media(max-width:720px) and (prefers-reduced-motion:reduce){
+  .home-final-panel .home-link.is-image-clear::before,.home-final-panel .home-link:first-child.is-image-clear::after{animation:none}
+}

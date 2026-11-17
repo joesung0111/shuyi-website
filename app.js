@@ -29,8 +29,11 @@
     event.preventDefault();
     const target = document.querySelector('#journal-care');
     if (!target) return;
-    const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
-    target.scrollIntoView({ behavior, block:'start' });
+    if (window.shuyiScrollToPanel && matchMedia('(max-width:720px)').matches) window.shuyiScrollToPanel(target);
+    else {
+      const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+      target.scrollIntoView({ behavior, block:'start' });
+    }
   });
   const root = document.documentElement;
   const switcher = document.querySelector('.theme-switch');
@@ -44,6 +47,69 @@
   if (menuButton) menuButton.addEventListener('click', () => { const open = document.body.classList.toggle('menu-open'); menuButton.setAttribute('aria-expanded', String(open)); });
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
   const currentPath = normalizePath(window.location.pathname);
+  const mobilePanelMotion = matchMedia('(max-width:720px)');
+  if (mobilePanelMotion.matches) {
+    const panelSelector = [
+      '.home-page main>.hero.home-intro', '.home-page main>.home-intro-copy', '.home-page main>.home-final-panel',
+      '.services-page>section:nth-child(-n+3)', '.journal-page>.journal-intro', '.journal-page>.journal-carousel', '.journal-page>.journal-care',
+      '.offerings-page main>.snap-panel', 'main.snap-page>.snap-panel'
+    ].join(',');
+    const panels = [...document.querySelectorAll(panelSelector)];
+    let settleTimer = 0;
+    let animationFrame = 0;
+    let settling = false;
+    const cancelSettle = () => {
+      window.clearTimeout(settleTimer);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+      settling = false;
+    };
+    const destinationFor = (panel) => Math.max(0, window.scrollY + panel.getBoundingClientRect().top - 68);
+    const scrollToPanel = (panel) => {
+      if (!mobilePanelMotion.matches || !panel || !panels.includes(panel)) return;
+      window.clearTimeout(settleTimer);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      const start = window.scrollY;
+      const end = destinationFor(panel);
+      const distance = end - start;
+      if (Math.abs(distance) < 3) { settling = false; return; }
+      const duration = Math.min(620, Math.max(420, Math.abs(distance) * .56));
+      const startedAt = performance.now();
+      settling = true;
+      const tick = (now) => {
+        const progress = Math.min(1, (now - startedAt) / duration);
+        const eased = progress < .5 ? 16 * progress ** 5 : 1 - ((-2 * progress + 2) ** 5) / 2;
+        window.scrollTo(0, start + distance * eased);
+        if (progress < 1) animationFrame = requestAnimationFrame(tick);
+        else { animationFrame = 0; settling = false; }
+      };
+      animationFrame = requestAnimationFrame(tick);
+    };
+    const settleNearest = () => {
+      if (settling || !panels.length) return;
+      const current = window.scrollY;
+      const nearest = panels.reduce((best, panel) => {
+        const target = destinationFor(panel);
+        return Math.abs(target - current) < Math.abs(destinationFor(best) - current) ? panel : best;
+      }, panels[0]);
+      const target = destinationFor(nearest);
+      if (Math.abs(target - current) > 12) scrollToPanel(nearest);
+    };
+    const scheduleSettle = () => {
+      if (!mobilePanelMotion.matches || settling) return;
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(settleNearest, 210);
+    };
+    window.addEventListener('scroll', scheduleSettle, { passive:true });
+    window.addEventListener('scrollend', scheduleSettle, { passive:true });
+    window.addEventListener('touchend', scheduleSettle, { passive:true });
+    window.addEventListener('pointerup', scheduleSettle, { passive:true });
+    window.addEventListener('touchstart', cancelSettle, { passive:true });
+    window.addEventListener('pointerdown', cancelSettle, { passive:true });
+    window.addEventListener('wheel', cancelSettle, { passive:true });
+    window.addEventListener('resize', () => { if (!mobilePanelMotion.matches) cancelSettle(); }, { passive:true });
+    window.shuyiScrollToPanel = scrollToPanel;
+  }
   document.querySelectorAll('[role="tablist"]').forEach((tablist) => {
     const tabs = [...tablist.querySelectorAll('[role="tab"]')];
     if (!tabs.length || tabs.some((item) => !item.hasAttribute('aria-controls'))) return;
@@ -736,7 +802,9 @@
       state.lastMove = state.lastInput;
     }));
     downCue?.addEventListener('click', () => {
-      document.querySelector('#home-explore')?.scrollIntoView({ behavior:reduceMotion ? 'instant' : 'smooth', block:'start' });
+      const target = document.querySelector('#home-explore');
+      if (window.shuyiScrollToPanel && matchMedia('(max-width:720px)').matches) window.shuyiScrollToPanel(target);
+      else target?.scrollIntoView({ behavior:reduceMotion ? 'instant' : 'smooth', block:'start' });
     });
     const pointerDown = (event) => {
       if (event.button !== undefined && event.button !== 0) return;
