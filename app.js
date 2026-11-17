@@ -58,11 +58,16 @@
     let settleTimer = 0;
     let animationFrame = 0;
     let settling = false;
+    let settlePending = false;
+    let settleDelay = 320;
+    let viewportChangedAt = 0;
+    const visualViewport = window.visualViewport;
     const cancelSettle = () => {
       window.clearTimeout(settleTimer);
       if (animationFrame) cancelAnimationFrame(animationFrame);
       animationFrame = 0;
       settling = false;
+      settlePending = false;
     };
     const destinationFor = (panel) => Math.max(0, window.scrollY + panel.getBoundingClientRect().top - 68);
     const scrollToPanel = (panel) => {
@@ -79,9 +84,16 @@
       const tick = (now) => {
         const progress = Math.min(1, (now - startedAt) / duration);
         const eased = progress < .5 ? 16 * progress ** 5 : 1 - ((-2 * progress + 2) ** 5) / 2;
-        window.scrollTo(0, start + distance * eased);
+        // Re-read the panel position throughout the tween. On mobile Chrome the
+        // dynamic toolbar can resize 100dvh panels while the animation is running.
+        const currentEnd = destinationFor(panel);
+        window.scrollTo(0, start + (currentEnd - start) * eased);
         if (progress < 1) animationFrame = requestAnimationFrame(tick);
-        else { animationFrame = 0; settling = false; }
+        else {
+          window.scrollTo(0, currentEnd);
+          animationFrame = 0;
+          settling = false;
+        }
       };
       animationFrame = requestAnimationFrame(tick);
     };
@@ -95,19 +107,48 @@
       const target = destinationFor(nearest);
       if (Math.abs(target - current) > 12) scrollToPanel(nearest);
     };
-    const scheduleSettle = () => {
+    const scheduleSettle = (event) => {
       if (!mobilePanelMotion.matches || settling) return;
+      settlePending = true;
+      // Prefer scrollend, which fires after native touch momentum. Keep a longer
+      // scroll-quiet fallback for browsers without it and for interrupted gestures.
+      settleDelay = event?.type === 'scrollend' ? 100 : 320;
+      queueSettleAfterMotion();
+    };
+    const queueSettleAfterMotion = () => {
       window.clearTimeout(settleTimer);
-      settleTimer = window.setTimeout(settleNearest, 210);
+      const viewportQuietFor = 180;
+      const viewportWait = viewportChangedAt
+        ? Math.max(0, viewportChangedAt + viewportQuietFor - performance.now())
+        : 0;
+      settleTimer = window.setTimeout(() => {
+        if (!settlePending || settling) return;
+        const remainingViewportWait = viewportChangedAt
+          ? Math.max(0, viewportChangedAt + viewportQuietFor - performance.now())
+          : 0;
+        if (remainingViewportWait > 0) {
+          settleTimer = window.setTimeout(() => {
+            if (settlePending && !settling) {
+              settlePending = false;
+              settleNearest();
+            }
+          }, remainingViewportWait);
+          return;
+        }
+        settlePending = false;
+        settleNearest();
+      }, Math.max(settleDelay, viewportWait));
     };
     window.addEventListener('scroll', scheduleSettle, { passive:true });
     window.addEventListener('scrollend', scheduleSettle, { passive:true });
-    window.addEventListener('touchend', scheduleSettle, { passive:true });
-    window.addEventListener('pointerup', scheduleSettle, { passive:true });
     window.addEventListener('touchstart', cancelSettle, { passive:true });
     window.addEventListener('pointerdown', cancelSettle, { passive:true });
     window.addEventListener('wheel', cancelSettle, { passive:true });
     window.addEventListener('resize', () => { if (!mobilePanelMotion.matches) cancelSettle(); }, { passive:true });
+    visualViewport?.addEventListener('resize', () => {
+      viewportChangedAt = performance.now();
+      if (settlePending && !settling) queueSettleAfterMotion();
+    }, { passive:true });
     window.shuyiScrollToPanel = scrollToPanel;
   }
   document.querySelectorAll('[role="tablist"]').forEach((tablist) => {
