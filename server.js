@@ -25,6 +25,16 @@ const DB_PATH = resolve(process.env.DATABASE_PATH || join(ROOT, 'data', 'shuyi.s
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.jpeg': 'image/jpeg', '.jpg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.ico': 'image/x-icon' };
 const themeBoot = '<script>(function(){try{var t=localStorage.getItem("shuyi-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}}())<\/script>';
 const headEnhancements = (admin = false) => `${admin ? '<link rel="icon" href="/manage-center/favicon.svg" type="image/svg+xml">' : '<link rel="icon" href="/素材/淺色系-1K.jpeg" type="image/jpeg">'}${themeBoot}`;
+const assetFiles = {
+  'app.js': 'app.js',
+  'styles.css': 'styles.css',
+  'manage-center/admin.css': 'admin/admin.css'
+};
+const assetVersions = Object.fromEntries(Object.entries(assetFiles).map(([url, file]) => [
+  url, createHash('sha256').update(readFileSync(join(ROOT, file))).digest('hex').slice(0, 12)
+]));
+const versionAssets = (html) => html.replace(/\b(src|href)="(?:\.{1,2}\/|\/)(app\.js|styles\.css|manage-center\/admin\.css)(?:\?[^"]*)?"/g,
+  (_, attribute, file) => `${attribute}="/${file}?v=${assetVersions[file]}"`);
 const withoutSloganStops = (html) => ['不只放鬆。', '動起來。', '自在的樣子。', '新的情報。', '工作室。', '自己。'].reduce((result, phrase) => result.replaceAll(phrase, phrase.slice(0, -1)), html);
 
 mkdirSync(dirname(DB_PATH), { recursive: true });
@@ -116,6 +126,28 @@ function youtubeEmbedUrl(value) {
     return /^[A-Za-z0-9_-]{11}$/.test(id || '') ? `https://www.youtube-nocookie.com/embed/${id}?rel=0` : null;
   } catch { return null; }
 }
+function contentMediaUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  try {
+    const url = new URL(value, SITE_ORIGIN);
+    return ['https:', 'http:'].includes(url.protocol) ? url : null;
+  } catch {
+    return null;
+  }
+}
+function validateContent(body) {
+  const title = typeof body?.title === 'string' ? body.title.trim() : '';
+  const slug = typeof body?.slug === 'string' ? body.slug.trim() : '';
+  if (!title || !['article', 'video', 'news'].includes(body?.type)) return { error:'請填寫標題與內容類型' };
+  if (!/^[a-z0-9-]+$/.test(slug)) return { error:'網址代稱只能使用小寫英文、數字與連字號' };
+  for (const [field, label] of [['video_url', '影片'], ['cover_url', '封面']]) {
+    if (body[field] != null && body[field] !== '' && !contentMediaUrl(body[field])) {
+      return { error:`請輸入有效的${label}網址` };
+    }
+  }
+  const values = [title, slug, body.type, body.excerpt || '', body.body || '', body.video_url?.trim() || '', body.cover_url?.trim() || ''];
+  return { values, status:body.status === 'published' ? 'published' : 'draft' };
+}
 const safeContent = (row) => ({ ...row, href: `/journal/${row.slug}/`, tag: row.type === 'article' ? 'BODY NOTE' : row.type === 'video' ? 'SHU YI FILM' : 'STUDIO NEWS', date: row.status === 'published' ? (row.published_at || '').slice(0, 10) : 'DRAFT', video: row.video_url || undefined, embed_url: youtubeEmbedUrl(row.video_url) || undefined, cover: row.cover_url || undefined, imageAlt: editorialEvidence[row.slug]?.imageAlt || '', accent: row.type === 'article' ? 'peach' : row.type === 'video' ? 'violet' : 'lime' });
 const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const bodyHtml = (body, headings = []) => escapeHtml(body).split(/\n{2,}/).filter(Boolean).map((paragraph, index) => `${headings[index] ? `<h2>${escapeHtml(headings[index])}</h2>` : ''}<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('') || '<p>內容準備中。</p>';
@@ -182,15 +214,16 @@ function articlePage(row) {
   const description = articleDescription(row);
   const published = row.published_at || row.created_at;
   const modified = row.updated_at || published;
-  const image = row.cover_url ? new URL(row.cover_url, SITE_ORIGIN).href : `${SITE_ORIGIN}/素材/淺色系-1K.jpeg`;
+  const coverUrl = contentMediaUrl(row.cover_url);
+  const image = coverUrl?.href || `${SITE_ORIGIN}/素材/淺色系-1K.jpeg`;
   const schema = { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: row.title, description, datePublished: published, dateModified: modified, author: { '@type': 'Organization', name: '舒逸', '@id': `${SITE_ORIGIN}/#organization` }, publisher: { '@type': 'Organization', name: '舒逸', '@id': `${SITE_ORIGIN}/#organization` }, mainEntityOfPage: canonical, url: canonical, image };
   const embedUrl = youtubeEmbedUrl(row.video_url);
   const video = embedUrl ? `<figure class="article-video"><iframe src="${escapeHtml(embedUrl)}" title="${escapeHtml(row.title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></figure>` : row.video_url ? `<figure class="article-video"><video controls playsinline src="${escapeHtml(row.video_url)}"></video></figure>` : '';
-  const cover = row.cover_url ? `<img class="article-cover" src="${escapeHtml(row.cover_url)}" alt="${escapeHtml(editorialEvidence[row.slug]?.imageAlt || '')}">` : '';
+  const cover = coverUrl ? `<img class="article-cover" src="${escapeHtml(row.cover_url)}" alt="${escapeHtml(editorialEvidence[row.slug]?.imageAlt || '')}">` : '';
   const contentCard = (label, href, event) => `<a data-${event}="true" href="${href}">${label}</a>`;
   const evidence = editorialEvidence[row.slug] || { kind: '資料與審閱資訊待確認', basis: '本篇尚未登錄可核對的資料來源；請內容提供者先確認文字與依據。', boundary: '審核完成前，請勿將本篇內容視為健康指引、醫療資訊或治療建議。', review: '尚無審閱紀錄。', sources: [] };
   const evidenceHtml = evidence ? `<section class="article-evidence" aria-labelledby="article-evidence-title"><h2 id="article-evidence-title">資料來源與內容界線</h2><p><strong>內容性質：</strong>${escapeHtml(evidence.kind)}</p><p><strong>資料依據：</strong>${escapeHtml(evidence.basis)}</p><p><strong>醫療界線：</strong>${escapeHtml(evidence.boundary)}</p><p><strong>專業審閱：</strong>${escapeHtml(evidence.review)}</p>${evidence.sources.length ? `<h3>參考資料</h3><ul>${evidence.sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title)} ↗</a></li>`).join('')}</ul>` : '<p>本篇沒有引用醫療或科學研究；內容為一般生活建議。</p>'}${evidence.sources.length ? '<p class="article-evidence__date">參考資料連結檢視日期：2026-10-27</p>' : ''}</section>` : '';
-  const articleHtml = `<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(description)}"><title>${escapeHtml(row.title)}｜多多了解</title>${googleVerificationMeta}<link rel="canonical" href="${escapeHtml(canonical)}"><meta property="og:title" content="${escapeHtml(row.title)}｜多多了解"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:type" content="article"><meta property="og:image" content="${escapeHtml(image)}"><script type="application/ld+json">${jsonLd(schema)}</script><script type="application/ld+json">${jsonLd({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: '多多了解', item: `${SITE_ORIGIN}/journal/` }, { '@type': 'ListItem', position: 3, name: row.title, item: canonical }] })}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/styles.css"></head><body><header class="site-header"><a class="brand" href="/" aria-label="舒逸首頁"><img class="brand-logo brand-logo--light" src="/素材/淺色系-1K.jpeg" alt="舒逸 Shu Yi"><img class="brand-logo brand-logo--dark" src="/素材/深色系-1K.jpeg" alt="" aria-hidden="true"><span>SHU YI</span></a><nav class="site-nav" aria-label="主要導覽"><a href="/services/">活化調理</a><a href="/journal/" aria-current="page">多多了解</a><a href="/studio/">工作室</a><a href="/booking/">預約</a></nav><div class="header-actions"><button class="theme-switch" type="button" aria-label="切換深淺色主題" aria-pressed="false"><span class="theme-switch__dot"></span><span class="theme-switch__label">LIGHT</span></button><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false"><span></span><span></span></button></div></header><main class="article"><a class="back-link" href="/journal/#journal-return">← 回到多多了解</a><div class="article-meta"><span>${type}</span><span>發布日期：${escapeHtml(dateOnly(published))}</span><span>最後更新：${escapeHtml(dateOnly(modified))}</span><span>內容提供：舒逸</span></div><h1>${escapeHtml(row.title)}</h1>${cover}${video}<div class="article-body">${bodyHtml(row.body, evidence?.sectionHeadings || [])}</div>${evidenceHtml}<section class="article-related"><h2>相關內容</h2>${relatedLinks}<p>深入了解舒逸全身活化調理服務。</p>${contentCard('了解舒逸全身活化調理', '/services/', 'journal-to-service')}　${contentCard('前往預約', '/booking/', 'journal-to-booking')}</section></main><footer class="site-footer"><a class="brand" href="/"><span>舒逸</span><small>SHU YI</small></a><p>© 2026 SHU YI. MOVE WELL, LIVE LIGHT.</p><div><a href="/journal/">多多了解</a><a href="/booking/">BOOKING</a></div></footer><script src="/app.js"></script><script src="/analytics.js" defer></script></body></html>`;
+  const articleHtml = `<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(description)}"><title>${escapeHtml(row.title)}｜多多了解</title>${googleVerificationMeta}<link rel="canonical" href="${escapeHtml(canonical)}"><meta property="og:title" content="${escapeHtml(row.title)}｜多多了解"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:type" content="article"><meta property="og:image" content="${escapeHtml(image)}"><script type="application/ld+json">${jsonLd(schema)}</script><script type="application/ld+json">${jsonLd({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首頁', item: `${SITE_ORIGIN}/` }, { '@type': 'ListItem', position: 2, name: '多多了解', item: `${SITE_ORIGIN}/journal/` }, { '@type': 'ListItem', position: 3, name: row.title, item: canonical }] })}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/styles.css"></head><body><header class="site-header"><a class="brand" href="/" aria-label="舒逸首頁"><img class="brand-logo brand-logo--light" src="/素材/淺色系-1K.jpeg" alt="舒逸 Shu Yi"><img class="brand-logo brand-logo--dark" src="/素材/深色系-1K.jpeg" alt="" aria-hidden="true"><span>SHU YI</span></a><nav class="site-nav" aria-label="主要導覽"><a href="/services/">活化調理</a><a href="/journal/" aria-current="location">多多了解</a><a class="nav-service-details" href="/offerings/">服務項目</a><a href="/studio/">工作室</a><a href="/booking/">預約</a></nav><div class="header-actions"><button class="theme-switch" type="button" aria-label="切換深淺色主題" aria-pressed="false"><span class="theme-switch__dot"></span><span class="theme-switch__label">LIGHT</span></button><button class="menu-button" type="button" aria-label="開啟選單" aria-expanded="false"><span></span><span></span></button></div></header><main class="article"><a class="back-link" href="/journal/#journal-return">← 回到多多了解</a><div class="article-meta"><span>${type}</span><span>發布日期：${escapeHtml(dateOnly(published))}</span><span>最後更新：${escapeHtml(dateOnly(modified))}</span><span>內容提供：舒逸</span></div><h1>${escapeHtml(row.title)}</h1>${cover}${video}<div class="article-body">${bodyHtml(row.body, evidence?.sectionHeadings || [])}</div>${evidenceHtml}<section class="article-related"><h2>相關內容</h2>${relatedLinks}<p>深入了解舒逸全身活化調理服務。</p>${contentCard('了解舒逸全身活化調理', '/services/', 'journal-to-service')}　${contentCard('前往預約', '/booking/', 'journal-to-booking')}</section></main><footer class="site-footer"><a class="brand" href="/"><span>舒逸</span><small>SHU YI</small></a><p>© 2026 SHU YI. MOVE WELL, LIVE LIGHT.</p><div><a href="/journal/">多多了解</a><a href="/booking/">BOOKING</a></div></footer><script src="/app.js"></script><script src="/analytics.js" defer></script></body></html>`;
   return articleHtml;
 }
 
@@ -264,8 +297,42 @@ async function api(req, res, url) {
   if (url.pathname === '/api/analytics/events' && req.method === 'GET') return json(res, 200, analyticsReports.events(url.searchParams));
   const sessionMatch = url.pathname.match(/^\/api\/analytics\/sessions\/([a-zA-Z0-9_-]{8,80})$/);
   if (sessionMatch && req.method === 'GET') { const session = analyticsReports.session(sessionMatch[1]); return json(res, session ? 200 : 404, privateReport(session) || { error: '找不到工作階段' }); }
-  if (url.pathname === '/api/content' && req.method === 'POST') { const body = await readBody(req); if (!body?.title || !body?.slug || !['article','video','news'].includes(body.type)) return json(res, 400, { error: '標題、網址代稱與類型為必填' }); const timestamp = now(); try { const result = db.prepare('INSERT INTO content (title,slug,type,excerpt,body,video_url,cover_url,status,published_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)').run(body.title.trim(), body.slug.trim(), body.type, body.excerpt || '', body.body || '', body.video_url || '', body.cover_url || '', body.status === 'published' ? 'published' : 'draft', body.status === 'published' ? timestamp : null, timestamp, timestamp); return json(res, 201, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(result.lastInsertRowid))); } catch (error) { return json(res, 409, { error: error.message.includes('UNIQUE') ? '網址代稱已存在' : '無法建立內容' }); } }
-  const match = url.pathname.match(/^\/api\/content\/(\d+)$/); if (match) { const id = Number(match[1]); if (req.method === 'GET') return json(res, 200, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(id) || {})); if (req.method === 'PUT') { const body = await readBody(req); const current = db.prepare('SELECT * FROM content WHERE id = ?').get(id); if (!current) return json(res, 404, { error: '找不到內容' }); if (!body?.title || !body?.slug || !['article','video','news'].includes(body.type)) return json(res, 400, { error: '標題、網址代稱與類型為必填' }); const status = body.status === 'published' ? 'published' : 'draft'; const publishedAt = status === 'published' ? (current.published_at || now()) : null; try { db.prepare('UPDATE content SET title=?,slug=?,type=?,excerpt=?,body=?,video_url=?,cover_url=?,status=?,published_at=?,updated_at=? WHERE id=?').run(body.title.trim(), body.slug.trim(), body.type, body.excerpt || '', body.body || '', body.video_url || '', body.cover_url || '', status, publishedAt, now(), id); return json(res, 200, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(id))); } catch (error) { return json(res, 409, { error: error.message.includes('UNIQUE') ? '網址代稱已存在' : '無法更新內容' }); } } if (req.method === 'DELETE') { db.prepare('DELETE FROM content WHERE id = ?').run(id); return json(res, 200, { ok: true }); } }
+  if (url.pathname === '/api/content' && req.method === 'POST') {
+    const { values, status, error } = validateContent(await readBody(req));
+    if (error) return json(res, 400, { error });
+    const timestamp = now();
+    try {
+      const result = db.prepare('INSERT INTO content (title,slug,type,excerpt,body,video_url,cover_url,status,published_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)').run(...values, status, status === 'published' ? timestamp : null, timestamp, timestamp);
+      return json(res, 201, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(result.lastInsertRowid)));
+    } catch (error) {
+      return json(res, 409, { error: error.message.includes('UNIQUE') ? '網址代稱已存在' : '無法建立內容' });
+    }
+  }
+  const match = url.pathname.match(/^\/api\/content\/(\d+)$/);
+  if (match) {
+    const id = Number(match[1]);
+    if (req.method === 'GET') {
+      const row = db.prepare('SELECT * FROM content WHERE id = ?').get(id);
+      return row ? json(res, 200, safeContent(row)) : json(res, 404, { error:'找不到內容' });
+    }
+    if (req.method === 'PUT') {
+      const current = db.prepare('SELECT * FROM content WHERE id = ?').get(id);
+      if (!current) return json(res, 404, { error:'找不到內容' });
+      const { values, status, error } = validateContent(await readBody(req));
+      if (error) return json(res, 400, { error });
+      const publishedAt = status === 'published' ? (current.published_at || now()) : null;
+      try {
+        db.prepare('UPDATE content SET title=?,slug=?,type=?,excerpt=?,body=?,video_url=?,cover_url=?,status=?,published_at=?,updated_at=? WHERE id=?').run(...values, status, publishedAt, now(), id);
+        return json(res, 200, safeContent(db.prepare('SELECT * FROM content WHERE id = ?').get(id)));
+      } catch (error) {
+        return json(res, 409, { error: error.message.includes('UNIQUE') ? '網址代稱已存在' : '無法更新內容' });
+      }
+    }
+    if (req.method === 'DELETE') {
+      db.prepare('DELETE FROM content WHERE id = ?').run(id);
+      return json(res, 200, { ok: true });
+    }
+  }
   return json(res, 404, { error: 'API route not found' });
 }
 
@@ -322,7 +389,7 @@ async function staticFile(req, res, pathname) {
       let html = (await readFile(filePath, 'utf8')).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replaceAll('{{BOOKING_URL}}', escapeHtml(BOOKING_URL));
       if (clean === '/journal/index.html') {
         const published = db.prepare("SELECT * FROM content WHERE status = 'published' ORDER BY COALESCE(published_at, updated_at) DESC").all();
-        html = html.replace('<div class="content-grid" id="content-grid" aria-live="polite"></div>', `<div class="content-grid" id="content-grid" aria-live="polite">${published.map(cardHtml).join('')}</div>`);
+        html = html.replace('<!-- published-content -->', () => published.map(cardHtml).join(''));
       }
       if (!clean.startsWith('/manage-center/')) html = addSeo(html, clean.endsWith('/index.html') ? clean.slice(0, -'index.html'.length) : clean);
       html = html.replace('</head>', `${headEnhancements(clean.startsWith('/manage-center/'))}</head>`);
@@ -330,7 +397,7 @@ async function staticFile(req, res, pathname) {
       const headers = { 'content-type': contentType };
       if (clean === '/services/index.html') headers['cache-control'] = 'no-store';
       res.writeHead(200, headers);
-      return res.end(withoutSloganStops(html));
+      return res.end(versionAssets(withoutSloganStops(html)));
     }
     const file = await readFile(filePath);
     res.writeHead(200, { 'content-type': contentType });
@@ -346,7 +413,7 @@ function dynamicArticle(req, res, pathname) {
   if (!row) return false;
   res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
   if (req.method === 'HEAD') { res.end(); return true; }
-  res.end(articlePage(row).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replace('</head>', `${headEnhancements()}</head>`));
+  res.end(versionAssets(articlePage(row)).replace('MOVE WELL, LIVE LIGHT.', 'MOVE WELL, LIVE LIGHT').replace('</head>', `${headEnhancements()}</head>`));
   return true;
 }
 

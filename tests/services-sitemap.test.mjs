@@ -64,15 +64,33 @@ test('Services time copy and sitemap HTTP compatibility', async t => {
       const head = await fetch(base + '/journal/qa-keep/', { method: 'HEAD' });
       assert.equal(head.status, 200);
       assert.equal((await head.text()).length, 0);
+
+      const create = (fields) => fetch(base + '/api/content', {
+        method: 'POST',
+        headers: { ...headers, 'content-type': 'application/json' },
+        body: JSON.stringify({ title: 'QA', slug: 'qa-validation', type: 'article', status: 'published', ...fields })
+      });
+      for (const fields of [{ title: '   ' }, { slug: 'QA Invalid' }, { cover_url: 'https://[' }]) {
+        assert.equal((await create(fields)).status, 400);
+      }
+      assert.equal((await fetch(base + '/journal/qa-validation/')).status, 404);
     });
     await t.test('initial Journal contains final copy and articles have structured readable sections', async () => {
       const journal = await (await fetch(base + '/journal/')).text();
       assert(journal.includes('讓舒適的身體'));
       assert(!journal.includes('未來後台維護'));
+      assert.match(journal, /id="content-grid"[^>]*><article /);
+      assert(journal.includes('href="/journal/qa-keep/"'));
+      assert(!journal.includes('href="/journal/qa-draft/"'));
       const article = await (await fetch(base + '/journal/five-minute-morning-start/')).text();
       assert(article.includes('<h2>留一小段晨間時間</h2>'));
       assert(!article.includes('參考資料連結檢視日期'));
       assert(article.includes('一般生活建議'));
+      for (const asset of ['app.js', 'styles.css']) {
+        const versioned = article.match(new RegExp(`/${asset.replace('.', '\\.')}\\?v=[a-f0-9]{12}`))?.[0];
+        assert(versioned && journal.includes(versioned));
+        assert.equal((await fetch(base + versioned)).status, 200);
+      }
     });
     let initialXml;
     await t.test('GET preserves fixed pages and all published fixtures while excluding drafts', async () => {
@@ -110,17 +128,18 @@ test('Services time copy and sitemap HTTP compatibility', async t => {
       assert.equal(list.length, db.prepare("SELECT COUNT(*) AS total FROM content WHERE status = 'published'").get().total);
       assert.equal((await fetch(base + '/journal/qa-keep/')).status, 200);
     });
-    await t.test('initial Services HTML separates 40-minute care from a 60-minute visit in summary and FAQ', async () => {
+    await t.test('Services summary and Journal FAQ separate 40-minute care from a 60-minute visit', async () => {
       const html = await (await fetch(base + '/services/')).text();
+      const journal = await (await fetch(base + '/journal/')).text();
       assert(!html.includes('30～60'));
-      assert(html.includes('<dt>全身活化調理服務時間</dt><dd>約 40 分鐘'));
-      assert(html.includes('<dt>建議預留到訪時間</dt><dd>約 60 分鐘'));
-      assert.match(html, /<summary>一次大約多久？<\/summary><p>全身活化調理服務約 40 分鐘，建議預留約 60 分鐘的到訪時間/);
-      assert(html.includes('其他服務項目依各項目實際標示的時間為準'));
+      assert.match(html, /<dt>全身活化調理服務時間<\/dt><dd><strong>40<\/strong><span>分鐘左右/);
+      assert.match(html, /<dt>建議預留到訪時間<\/dt><dd><strong>60<\/strong><span>分鐘左右/);
+      assert(html.includes('其他服務依各項目標示時間為準'));
+      assert.match(journal, /<summary>一次大約多久？<\/summary><p>全身活化調理服務約 40 分鐘，建議預留約 60 分鐘的到訪時間/);
       assert(html.includes('NT$1,600'));
       assert.equal((html.match(/<h1\b/g) || []).length, 1);
       assert.equal((html.match(/rel="canonical"/g) || []).length, 1);
-      assert.equal((html.match(/<details>/g) || []).length, 8);
+      assert.equal((journal.match(/<details>/g) || []).length, 8);
     });
   } finally {
     child.kill('SIGTERM');

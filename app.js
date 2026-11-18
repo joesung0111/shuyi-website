@@ -36,18 +36,56 @@
     }
   });
   const root = document.documentElement;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const switcher = document.querySelector('.theme-switch');
   if (switcher) {
     const label = switcher.querySelector('.theme-switch__label');
-    const setTheme = (theme) => { root.dataset.theme = theme; localStorage.setItem('shuyi-theme', theme); switcher.setAttribute('aria-pressed', String(theme === 'dark')); label.textContent = theme === 'dark' ? 'DARK' : 'LIGHT'; };
-    setTheme(localStorage.getItem('shuyi-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+    const setTheme = (theme) => {
+      root.dataset.theme = theme;
+      switcher.setAttribute('aria-pressed', String(theme === 'dark'));
+      label.textContent = theme === 'dark' ? 'DARK' : 'LIGHT';
+      try { localStorage.setItem('shuyi-theme', theme); } catch { /* Theme still works for this page. */ }
+    };
+    const initialTheme = root.dataset.theme;
+    setTheme(['light', 'dark'].includes(initialTheme) ? initialTheme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     switcher.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
   }
   const menuButton = document.querySelector('.menu-button');
-  if (menuButton) menuButton.addEventListener('click', () => { const open = document.body.classList.toggle('menu-open'); menuButton.setAttribute('aria-expanded', String(open)); });
+  const siteNav = document.querySelector('.site-nav');
   const normalizePath = (path) => path.replace(/index\.html$/, '').replace(/\/+$/, '') || '/';
   const currentPath = normalizePath(window.location.pathname);
   const mobilePanelMotion = matchMedia('(max-width:720px)');
+  if (menuButton && siteNav) {
+    siteNav.id ||= 'site-navigation';
+    menuButton.setAttribute('aria-controls', siteNav.id);
+    const setMenu = (open) => {
+      document.body.classList.toggle('menu-open', open);
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? '關閉選單' : '開啟選單');
+    };
+    const isOpen = () => menuButton.getAttribute('aria-expanded') === 'true';
+    menuButton.addEventListener('click', () => {
+      const open = !isOpen();
+      setMenu(open);
+      if (open) siteNav.querySelector('a')?.focus({ preventScroll:true });
+    });
+    siteNav.addEventListener('click', (event) => {
+      if (event.target.closest('a') && isOpen()) {
+        setMenu(false);
+        menuButton.focus({ preventScroll:true });
+      }
+    });
+    document.addEventListener('click', (event) => {
+      if (isOpen() && !siteNav.contains(event.target) && !menuButton.contains(event.target)) setMenu(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !isOpen()) return;
+      setMenu(false);
+      menuButton.focus({ preventScroll:true });
+    });
+    mobilePanelMotion.addEventListener('change', () => setMenu(false));
+    window.addEventListener('pageshow', () => setMenu(false));
+  }
   if (mobilePanelMotion.matches) {
     const panelSelector = [
       '.home-page main>.hero.home-intro', '.home-page main>.home-intro-copy', '.home-page main>.home-final-panel',
@@ -57,7 +95,7 @@
     const panels = [...document.querySelectorAll(panelSelector)];
     window.shuyiScrollToPanel = (panel) => {
       if (mobilePanelMotion.matches && panels.includes(panel)) {
-        panel.scrollIntoView({ behavior:'smooth', block:'start' });
+        panel.scrollIntoView({ behavior:reducedMotion.matches ? 'instant' : 'smooth', block:'start' });
       }
     };
   }
@@ -103,8 +141,13 @@
       start = null;
       if (Math.abs(dx) < 44 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
       const tabs = [...tablist.querySelectorAll(selector)];
+      if (!tabs.length) return;
       const active = Math.max(0, tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true' || tab.getAttribute('aria-pressed') === 'true'));
       const next = (active + (dx < 0 ? 1 : -1) + tabs.length) % tabs.length;
+      if (reducedMotion.matches) {
+        tabs[next].click();
+        return;
+      }
       const oldPanel = view.querySelector('.is-active');
       const outgoing = oldPanel?.cloneNode(true);
       if (outgoing) {
@@ -133,7 +176,7 @@
   enableSwipeTabs(document.querySelector('.activity-details'), document.querySelector('.activity-cards'), '[role="tab"]');
   enableSwipeTabs(document.querySelector('.journal-topic-view'), document.querySelector('.journal-topic-list'), '[data-topic]');
   const homeCards = [...document.querySelectorAll('.home-final-panel .home-link')];
-  if (homeCards.length === 3 && matchMedia('(max-width:720px)').matches && 'IntersectionObserver' in window) {
+  if (homeCards.length === 3 && mobilePanelMotion.matches && !reducedMotion.matches && 'IntersectionObserver' in window) {
     let timer = 0;
     let index = 0;
     let visible = false;
@@ -155,24 +198,30 @@
     }, { threshold:.35 });
     observer.observe(document.querySelector('.home-final-panel'));
   }
-  const typewrite = (element, text) => new Promise((resolve) => {
-    element.classList.add('journal-typewriter');
-    element.setAttribute('aria-label', text);
-    element.textContent = '';
-    let textIndex = 0;
-    const typeNext = () => {
-      if (textIndex >= text.length) { resolve(); return; }
-      const character = text[textIndex++];
-      element.textContent += character;
-      window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30);
-    };
-    typeNext();
-  });
-  document.querySelectorAll('.site-nav').forEach((nav) => { const journalLink = [...nav.querySelectorAll('a')].find((link) => normalizePath(new URL(link.href, window.location.href).pathname) === '/journal'); if (journalLink) { journalLink.textContent = '多多了解'; if (!nav.querySelector('.nav-service-details')) journalLink.insertAdjacentHTML('afterend', '<a class="nav-service-details" href="/offerings/">服務項目</a>'); } });
   if (currentPath === '/services') { const callout = document.querySelector('.callout'); if (callout && !callout.querySelector('.callout__signal')) callout.insertAdjacentHTML('beforeend', '<div class="callout__signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>'); }
-  if (currentPath === '/journal') { const journalTitle = document.querySelector('.journal-page .page-hero h1'); const journalLead = document.querySelector('.journal-page .page-hero__lead'); const journalText = '讓舒適的身體，習以為常。從身體感受開始，探索活動、日常與那些讓自己更舒服的細節；每一篇，都是舒逸正在累積的身體筆記。'; if (journalTitle) journalTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; if (journalLead) { journalLead.classList.add('journal-typewriter'); journalLead.setAttribute('aria-label', journalText); journalLead.textContent = ''; let textIndex = 0; const typeNext = () => { if (textIndex >= journalText.length) return; const character = journalText[textIndex]; journalLead.textContent += character; textIndex += 1; window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30); }; typeNext(); } }
+  const journalLead = document.querySelector('.journal-intro .page-hero__lead');
+  if (journalLead && !reducedMotion.matches) {
+    const text = journalLead.textContent.trim();
+    journalLead.classList.add('journal-typewriter');
+    journalLead.setAttribute('aria-label', text);
+    journalLead.textContent = '';
+    let index = 0;
+    const typeNext = () => {
+      const character = text[index++];
+      journalLead.textContent += character;
+      if (index < text.length) window.setTimeout(typeNext, /[，。；]/.test(character) ? 180 : 30);
+    };
+    if (text) typeNext();
+  }
   if (currentPath === '/') { const journalLinkTitle = document.querySelector('.home-link[href*="journal"] h2'); if (journalLinkTitle) journalLinkTitle.innerHTML = '讓舒適的身體<br><em>習以為常</em>'; }
-  document.querySelectorAll('.site-nav a').forEach((link) => { const linkUrl = new URL(link.href, window.location.href); const isCurrent = normalizePath(linkUrl.pathname) === currentPath && (!link.classList.contains('nav-service-details') || window.location.hash === '#service-menu' || currentPath === '/offerings'); link.classList.toggle('is-current', isCurrent); if (isCurrent) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); link.addEventListener('click', () => document.body.classList.remove('menu-open')); });
+  document.querySelectorAll('.site-nav a').forEach((link) => {
+    const linkPath = normalizePath(new URL(link.href, window.location.href).pathname);
+    const isCurrent = linkPath === currentPath;
+    const isJournalSection = linkPath === '/journal' && currentPath.startsWith('/journal/');
+    link.classList.toggle('is-current', isCurrent || isJournalSection);
+    if (isCurrent || isJournalSection) link.setAttribute('aria-current', isCurrent ? 'page' : 'location');
+    else link.removeAttribute('aria-current');
+  });
   const serviceHero = document.querySelector('.page-hero');
   if (serviceHero && currentPath === '/services' && !serviceHero.classList.contains('page-hero--service')) {
     const copy = document.createElement('div');
@@ -1140,117 +1189,149 @@
     if (intro) intro.remove();
     if (notice) notice.remove();
     const bookingPlatformUrl = document.querySelector('[data-booking-platform-outbound]')?.href || '/booking/';
-    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-demo" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__steps"></div><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="" aria-hidden="true"></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted autoplay playsinline webkit-playsinline preload="auto" poster="../素材/預約流程登入介面.jpg"><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div><div class="booking-entry__copy"><h1>把時間<br>留給<em>自己</em></h1><a class="button button--primary" data-booking-cta="true" data-booking-platform-outbound="true" href="' + escapeHtml(bookingPlatformUrl) + '" target="_blank" rel="noopener">前往舒逸線上預約 <span>↗</span></a></div></div>');
+    bookingCard.insertAdjacentHTML('beforeend', '<div class="booking-entry" data-booking-entry><div class="booking-demo" aria-label="掃描 QR Code 後開啟預約流程示意動畫"><div class="booking-browser__steps"></div><div class="booking-demo__scene"><div class="booking-demo__scan-target"><small>SCAN TO BOOK</small><img src="../素材/L_gainfriends_2dbarcodes_BW.png" alt="" aria-hidden="true"></div><div class="booking-demo__phone" aria-hidden="true"><div class="booking-demo__phone-screen"><video class="booking-demo__video" muted playsinline webkit-playsinline preload="none" poster="../素材/預約流程登入介面.jpg"><source src="../素材/預約流程影片.mp4" type="video/mp4"></video></div></div><span class="booking-demo__scan-line" aria-hidden="true"></span><span class="booking-demo__caption booking-demo__caption--scan">掃描 QR Code</span><span class="booking-demo__caption booking-demo__caption--login">LINE 登入</span><span class="booking-demo__caption booking-demo__caption--flow">進入預約流程</span></div><div class="booking-demo__status"><span></span><b>預約入口示意</b><em>QR → 登入 → 預約</em></div></div><div class="booking-entry__copy"><h1>把時間<br>留給<em>自己</em></h1><a class="button button--primary" data-booking-cta="true" data-booking-platform-outbound="true" href="' + escapeHtml(bookingPlatformUrl) + '" target="_blank" rel="noopener">前往舒逸線上預約 <span>↗</span></a></div></div>');
     const bookingSteps = bookingCard.querySelector('.booking-demo .booking-browser__steps');
     if (bookingSteps) bookingSteps.className = 'booking-browser__steps';
     if (bookingSteps) bookingSteps.innerHTML = '<b class="booking-browser__step booking-browser__step--scan">01 / 掃 QR Code 或點連結</b><b class="booking-browser__step booking-browser__step--login">02 / 登入 LINE</b><b class="booking-browser__step booking-browser__step--time">03 / 選日期與時間</b><b class="booking-browser__step booking-browser__step--service">04 / 選服務項目</b><b class="booking-browser__step booking-browser__step--confirm">05 / 確認預約</b>';
     const bookingVideo = bookingCard.querySelector('.booking-demo__video');
-    if (bookingVideo) { bookingVideo.loop = false; bookingVideo.muted = true; bookingVideo.playsInline = true; bookingVideo.preload = 'auto'; }
     const bookingStepItems = [...bookingCard.querySelectorAll('.booking-browser__step')];
-    const bookingCycleMs = 29000;
-    const bookingScanMs = 4500;
-    const bookingLoginMs = 10500;
-    const bookingTimeMs = 14500;
-    const bookingServiceMs = 18000;
-    const bookingVideoMaxTime = 19;
-    const bookingVideoFadeStart = 18.5;
-    let bookingVideoStopped = false;
-    let bookingVideoReady = false;
-    let bookingPreviousPhase = 0;
-    const bookingCycleStarted = performance.now();
-    const stopBookingVideoAtLimit = () => {
-      if (bookingVideo && bookingVideo.currentTime >= bookingVideoFadeStart) {
-        bookingVideo.classList.remove('is-active');
-      }
-      if (bookingVideo && bookingVideo.currentTime >= bookingVideoMaxTime) {
-        bookingVideoStopped = true;
-        bookingVideo.pause();
-        bookingVideo.currentTime = bookingVideoMaxTime;
-        bookingVideo.classList.remove('is-active');
-      }
-    };
-    if (bookingVideo) {
-      const tryStartBookingVideo = () => {
-        bookingVideoReady = bookingVideo.readyState >= 2;
-        if (bookingVideoReady && !bookingVideoStopped && performance.now() - bookingCycleStarted >= bookingScanMs) bookingVideo.play().catch(() => {});
+    if (reducedMotion.matches) bookingStepItems[0]?.classList.add('is-active');
+    else {
+      const bookingCycleMs = 29000;
+      const bookingScanMs = 4500;
+      const bookingLoginMs = 10500;
+      const bookingTimeMs = 14500;
+      const bookingServiceMs = 18000;
+      const bookingVideoMaxTime = 19;
+      const bookingVideoFadeStart = 18.5;
+      let bookingVideoStopped = false;
+      let bookingVideoReady = false;
+      let bookingPreviousPhase = 0;
+      let bookingCycleStarted = performance.now();
+      let bookingTimer = 0;
+      const stopBookingVideoAtLimit = () => {
+        if (bookingVideo && bookingVideo.currentTime >= bookingVideoFadeStart) {
+          bookingVideo.classList.remove('is-active');
+        }
+        if (bookingVideo && bookingVideo.currentTime >= bookingVideoMaxTime) {
+          bookingVideoStopped = true;
+          bookingVideo.pause();
+          bookingVideo.currentTime = bookingVideoMaxTime;
+          bookingVideo.classList.remove('is-active');
+        }
       };
-      bookingVideo.addEventListener('loadeddata', tryStartBookingVideo, { once:false });
-      bookingVideo.addEventListener('canplay', tryStartBookingVideo, { once:false });
-      bookingVideo.addEventListener('timeupdate', stopBookingVideoAtLimit);
-      bookingVideo.addEventListener('ended', () => {
-        bookingVideoStopped = true;
-        bookingVideo.classList.remove('is-active');
-      });
-      bookingVideo.load();
-    }
-    const syncBookingDemo = () => {
-      const phase = (performance.now() - bookingCycleStarted) % bookingCycleMs;
-      if (phase < bookingPreviousPhase) bookingVideoStopped = false;
-      bookingPreviousPhase = phase;
-      const activeStep = phase < bookingScanMs ? 0 : phase < bookingLoginMs ? 1 : phase < bookingTimeMs ? 2 : phase < bookingServiceMs ? 3 : 4;
-      bookingStepItems.forEach((step, index) => step.classList.toggle('is-active', index === activeStep));
-      if (!bookingVideo) return;
-      bookingVideo.classList.toggle('is-active', phase >= bookingScanMs && !bookingVideoStopped && bookingVideo.currentTime < bookingVideoFadeStart);
-      if (phase < bookingScanMs) {
-        if (!bookingVideo.paused) bookingVideo.pause();
-        if (bookingVideo.currentTime !== 0) bookingVideo.currentTime = 0;
-        bookingVideoStopped = false;
-      } else if (bookingVideoStopped) {
-        if (!bookingVideo.paused) bookingVideo.pause();
-      } else if (bookingVideo.currentTime >= bookingVideoMaxTime) {
-        bookingVideoStopped = true;
-        if (!bookingVideo.paused) bookingVideo.pause();
-        if (bookingVideo.currentTime > bookingVideoMaxTime) bookingVideo.currentTime = bookingVideoMaxTime;
-        bookingVideo.classList.remove('is-active');
-      } else if (bookingVideo.paused && !bookingVideo.ended && (bookingVideoReady || bookingVideo.readyState >= 2)) {
-        bookingVideo.currentTime = 0;
-        bookingVideo.play().catch(() => {});
+      if (bookingVideo) {
+        const tryStartBookingVideo = () => {
+          bookingVideoReady = bookingVideo.readyState >= 2;
+          if (bookingTimer && bookingVideoReady && !bookingVideoStopped && performance.now() - bookingCycleStarted >= bookingScanMs) bookingVideo.play().catch(() => {});
+        };
+        bookingVideo.addEventListener('loadeddata', tryStartBookingVideo, { once:false });
+        bookingVideo.addEventListener('canplay', tryStartBookingVideo, { once:false });
+        bookingVideo.addEventListener('timeupdate', stopBookingVideoAtLimit);
+        bookingVideo.addEventListener('ended', () => {
+          bookingVideoStopped = true;
+          bookingVideo.classList.remove('is-active');
+        });
       }
-    };
-    syncBookingDemo();
-    window.setInterval(syncBookingDemo, 120);
+      const syncBookingDemo = () => {
+        const phase = (performance.now() - bookingCycleStarted) % bookingCycleMs;
+        if (phase < bookingPreviousPhase) bookingVideoStopped = false;
+        bookingPreviousPhase = phase;
+        const activeStep = phase < bookingScanMs ? 0 : phase < bookingLoginMs ? 1 : phase < bookingTimeMs ? 2 : phase < bookingServiceMs ? 3 : 4;
+        bookingStepItems.forEach((step, index) => step.classList.toggle('is-active', index === activeStep));
+        if (!bookingVideo) return;
+        bookingVideo.classList.toggle('is-active', phase >= bookingScanMs && !bookingVideoStopped && bookingVideo.currentTime < bookingVideoFadeStart);
+        if (phase < bookingScanMs) {
+          if (!bookingVideo.paused) bookingVideo.pause();
+          if (bookingVideo.currentTime !== 0) bookingVideo.currentTime = 0;
+          bookingVideoStopped = false;
+        } else if (bookingVideoStopped) {
+          if (!bookingVideo.paused) bookingVideo.pause();
+        } else if (bookingVideo.currentTime >= bookingVideoMaxTime) {
+          bookingVideoStopped = true;
+          if (!bookingVideo.paused) bookingVideo.pause();
+          if (bookingVideo.currentTime > bookingVideoMaxTime) bookingVideo.currentTime = bookingVideoMaxTime;
+          bookingVideo.classList.remove('is-active');
+        } else if (bookingVideo.paused && !bookingVideo.ended && (bookingVideoReady || bookingVideo.readyState >= 2)) {
+          bookingVideo.currentTime = 0;
+          bookingVideo.play().catch(() => {});
+        }
+      };
+      const startBookingDemo = () => {
+        if (bookingTimer) return;
+        if (bookingVideo && bookingVideo.preload === 'none') {
+          bookingVideo.preload = 'auto';
+          bookingVideo.load();
+        }
+        bookingCycleStarted = performance.now();
+        syncBookingDemo();
+        bookingTimer = window.setInterval(syncBookingDemo, 120);
+      };
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) startBookingDemo();
+          else {
+            window.clearInterval(bookingTimer);
+            bookingTimer = 0;
+            bookingVideo?.pause();
+          }
+        }, { rootMargin:'-68px 0px 0px' });
+        observer.observe(bookingCard);
+      } else startBookingDemo();
+    }
   }
   const grid = document.querySelector('#content-grid');
   if (grid) {
     let activeFilter = 'all';
+    const emptyState = '<div class="journal-empty-state" role="img" aria-label="逸石說：沒有資料唷"><img src="../素材/人物/AI加工/12_逸石_稜角石_綠圍巾揮手.webp?v=1.0.43" alt=""><span class="journal-empty-state__bubble">沒有資料唷</span></div>';
     const returnStateKey = 'shuyi-journal-return';
+    const filterButtons = [...grid.closest('.journal-carousel').querySelectorAll('[data-filter]')];
+    const setFilter = (value) => {
+      activeFilter = filterButtons.some((button) => button.dataset.filter === value) ? value : 'all';
+      filterButtons.forEach((button) => {
+        const selected = button.dataset.filter === activeFilter;
+        button.classList.toggle('is-active', selected);
+        button.setAttribute('aria-pressed', String(selected));
+      });
+      renderContent();
+    };
     const restoreListPosition = () => {
       if (window.location.hash !== '#journal-return') return;
       let saved;
       try { saved = JSON.parse(sessionStorage.getItem(returnStateKey) || 'null'); } catch { saved = null; }
       if (!saved) return;
-      activeFilter = saved.filter || 'all';
-      const selected = document.querySelector(`[data-filter="${activeFilter}"]`);
-      if (selected) {
-        document.querySelectorAll('[data-filter]').forEach((button) => { button.classList.toggle('is-active', button === selected); button.setAttribute('aria-selected', String(button === selected)); });
-      }
-      renderContent();
+      setFilter(saved.filter);
+      carousel.centerLink(saved.href);
       requestAnimationFrame(() => requestAnimationFrame(() => {
-        window.scrollTo(0, Number(saved.scrollY) || 0);
+        window.scrollTo({ top:Number(saved.scrollY) || 0, behavior:'instant' });
         sessionStorage.removeItem(returnStateKey);
       }));
     };
     grid.addEventListener('click', (event) => {
       const link = event.target.closest('a[href]');
-      if (!link || !/^\.\/|^\/journal\//.test(link.getAttribute('href') || '')) return;
-      try { sessionStorage.setItem(returnStateKey, JSON.stringify({ scrollY: window.scrollY, filter: activeFilter })); } catch {}
+      if (!link || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      try { sessionStorage.setItem(returnStateKey, JSON.stringify({ scrollY: window.scrollY, filter: activeFilter, href:link.pathname })); } catch {}
     });
     let carousel = null;
     const renderContent = () => {
       if (!Array.isArray(window.SHU_YI_CONTENT)) {
-        grid.querySelectorAll('[data-content-type]').forEach((card) => { card.hidden = activeFilter !== 'all' && card.dataset.contentType !== activeFilter; });
+        const cards = [...grid.querySelectorAll('[data-content-type]')];
+        cards.forEach((card) => { card.hidden = activeFilter !== 'all' && card.dataset.contentType !== activeFilter; });
+        const previousEmpty = grid.querySelector('.journal-empty-state');
+        if (cards.some((card) => !card.hidden)) previousEmpty?.remove();
+        else if (!previousEmpty) grid.insertAdjacentHTML('beforeend', emptyState);
         if (carousel) carousel.refresh(); else carousel = createJournalCarousel(grid);
         return;
       }
       const items = window.SHU_YI_CONTENT.filter((item) => activeFilter === 'all' || item.type === activeFilter);
-      grid.innerHTML = items.length ? items.map((item, index) => { const title = escapeHtml(item.title); const href = escapeHtml(item.href); const visual = item.cover ? `<img class="card-cover" src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.imageAlt)}" loading="eager" draggable="false">` : item.type === 'video' ? `<button class="card-play" ${item.embed_url ? `data-youtube="${escapeHtml(item.embed_url)}"` : `data-video="${escapeHtml(item.video)}"`} aria-label="播放 ${title}">▶</button>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`; return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}" role="group" aria-label="內容卡片：${title}" style="--card-index:${index}"><a class="content-card__hit-area" href="${href}" aria-label="閱讀內容：${title}"></a><div class="card-art">${visual}</div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p></article>`; }).join('') : '<div class="journal-empty-state" role="img" aria-label="逸石說：沒有資料唷"><img src="../素材/人物/AI加工/12_逸石_稜角石_綠圍巾揮手.webp?v=1.0.43" alt="逸石"><span class="journal-empty-state__bubble">沒有資料唷</span></div>';
+      grid.innerHTML = items.length ? items.map((item, index) => { const title = escapeHtml(item.title); const href = escapeHtml(item.href); const visual = item.cover ? `<img class="card-cover" src="${escapeHtml(item.cover)}" alt="${escapeHtml(item.imageAlt)}" loading="eager" draggable="false">` : item.type === 'video' && (item.embed_url || item.video) ? `<button class="card-play" ${item.embed_url ? `data-youtube="${escapeHtml(item.embed_url)}"` : `data-video="${escapeHtml(item.video)}"`} aria-label="播放 ${title}">▶</button>` : `<span>${escapeHtml(item.type).toUpperCase()}</span>`; return `<article class="content-card content-card--${escapeHtml(item.accent)}" data-content-type="${escapeHtml(item.type)}" role="group" aria-label="內容卡片：${title}" style="--card-index:${index}"><a class="content-card__hit-area" href="${href}" aria-label="閱讀內容：${title}"></a><div class="card-art">${visual}</div><div class="card-meta"><span>${escapeHtml(item.tag)}</span><span>${escapeHtml(item.date)}</span></div><h3>${title}</h3><p>${escapeHtml(item.excerpt)}</p></article>`; }).join('') : emptyState;
       if (carousel) carousel.refresh(); else carousel = createJournalCarousel(grid);
     };
     const createJournalCarousel = (stage) => {
       const canvas = document.querySelector('.journal-carousel__gradient');
       const context = canvas?.getContext('2d', { alpha:false });
       const status = document.querySelector('[data-carousel-status]');
-      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reduceMotion = reducedMotion.matches;
       const palette = { peach:['#ba6873','#f1b5a0'], violet:['#715987','#c6a1d7'], lime:['#758454','#d1d9a4'] };
       const state = { cards:[], positions:[], step:0, track:0, centerX:0, x:0, targetX:null, velocity:0, tugX:0, tugV:0, active:-1, lastTime:0, pointerId:null, pointerX:0, lastX:0, lastPointerTime:0, dragMoved:false, raf:0, size:[0,0], from:['#c99c92','#e7c5bb'], to:['#c99c92','#e7c5bb'], gradientAt:0 };
       const hexRgb = (hex) => hex.match(/[\da-f]{2}/gi).map((part) => parseInt(part,16));
@@ -1278,6 +1359,7 @@
       const resize = () => { const rect=stage.getBoundingClientRect(); state.size=[Math.max(1,rect.width),Math.max(1,rect.height)]; if(canvas){const dpr=Math.min(devicePixelRatio||1,1.5); canvas.width=Math.round(state.size[0]*dpr);canvas.height=Math.round(state.size[1]*dpr);context?.setTransform(dpr,0,0,dpr,0,0);} measure(); };
       const measure = () => { const sample=state.cards[0];const gridRect=stage.getBoundingClientRect();state.centerX=innerWidth/2-gridRect.left;if(!sample){state.track=0;return;}state.step=(sample.offsetWidth||340)+28;state.track=state.cards.length*state.step;state.x=state.track?((state.x%state.track)+state.track)%state.track:0;if(state.targetX!==null&&state.track)state.targetX=((state.targetX%state.track)+state.track)%state.track; };
       const render = (time) => {
+        state.raf = 0;
         const dt=state.lastTime?Math.min(.05,(time-state.lastTime)/1000):0;state.lastTime=time;
         if(state.cards.length<=2){if(!state.pointerId&&!reduceMotion){state.tugV+=(-state.tugX*52-state.tugV*14)*dt;state.tugX+=state.tugV*dt;if(Math.abs(state.tugX)<.08&&Math.abs(state.tugV)<.08){state.tugX=0;state.tugV=0;}}const offset=state.step*.5;state.cards.forEach((card,i)=>{const pos=(state.cards.length===2?(i===0?-offset:offset):0)+state.tugX;state.positions[i]=pos;const norm=Math.max(-1,Math.min(1,pos/(innerWidth/2)));const depth=state.cards.length===2?70:140;const scale=state.cards.length===2?0.9:1;card.style.left=`${state.centerX}px`;card.style.transform=`translate3d(calc(-50% + ${pos}px),-50%,${depth}px) rotateY(${-norm*14}deg) scale(${scale})`;card.style.zIndex=String(i===0?1002:1001);card.style.filter='none';});if(state.cards.length)setActive(0);}
         else if(state.targetX!==null&&state.track&&!state.pointerId&&!reduceMotion){const half=state.track/2;const delta=((state.targetX-state.x+half)%state.track+state.track)%state.track-half;state.x+=delta*(1-Math.exp(-16*dt));if(Math.abs(delta)<.3){state.x=state.targetX;state.targetX=null;state.velocity=0;}}
@@ -1287,28 +1369,95 @@
           const previous=(closest-1+state.cards.length)%state.cards.length;const next=(closest+1)%state.cards.length;
           state.cards.forEach((card,i)=>{const pos=state.positions[i];const norm=Math.max(-1,Math.min(1,pos/(innerWidth/2)));const depth=(1-Math.abs(norm))*140;const scale=.92+(1-Math.abs(norm))*.1;card.style.left=`${state.centerX}px`;card.style.transform=`translate3d(calc(-50% + ${pos}px),-50%,${depth}px) rotateY(${-norm*28}deg) scale(${scale})`;card.style.zIndex=String(1000+Math.round(depth));const blur=i===closest||i===previous||i===next?0:2.6*Math.pow(Math.abs(norm),1.1);card.style.filter=`blur(${blur.toFixed(2)}px)`;});setActive(closest);
         }
-        if(context&&canvas){const [w,h]=state.size;const t=Math.min(1,(time-state.gradientAt)/800);const c1=hexRgb(state.from[0]).map((v,i)=>v+(hexRgb(state.to[0])[i]-v)*t);const c2=hexRgb(state.from[1]).map((v,i)=>v+(hexRgb(state.to[1])[i]-v)*t);const rgb=(c)=>`rgb(${c.map(Math.round).join(',')})`;context.clearRect(0,0,w,h);const g=context.createLinearGradient(0,0,w,h);g.addColorStop(0,rgb(c1));g.addColorStop(1,rgb(c2));context.fillStyle=g;context.fillRect(0,0,w,h);const pulse=context.createRadialGradient(w*(.5+Math.sin(time*.00022)*.2),h*(.5+Math.cos(time*.00018)*.15),0,w*.5,h*.5,Math.max(w,h)*.72);pulse.addColorStop(0,'rgba(255,255,255,.34)');pulse.addColorStop(1,'rgba(255,255,255,0)');context.fillStyle=pulse;context.fillRect(0,0,w,h);}
-        state.raf=requestAnimationFrame(render);
+        if(context&&canvas){const [w,h]=state.size;const t=reduceMotion ? 1 : Math.min(1,(time-state.gradientAt)/800);const c1=hexRgb(state.from[0]).map((v,i)=>v+(hexRgb(state.to[0])[i]-v)*t);const c2=hexRgb(state.from[1]).map((v,i)=>v+(hexRgb(state.to[1])[i]-v)*t);const rgb=(c)=>`rgb(${c.map(Math.round).join(',')})`;context.clearRect(0,0,w,h);const g=context.createLinearGradient(0,0,w,h);g.addColorStop(0,rgb(c1));g.addColorStop(1,rgb(c2));context.fillStyle=g;context.fillRect(0,0,w,h);const pulse=context.createRadialGradient(w*(.5+Math.sin((reduceMotion ? 0 : time)*.00022)*.2),h*(.5+Math.cos((reduceMotion ? 0 : time)*.00018)*.15),0,w*.5,h*.5,Math.max(w,h)*.72);pulse.addColorStop(0,'rgba(255,255,255,.34)');pulse.addColorStop(1,'rgba(255,255,255,0)');context.fillStyle=pulse;context.fillRect(0,0,w,h);}
+        if (!reduceMotion) queueRender();
+      };
+      let visible = !('IntersectionObserver' in window);
+      const queueRender = () => {
+        if (visible && !state.raf) state.raf = requestAnimationFrame(render);
       };
       const refresh = () => { state.cards=[...stage.querySelectorAll('.content-card')].filter((card)=>!card.hidden);state.positions=new Array(state.cards.length);state.active=-1;state.x=0;state.targetX=null;state.velocity=0;state.tugX=0;state.tugV=0;stage.classList.toggle('has-two-cards',state.cards.length===2);resize();const controls=document.querySelector('.journal-carousel__controls');if(controls){controls.hidden=state.cards.length===0;controls.querySelectorAll('[data-carousel-step]').forEach((button)=>{button.hidden=state.cards.length<3;});}if(state.cards.length){state.x=0;setActive(0);}else if(status)status.textContent='目前沒有這個分類的內容'; };
-      const turn=(direction)=>{if(state.cards.length<=2||!state.track)return;state.velocity=0;if(reduceMotion){state.targetX=null;state.x+=direction*state.step;}else{const base=state.targetX===null?state.x:state.targetX;state.targetX=((base+direction*state.step)%state.track+state.track)%state.track;}};
-      stage.addEventListener('wheel',(event)=>{if(state.cards.length<=2)return;event.preventDefault();state.targetX=null;const delta=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;state.velocity+=delta*.6*20;},{passive:false});
+      const turn=(direction)=>{if(state.cards.length<=2||!state.track)return;state.velocity=0;if(reduceMotion){state.targetX=null;state.x+=direction*state.step;queueRender();}else{const base=state.targetX===null?state.x:state.targetX;state.targetX=((base+direction*state.step)%state.track+state.track)%state.track;}};
+      stage.addEventListener('wheel',(event)=>{if(state.cards.length<=2 || reduceMotion || event.ctrlKey)return;event.preventDefault();state.targetX=null;const delta=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;state.velocity+=delta*.6*20;},{passive:false});
       stage.addEventListener('pointerdown',(event)=>{if(event.target.closest('button'))return;if(event.button!==undefined&&event.button!==0)return;state.pointerId=event.pointerId;state.targetX=null;state.pointerX=state.lastX=event.clientX;state.lastPointerTime=performance.now();state.dragMoved=false;state.velocity=0;state.tugV=0;document.querySelector('.journal-carousel')?.classList.add('is-dragging');});
-      window.addEventListener('pointermove',(event)=>{if(state.pointerId!==event.pointerId)return;const now=performance.now();const dx=event.clientX-state.lastX;const dt=Math.max(1,now-state.lastPointerTime)/1000;if(state.cards.length<=2){const tugDelta=dx*.24;state.tugX=Math.max(-24,Math.min(24,state.tugX+tugDelta));state.tugV=Math.max(-220,Math.min(220,tugDelta/dt));}else{state.x-=dx;state.velocity=-dx/dt;}state.dragMoved=state.dragMoved||Math.abs(event.clientX-state.pointerX)>8;state.lastX=event.clientX;state.lastPointerTime=now;});
-      stage.addEventListener('click',(event)=>{if(!state.dragMoved)return;event.preventDefault();event.stopPropagation();state.dragMoved=false;},true);
-      const release=(event)=>{if(state.pointerId!==event.pointerId)return;state.pointerId=null;if(state.cards.length<=2&&reduceMotion){state.tugX=0;state.tugV=0;}document.querySelector('.journal-carousel')?.classList.remove('is-dragging');};
+      window.addEventListener('pointermove',(event)=>{if(state.pointerId!==event.pointerId)return;const now=performance.now();const dx=event.clientX-state.lastX;const dt=Math.max(1,now-state.lastPointerTime)/1000;if(state.cards.length<=2){const tugDelta=dx*.24;state.tugX=Math.max(-24,Math.min(24,state.tugX+tugDelta));state.tugV=Math.max(-220,Math.min(220,tugDelta/dt));}else{state.x-=dx;state.velocity=-dx/dt;}state.dragMoved=state.dragMoved||Math.abs(event.clientX-state.pointerX)>8;state.lastX=event.clientX;state.lastPointerTime=now;queueRender();});
+      stage.addEventListener('click',(event)=>{if(!state.dragMoved || event.detail === 0)return;event.preventDefault();event.stopPropagation();state.dragMoved=false;},true);
+      const release=(event)=>{if(state.pointerId!==event.pointerId)return;state.pointerId=null;if(state.cards.length<=2&&reduceMotion){state.tugX=0;state.tugV=0;queueRender();}document.querySelector('.journal-carousel')?.classList.remove('is-dragging');};
       window.addEventListener('pointerup',release);window.addEventListener('pointercancel',release);stage.addEventListener('keydown',(event)=>{if(event.target!==stage)return;if(event.key==='ArrowRight'){event.preventDefault();turn(1);}if(event.key==='ArrowLeft'){event.preventDefault();turn(-1);}});
       document.querySelectorAll('[data-carousel-step]').forEach((button)=>button.addEventListener('click',()=>turn(button.dataset.carouselStep==='previous'?-1:1)));
-      addEventListener('resize',resize);refresh();state.raf=requestAnimationFrame(render);return {refresh};
+      const centerCard = (card) => {
+        const index = state.cards.indexOf(card);
+        if (index < 0 || state.cards.length < 3) return;
+        state.x = index * state.step;
+        state.targetX = null;
+        state.velocity = 0;
+        stage.scrollLeft = 0;
+        queueRender();
+      };
+      stage.addEventListener('focusin', (event) => {
+        if (event.target.matches(':focus-visible')) centerCard(event.target.closest('.content-card'));
+      });
+      addEventListener('resize', () => { resize(); queueRender(); });
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(([entry]) => {
+          visible = entry.isIntersecting;
+          if (visible) queueRender();
+          else {
+            cancelAnimationFrame(state.raf);
+            state.raf = 0;
+            state.lastTime = 0;
+          }
+        });
+        observer.observe(stage);
+      }
+      refresh();
+      queueRender();
+      return {
+        refresh() { refresh(); queueRender(); },
+        centerLink(href) {
+          if (href) centerCard(state.cards.find((card) => card.querySelector('a')?.pathname === href));
+        }
+      };
     };
     renderContent();
     document.addEventListener('shuyi-content-ready', renderContent);
     if (window.SHU_YI_CONTENT_READY && typeof window.SHU_YI_CONTENT_READY.then === 'function') window.SHU_YI_CONTENT_READY.then(restoreListPosition);
     else restoreListPosition();
-    document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => { document.querySelectorAll('[data-filter]').forEach((item) => { item.classList.remove('is-active'); item.setAttribute('aria-selected', 'false'); }); button.classList.add('is-active'); button.setAttribute('aria-selected', 'true'); activeFilter = button.dataset.filter; renderContent(); }));
+    filterButtons.forEach((button) => button.addEventListener('click', () => setFilter(button.dataset.filter)));
   }
-  const videoDialog = document.querySelector('#video-dialog'); const dialogVideo = document.querySelector('#dialog-video');
-  if (videoDialog && dialogVideo) { const dialogYoutube = document.createElement('iframe'); dialogYoutube.id = 'dialog-youtube'; dialogYoutube.title = 'YouTube 影片'; dialogYoutube.hidden = true; dialogYoutube.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; dialogYoutube.allowFullscreen = true; dialogVideo.after(dialogYoutube); document.addEventListener('click', (event) => { const play = event.target.closest('[data-video],[data-youtube]'); if (!play) return; event.preventDefault(); if (play.dataset.youtube) { dialogVideo.pause(); dialogVideo.removeAttribute('src'); dialogVideo.hidden = true; dialogYoutube.src = play.dataset.youtube; dialogYoutube.hidden = false; } else { dialogYoutube.removeAttribute('src'); dialogYoutube.hidden = true; dialogVideo.hidden = false; dialogVideo.src = play.dataset.video; dialogVideo.play(); } videoDialog.showModal(); }); videoDialog.querySelector('.dialog-close').addEventListener('click', () => { dialogVideo.pause(); dialogVideo.removeAttribute('src'); dialogYoutube.removeAttribute('src'); videoDialog.close(); }); }
+  const videoDialog = document.querySelector('#video-dialog');
+  const dialogVideo = document.querySelector('#dialog-video');
+  if (videoDialog && dialogVideo) {
+    const dialogYoutube = document.createElement('iframe');
+    dialogYoutube.title = 'YouTube 影片';
+    dialogYoutube.hidden = true;
+    dialogYoutube.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    dialogYoutube.allowFullscreen = true;
+    dialogVideo.after(dialogYoutube);
+    videoDialog.setAttribute('aria-label', '影片播放器');
+    videoDialog.querySelector('.dialog-close').addEventListener('click', () => videoDialog.close());
+    videoDialog.addEventListener('close', () => {
+      dialogVideo.pause();
+      dialogVideo.removeAttribute('src');
+      dialogVideo.load();
+      dialogYoutube.removeAttribute('src');
+    });
+    document.addEventListener('click', (event) => {
+      const play = event.target.closest('[data-video],[data-youtube]');
+      if (!play || videoDialog.open) return;
+      const { video, youtube } = play.dataset;
+      if (!video && !youtube) return;
+      event.preventDefault();
+      dialogVideo.hidden = Boolean(youtube);
+      dialogYoutube.hidden = !youtube;
+      videoDialog.showModal();
+      if (youtube) dialogYoutube.src = youtube;
+      else {
+        dialogVideo.src = video;
+        dialogVideo.play().catch(() => {});
+      }
+    });
+  }
   document.body.style.visibility = 'visible';
   document.body.style.animation = 'none';
 })();
