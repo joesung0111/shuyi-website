@@ -1641,6 +1641,7 @@ body .offering-panel--series>.site-footer{width:auto}
     box-sizing:border-box;scroll-snap-align:start;scroll-snap-stop:always;overflow-x:clip
   }
   .home-page main>.home-intro-copy.reveal-on-scroll,
+  .home-final-panel>.home-links.reveal-on-scroll,
   .snap-page main>section.reveal-on-scroll,main.snap-page>section.reveal-on-scroll,.offerings-page>section.reveal-on-scroll{
     opacity:1!important;transform:none!important;filter:none!important;transition:none!important
   }
