@@ -67,13 +67,28 @@
     let scrollDirection = 0;
     let gestureActive = false;
     let wheelGestureTimer = 0;
+    let programmaticScrollEndPending = false;
+    let anchorGuardActive = false;
+    const rootInlineOverflowAnchor = document.documentElement.style.overflowAnchor;
     const visualViewport = window.visualViewport;
+    const lockScrollAnchor = () => {
+      if (anchorGuardActive) return;
+      document.documentElement.style.overflowAnchor = 'none';
+      anchorGuardActive = true;
+    };
+    const unlockScrollAnchor = () => {
+      if (!anchorGuardActive) return;
+      document.documentElement.style.overflowAnchor = rootInlineOverflowAnchor;
+      anchorGuardActive = false;
+    };
     const cancelSettle = () => {
       window.clearTimeout(settleTimer);
       if (animationFrame) cancelAnimationFrame(animationFrame);
       animationFrame = 0;
       settling = false;
       settlePending = false;
+      programmaticScrollEndPending = false;
+      unlockScrollAnchor();
     };
     const destinationFor = (panel) => Math.max(0, window.scrollY + panel.getBoundingClientRect().top - 68);
     const nearestPanelIndex = (position = window.scrollY) => panels.reduce((bestIndex, panel, index) => {
@@ -98,26 +113,35 @@
     const scrollToPanel = (panel) => {
       if (!mobilePanelMotion.matches || !panel || !panels.includes(panel)) return;
       window.clearTimeout(settleTimer);
+      settlePending = false;
       if (animationFrame) cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
       const start = window.scrollY;
       const end = destinationFor(panel);
       const distance = end - start;
-      if (Math.abs(distance) < 3) { settling = false; return; }
+      if (Math.abs(distance) < 3) {
+        settling = false;
+        programmaticScrollEndPending = false;
+        unlockScrollAnchor();
+        return;
+      }
       const duration = Math.min(820, Math.max(520, Math.abs(distance) * .72));
       const startedAt = performance.now();
       settling = true;
+      programmaticScrollEndPending = true;
+      lockScrollAnchor();
       const tick = (now) => {
         const progress = Math.min(1, (now - startedAt) / duration);
         const eased = progress < .5 ? 4 * progress ** 3 : 1 - ((-2 * progress + 2) ** 3) / 2;
-        // Re-read the panel position throughout the tween. On mobile Chrome the
-        // dynamic toolbar can resize 100dvh panels while the animation is running.
-        const currentEnd = destinationFor(panel);
-        window.scrollTo(0, start + (currentEnd - start) * eased);
+        // Keep one destination for the whole tween. Re-measuring a 100dvh panel
+        // every frame while Chrome animates its toolbar can reverse the target.
+        window.scrollTo(0, start + distance * eased);
         if (progress < 1) animationFrame = requestAnimationFrame(tick);
         else {
-          window.scrollTo(0, currentEnd);
+          window.scrollTo(0, end);
           animationFrame = 0;
           settling = false;
+          unlockScrollAnchor();
         }
       };
       animationFrame = requestAnimationFrame(tick);
@@ -148,6 +172,10 @@
       if (Math.abs(target - current) > 12) scrollToPanel(targetPanel);
     };
     const scheduleSettle = (event) => {
+      if (event?.type === 'scrollend' && programmaticScrollEndPending) {
+        if (!settling) programmaticScrollEndPending = false;
+        return;
+      }
       if (!mobilePanelMotion.matches || settling) return;
       settlePending = true;
       // Prefer scrollend, which fires after native touch momentum. Keep a longer
