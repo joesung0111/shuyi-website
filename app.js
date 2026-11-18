@@ -1283,7 +1283,7 @@
   const grid = document.querySelector('#content-grid');
   if (grid) {
     let activeFilter = 'all';
-    const emptyState = '<div class="journal-empty-state" role="img" aria-label="逸石說：沒有資料唷"><img src="../素材/人物/AI加工/12_逸石_稜角石_綠圍巾揮手.webp?v=1.0.43" alt=""><span class="journal-empty-state__bubble">沒有資料唷</span></div>';
+    const emptyState = '<div class="journal-empty-state" role="img" aria-label="逸石說：沒有資料唷"><img src="../素材/人物/AI加工/12_逸石_稜角石_綠圍巾揮手.webp?v=1.0.43" width="520" height="520" alt=""><span class="journal-empty-state__bubble">沒有資料唷</span></div>';
     const returnStateKey = 'shuyi-journal-return';
     const filterButtons = [...grid.closest('.journal-carousel').querySelectorAll('[data-filter]')];
     const setFilter = (value) => {
