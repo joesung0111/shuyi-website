@@ -1663,7 +1663,7 @@ body .offering-panel--series>.site-footer{width:auto}
 @media(max-width:720px){
   html:has(body.home-page),html:has(.services-page),html:has(.journal-page),
   html:has(.offerings-page),html:has(.studio-page),html:has(.booking-page),html:has(.snap-page){
-    scroll-snap-type:none!important;scroll-behavior:auto!important;
+    scroll-snap-type:y mandatory!important;scroll-behavior:auto!important;
     scroll-padding-top:68px;overscroll-behavior-y:auto
   }
   .home-page main>.hero.home-intro,.home-page main>.home-intro-copy,.home-page main>.home-final-panel,
@@ -1673,7 +1673,7 @@ body .offering-panel--series>.site-footer{width:auto}
   .studio-page.snap-panel,.studio-details.snap-panel,
   .booking-card.snap-panel,.booking-guide-panel.snap-panel,.booking-policy-panel.snap-panel{
     height:calc(100dvh - 68px);min-height:calc(100dvh - 68px);max-height:calc(100dvh - 68px);
-    scroll-snap-align:none!important;scroll-snap-stop:normal
+    scroll-snap-align:start!important;scroll-snap-stop:normal
   }
   .hero.home-intro{height:calc(100dvh - 68px);min-height:calc(100dvh - 68px)}
   .snap-page main>.snap-panel,main.snap-page>.snap-panel,.offerings-page>.snap-panel,
@@ -1718,4 +1718,8 @@ body .offering-panel--series>.site-footer{width:auto}
 }
 @media(max-width:720px) and (prefers-reduced-motion:reduce){
   .home-final-panel .home-link.is-image-clear::before,.home-final-panel .home-link:first-child.is-image-clear::after{animation:none}
+}
+@media(max-width:720px) and (prefers-reduced-motion:reduce){
+  html:has(body.home-page),html:has(.services-page),html:has(.journal-page),
+  html:has(.offerings-page),html:has(.studio-page),html:has(.booking-page),html:has(.snap-page){scroll-snap-type:none!important}
 }
