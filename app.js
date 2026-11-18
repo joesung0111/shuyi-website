@@ -61,6 +61,12 @@
     let settlePending = false;
     let settleDelay = 320;
     let viewportChangedAt = 0;
+    let gestureStartY = window.scrollY;
+    let gestureStartIndex = 0;
+    let lastObservedY = window.scrollY;
+    let scrollDirection = 0;
+    let gestureActive = false;
+    let wheelGestureTimer = 0;
     const visualViewport = window.visualViewport;
     const cancelSettle = () => {
       window.clearTimeout(settleTimer);
@@ -70,6 +76,25 @@
       settlePending = false;
     };
     const destinationFor = (panel) => Math.max(0, window.scrollY + panel.getBoundingClientRect().top - 68);
+    const nearestPanelIndex = (position = window.scrollY) => panels.reduce((bestIndex, panel, index) => {
+      const bestDistance = Math.abs(destinationFor(panels[bestIndex]) - position);
+      return Math.abs(destinationFor(panel) - position) < bestDistance ? index : bestIndex;
+    }, 0);
+    const beginGesture = () => {
+      cancelSettle();
+      if (gestureActive) return;
+      gestureActive = true;
+      gestureStartY = window.scrollY;
+      gestureStartIndex = nearestPanelIndex(gestureStartY);
+      lastObservedY = gestureStartY;
+      scrollDirection = 0;
+    };
+    const observeScrollDirection = () => {
+      const current = window.scrollY;
+      const delta = current - lastObservedY;
+      if (!settling && Math.abs(delta) > 1) scrollDirection = Math.sign(delta);
+      lastObservedY = current;
+    };
     const scrollToPanel = (panel) => {
       if (!mobilePanelMotion.matches || !panel || !panels.includes(panel)) return;
       window.clearTimeout(settleTimer);
@@ -78,12 +103,12 @@
       const end = destinationFor(panel);
       const distance = end - start;
       if (Math.abs(distance) < 3) { settling = false; return; }
-      const duration = Math.min(620, Math.max(420, Math.abs(distance) * .56));
+      const duration = Math.min(820, Math.max(520, Math.abs(distance) * .72));
       const startedAt = performance.now();
       settling = true;
       const tick = (now) => {
         const progress = Math.min(1, (now - startedAt) / duration);
-        const eased = progress < .5 ? 16 * progress ** 5 : 1 - ((-2 * progress + 2) ** 5) / 2;
+        const eased = progress < .5 ? 4 * progress ** 3 : 1 - ((-2 * progress + 2) ** 3) / 2;
         // Re-read the panel position throughout the tween. On mobile Chrome the
         // dynamic toolbar can resize 100dvh panels while the animation is running.
         const currentEnd = destinationFor(panel);
@@ -100,12 +125,27 @@
     const settleNearest = () => {
       if (settling || !panels.length) return;
       const current = window.scrollY;
-      const nearest = panels.reduce((best, panel) => {
-        const target = destinationFor(panel);
-        return Math.abs(target - current) < Math.abs(destinationFor(best) - current) ? panel : best;
-      }, panels[0]);
-      const target = destinationFor(nearest);
-      if (Math.abs(target - current) > 12) scrollToPanel(nearest);
+      let targetIndex = nearestPanelIndex(current);
+      if (scrollDirection > 0) {
+        targetIndex = Math.max(targetIndex, gestureStartIndex);
+        for (let index = Math.max(gestureStartIndex + 1, targetIndex); index < panels.length; index += 1) {
+          const boundary = (destinationFor(panels[index - 1]) + destinationFor(panels[index])) / 2;
+          if (current >= boundary) targetIndex = index;
+          else break;
+        }
+      } else if (scrollDirection < 0) {
+        targetIndex = Math.min(targetIndex, gestureStartIndex);
+        for (let index = Math.min(gestureStartIndex - 1, targetIndex); index >= 0; index -= 1) {
+          const boundary = (destinationFor(panels[index]) + destinationFor(panels[index + 1])) / 2;
+          if (current <= boundary) targetIndex = index;
+          else break;
+        }
+      }
+      const targetPanel = panels[targetIndex];
+      const target = destinationFor(targetPanel);
+      gestureStartIndex = targetIndex;
+      scrollDirection = 0;
+      if (Math.abs(target - current) > 12) scrollToPanel(targetPanel);
     };
     const scheduleSettle = (event) => {
       if (!mobilePanelMotion.matches || settling) return;
@@ -139,11 +179,20 @@
         settleNearest();
       }, Math.max(settleDelay, viewportWait));
     };
-    window.addEventListener('scroll', scheduleSettle, { passive:true });
+    window.addEventListener('scroll', (event) => {
+      observeScrollDirection();
+      scheduleSettle(event);
+    }, { passive:true });
     window.addEventListener('scrollend', scheduleSettle, { passive:true });
-    window.addEventListener('touchstart', cancelSettle, { passive:true });
-    window.addEventListener('pointerdown', cancelSettle, { passive:true });
-    window.addEventListener('wheel', cancelSettle, { passive:true });
+    window.addEventListener('touchstart', beginGesture, { passive:true });
+    window.addEventListener('touchend', () => { gestureActive = false; }, { passive:true });
+    window.addEventListener('pointerdown', beginGesture, { passive:true });
+    window.addEventListener('pointerup', () => { gestureActive = false; }, { passive:true });
+    window.addEventListener('wheel', () => {
+      beginGesture();
+      window.clearTimeout(wheelGestureTimer);
+      wheelGestureTimer = window.setTimeout(() => { gestureActive = false; }, 600);
+    }, { passive:true });
     window.addEventListener('resize', () => { if (!mobilePanelMotion.matches) cancelSettle(); }, { passive:true });
     visualViewport?.addEventListener('resize', () => {
       viewportChangedAt = performance.now();
