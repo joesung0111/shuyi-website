@@ -809,9 +809,6 @@
     const pointerDown = (event) => {
       if (event.button !== undefined && event.button !== 0) return;
       if (event.target.closest?.('button')) return;
-      // Mascot anchors navigate directly. Do not let a normal click enter the
-      // drag/release path, which can snap using velocity left from prior input.
-      if (event.target.closest?.('.hero-orbit__item')) return;
       cancelIntro();
       hideHoverLabel();
       state.hover = -1;
@@ -821,6 +818,7 @@
       drag.y = event.clientY;
       drag.start = state.target;
       drag.baseTarget = state.target;
+      state.velocity = 0;
       drag.axis = 0;
       drag.mobileTouch = matchMedia('(max-width:720px)').matches;
       drag.time = performance.now();
