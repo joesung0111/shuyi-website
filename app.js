@@ -1336,7 +1336,7 @@
       const status = document.querySelector('[data-carousel-status]');
       const reduceMotion = reducedMotion.matches;
       const palette = { peach:['#ba6873','#f1b5a0'], violet:['#715987','#c6a1d7'], lime:['#758454','#d1d9a4'] };
-      const state = { cards:[], positions:[], step:0, track:0, centerX:0, x:0, targetX:null, velocity:0, tugX:0, tugV:0, active:-1, lastTime:0, pointerId:null, pointerX:0, lastX:0, lastPointerTime:0, dragMoved:false, raf:0, size:[0,0], from:['#c99c92','#e7c5bb'], to:['#c99c92','#e7c5bb'], gradientAt:0 };
+      const state = { cards:[], positions:[], step:0, track:0, centerX:0, x:0, targetX:null, velocity:0, tugX:0, tugV:0, active:-1, lastTime:0, pointerId:null, pointerX:0, lastX:0, lastPointerTime:0, dragMoved:false, autoplayPaused:false, raf:0, size:[0,0], from:['#c99c92','#e7c5bb'], to:['#c99c92','#e7c5bb'], gradientAt:0 };
       const hexRgb = (hex) => hex.match(/[\da-f]{2}/gi).map((part) => parseInt(part,16));
       const colorForCard = (card) => {
         const img = card.querySelector('.card-cover');
@@ -1366,7 +1366,7 @@
         const dt=state.lastTime?Math.min(.05,(time-state.lastTime)/1000):0;state.lastTime=time;
         if(state.cards.length<=2){if(!state.pointerId&&!reduceMotion){state.tugV+=(-state.tugX*52-state.tugV*14)*dt;state.tugX+=state.tugV*dt;if(Math.abs(state.tugX)<.08&&Math.abs(state.tugV)<.08){state.tugX=0;state.tugV=0;}}const offset=state.step*.5;state.cards.forEach((card,i)=>{const pos=(state.cards.length===2?(i===0?-offset:offset):0)+state.tugX;state.positions[i]=pos;const norm=Math.max(-1,Math.min(1,pos/(innerWidth/2)));const depth=state.cards.length===2?70:140;const scale=state.cards.length===2?0.9:1;card.style.left=`${state.centerX}px`;card.style.transform=`translate3d(calc(-50% + ${pos}px),-50%,${depth}px) rotateY(${-norm*14}deg) scale(${scale})`;card.style.zIndex=String(i===0?1002:1001);card.style.filter='none';});if(state.cards.length)setActive(0);}
         else if(state.targetX!==null&&state.track&&!state.pointerId&&!reduceMotion){const half=state.track/2;const delta=((state.targetX-state.x+half)%state.track+state.track)%state.track-half;state.x+=delta*(1-Math.exp(-16*dt));if(Math.abs(delta)<.3){state.x=state.targetX;state.targetX=null;state.velocity=0;}}
-        else if(state.targetX===null&&!state.pointerId&&!reduceMotion){state.x+=state.velocity*dt;state.velocity*=Math.pow(.9,dt*60);if(Math.abs(state.velocity)<.02)state.velocity=0;}
+        else if(state.targetX===null&&!state.pointerId&&!reduceMotion){if(innerWidth<=720&&!state.autoplayPaused&&state.cards.length>2){state.x+=12*dt;state.velocity=0;}else{state.x+=state.velocity*dt;state.velocity*=Math.pow(.9,dt*60);if(Math.abs(state.velocity)<.02)state.velocity=0;}}
         if(state.cards.length>2&&state.track){state.x=((state.x%state.track)+state.track)%state.track;let closest=0,dist=Infinity;const half=state.track/2;
           state.cards.forEach((card,i)=>{let pos=i*state.step-state.x;if(pos< -half)pos+=state.track;if(pos>half)pos-=state.track;state.positions[i]=pos;const distance=Math.abs(pos);if(distance<dist){dist=distance;closest=i;}});
           const previous=(closest-1+state.cards.length)%state.cards.length;const next=(closest+1)%state.cards.length;
@@ -1381,8 +1381,8 @@
       };
       const refresh = () => { state.cards=[...stage.querySelectorAll('.content-card')].filter((card)=>!card.hidden);state.positions=new Array(state.cards.length);state.active=-1;state.x=0;state.targetX=null;state.velocity=0;state.tugX=0;state.tugV=0;stage.classList.toggle('has-two-cards',state.cards.length===2);resize();const controls=document.querySelector('.journal-carousel__controls');if(controls){controls.hidden=state.cards.length===0;controls.querySelectorAll('[data-carousel-step]').forEach((button)=>{button.hidden=state.cards.length<3;});}if(state.cards.length){state.x=0;setActive(0);}else if(status)status.textContent='目前沒有這個分類的內容'; };
       const turn=(direction)=>{if(state.cards.length<=2||!state.track)return;state.velocity=0;if(reduceMotion){state.targetX=null;state.x+=direction*state.step;queueRender();}else{const base=state.targetX===null?state.x:state.targetX;state.targetX=((base+direction*state.step)%state.track+state.track)%state.track;}};
-      stage.addEventListener('wheel',(event)=>{if(state.cards.length<=2 || reduceMotion || event.ctrlKey)return;event.preventDefault();state.targetX=null;const delta=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;state.velocity+=delta*.6*20;},{passive:false});
-      stage.addEventListener('pointerdown',(event)=>{if(event.target.closest('button'))return;if(event.button!==undefined&&event.button!==0)return;state.pointerId=event.pointerId;state.targetX=null;state.pointerX=state.lastX=event.clientX;state.lastPointerTime=performance.now();state.dragMoved=false;state.velocity=0;state.tugV=0;document.querySelector('.journal-carousel')?.classList.add('is-dragging');});
+      stage.addEventListener('wheel',(event)=>{if(state.cards.length<=2 || reduceMotion || event.ctrlKey)return;state.autoplayPaused=true;event.preventDefault();state.targetX=null;const delta=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;state.velocity+=delta*.6*20;},{passive:false});
+      stage.addEventListener('pointerdown',(event)=>{if(event.target.closest('button'))return;if(event.button!==undefined&&event.button!==0)return;state.autoplayPaused=true;state.pointerId=event.pointerId;state.targetX=null;state.pointerX=state.lastX=event.clientX;state.lastPointerTime=performance.now();state.dragMoved=false;state.velocity=0;state.tugV=0;document.querySelector('.journal-carousel')?.classList.add('is-dragging');});
       window.addEventListener('pointermove',(event)=>{if(state.pointerId!==event.pointerId)return;const now=performance.now();const dx=event.clientX-state.lastX;const dt=Math.max(1,now-state.lastPointerTime)/1000;if(state.cards.length<=2){const tugDelta=dx*.24;state.tugX=Math.max(-24,Math.min(24,state.tugX+tugDelta));state.tugV=Math.max(-220,Math.min(220,tugDelta/dt));}else{state.x-=dx;state.velocity=-dx/dt;}state.dragMoved=state.dragMoved||Math.abs(event.clientX-state.pointerX)>8;state.lastX=event.clientX;state.lastPointerTime=now;queueRender();});
       stage.addEventListener('click',(event)=>{if(!state.dragMoved || event.detail === 0)return;event.preventDefault();event.stopPropagation();state.dragMoved=false;},true);
       const release=(event)=>{if(state.pointerId!==event.pointerId)return;state.pointerId=null;if(state.cards.length<=2&&reduceMotion){state.tugX=0;state.tugV=0;queueRender();}document.querySelector('.journal-carousel')?.classList.remove('is-dragging');};
@@ -1398,8 +1398,10 @@
         queueRender();
       };
       stage.addEventListener('focusin', (event) => {
+        state.autoplayPaused = true;
         if (event.target.matches(':focus-visible')) centerCard(event.target.closest('.content-card'));
       });
+      document.querySelectorAll('[data-carousel-step], [data-filter]').forEach((control)=>control.addEventListener('click',()=>{state.autoplayPaused=true;}));
       addEventListener('resize', () => { resize(); queueRender(); });
       if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver(([entry]) => {
