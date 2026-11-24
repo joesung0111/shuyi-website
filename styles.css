@@ -1767,11 +1767,12 @@ body .offering-panel--series>.site-footer{width:auto}
 .studio-page--hero .studio-page__copy { position:relative; z-index:1; }
 
 .studio-page--hero .studio-page__image {
-  animation:studio-hero-image-fade-in .9s ease-out both;
+  transform-origin:center center;
+  animation:studio-hero-cinematic-reveal 2.4s cubic-bezier(.2,.7,.2,1) both;
 }
-@keyframes studio-hero-image-fade-in {
-  from { opacity:0; }
-  to { opacity:1; }
+@keyframes studio-hero-cinematic-reveal {
+  from { opacity:0; transform:scale(1.1); }
+  to { opacity:1; transform:scale(1); }
 }
 @media(prefers-reduced-motion:reduce) {
   .studio-page--hero .studio-page__image { animation:none; }
