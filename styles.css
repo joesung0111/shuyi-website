@@ -1765,14 +1765,30 @@ body .offering-panel--series>.site-footer{width:auto}
   pointer-events:none;
   background:var(--bg);
 }
+.studio-backdrop__scene {
+  position:absolute;
+  inset:0;
+  transform-origin:center center;
+  animation:studio-hero-cinematic-reveal 6s cubic-bezier(.2,.7,.2,1) both;
+}
 .studio-backdrop__image {
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  transform-origin:center center;
-  animation:studio-hero-cinematic-reveal 6s cubic-bezier(.2,.7,.2,1) both;
+}
+.studio-backdrop__image--night {
+  opacity:0;
+  filter:brightness(.5) saturate(.82) contrast(1.08) hue-rotate(-8deg);
+}
+.studio-backdrop__night-tint {
+  position:absolute;
+  inset:0;
+  opacity:0;
+  background:linear-gradient(145deg,rgba(15,25,45,.36),rgba(20,27,43,.12) 48%,rgba(12,20,34,.34));
+  mix-blend-mode:multiply;
+  pointer-events:none;
 }
 .studio-backdrop__light {
   position:absolute;
@@ -1781,26 +1797,10 @@ body .offering-panel--series>.site-footer{width:auto}
   transform:translate(-5%,-4%);
   background:radial-gradient(ellipse at 72% 24%,rgba(255,224,176,.46),transparent 34%),radial-gradient(ellipse at 27% 78%,rgba(226,164,124,.25),transparent 38%);
   mix-blend-mode:screen;
-  transition:transform 1.8s cubic-bezier(.2,.7,.2,1),opacity 1.8s ease;
-}
-.studio-page-shell.is-details .studio-backdrop__light {
-  opacity:.72;
-  transform:translate(5%,5%);
-}
-.studio-page-shell > .snap-panel {
-  position:relative;
-  z-index:1;
-  background:transparent;
-}
-.studio-page--hero { position:relative; }
-.studio-page--hero .studio-page__copy { position:relative; z-index:1; }
-
-@keyframes studio-hero-cinematic-reveal {
-  from { opacity:0; transform:scale(1.1); }
-  to { opacity:1; transform:scale(1); }
+  pointer-events:none;
 }
 @media(prefers-reduced-motion:reduce) {
-  .studio-backdrop__image { animation:none; }
+  .studio-backdrop__scene { animation:none; }
 }
 
 /* Keep studio hero copy legible over the photo using the site theme colors. */

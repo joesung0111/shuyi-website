@@ -968,12 +968,32 @@
   }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = [...document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .studio-details .info-row, .service-list article, .services-faq')].filter((element) => !element.closest('.offerings-page') && !element.matches('.services-page > .services-activities')); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
   const studioShell = document.querySelector('.studio-page-shell');
+  const studioHero = studioShell?.querySelector('.studio-page--hero');
   const studioDetails = studioShell?.querySelector('.studio-details');
-  if (studioShell && studioDetails && !reducedMotion.matches && 'IntersectionObserver' in window) {
-    const studioSceneObserver = new IntersectionObserver(([entry]) => {
-      studioShell.classList.toggle('is-details', entry.isIntersecting);
-    }, { threshold:.45 });
-    studioSceneObserver.observe(studioDetails);
+  const studioNight = studioShell?.querySelector('.studio-backdrop__image--night');
+  const studioNightTint = studioShell?.querySelector('.studio-backdrop__night-tint');
+  const studioLight = studioShell?.querySelector('.studio-backdrop__light');
+  if (studioShell && studioHero && studioDetails && studioNight && studioNightTint && studioLight) {
+    let studioScrollFrame = 0;
+    const updateStudioScene = () => {
+      studioScrollFrame = 0;
+      const headerHeight = Number.parseFloat(getComputedStyle(root).getPropertyValue('--panel-header-height')) || 0;
+      const heroTop = studioHero.getBoundingClientRect().top + window.scrollY;
+      const detailsTop = studioDetails.getBoundingClientRect().top + window.scrollY;
+      const transitionStart = heroTop - headerHeight;
+      const transitionLength = Math.max(1, detailsTop - heroTop);
+      const progress = Math.max(0, Math.min(1, (window.scrollY - transitionStart) / transitionLength));
+      studioNight.style.opacity = progress.toFixed(3);
+      studioNightTint.style.opacity = (progress * .46).toFixed(3);
+      studioLight.style.opacity = (.58 + progress * .14).toFixed(3);
+      studioLight.style.transform = `translate(${(-5 + progress * 10).toFixed(2)}%,${(-4 + progress * 9).toFixed(2)}%)`;
+    };
+    const requestStudioSceneUpdate = () => {
+      if (!studioScrollFrame) studioScrollFrame = requestAnimationFrame(updateStudioScene);
+    };
+    window.addEventListener('scroll', requestStudioSceneUpdate, { passive:true });
+    window.addEventListener('resize', requestStudioSceneUpdate);
+    requestStudioSceneUpdate();
   }
   const offerings = document.querySelector('.offerings-page main');
   if (offerings && !matchMedia('(prefers-reduced-motion: reduce)').matches && !matchMedia('(pointer: coarse), (max-width:720px)').matches) {
