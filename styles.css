@@ -1794,3 +1794,5 @@ body .offering-panel--series>.site-footer{width:auto}
 .studio-details { padding-top:0; }
 .studio-details .info-rows { margin-block:auto; }
 .studio-details > .site-footer { margin-top:0; }
+
+.studio-details .info-row:nth-child(2) a { color:var(--muted); }
