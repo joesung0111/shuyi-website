@@ -967,6 +967,14 @@
     }
   }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) { const revealTargets = [...document.querySelectorAll('.section, .page-hero, .article, .booking-card, .studio-page__copy, .studio-details .info-row, .service-list article, .services-faq')].filter((element) => !element.closest('.offerings-page') && !element.matches('.services-page > .services-activities')); revealTargets.forEach((element, index) => { element.classList.add('reveal-on-scroll'); element.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 70}ms`); }); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); observer.unobserve(entry.target); } }), { threshold: .12 }); revealTargets.forEach((element) => observer.observe(element)); }
+  const studioShell = document.querySelector('.studio-page-shell');
+  const studioDetails = studioShell?.querySelector('.studio-details');
+  if (studioShell && studioDetails && !reducedMotion.matches && 'IntersectionObserver' in window) {
+    const studioSceneObserver = new IntersectionObserver(([entry]) => {
+      studioShell.classList.toggle('is-details', entry.isIntersecting);
+    }, { threshold:.45 });
+    studioSceneObserver.observe(studioDetails);
+  }
   const offerings = document.querySelector('.offerings-page main');
   if (offerings && !matchMedia('(prefers-reduced-motion: reduce)').matches && !matchMedia('(pointer: coarse), (max-width:720px)').matches) {
     // Render the visible DOM into a texture and refract it through a WebGL lens.

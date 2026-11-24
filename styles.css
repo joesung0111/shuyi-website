@@ -1756,26 +1756,51 @@ body .offering-panel--series>.site-footer{width:auto}
 }
 
 /* Studio page full-bleed photo */
-.studio-page--hero { position:relative; }
-.studio-page--hero .studio-page__image {
+.studio-page-shell { position:relative; isolation:isolate; }
+.studio-backdrop {
+  position:fixed;
+  z-index:0;
+  inset:var(--panel-header-height,88px) 0 0;
+  overflow:hidden;
+  pointer-events:none;
+  background:var(--bg);
+}
+.studio-backdrop__image {
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-}
-.studio-page--hero .studio-page__copy { position:relative; z-index:1; }
-
-.studio-page--hero .studio-page__image {
   transform-origin:center center;
   animation:studio-hero-cinematic-reveal 6s cubic-bezier(.2,.7,.2,1) both;
 }
+.studio-backdrop__light {
+  position:absolute;
+  inset:-22%;
+  opacity:.58;
+  transform:translate(-5%,-4%);
+  background:radial-gradient(ellipse at 72% 24%,rgba(255,224,176,.46),transparent 34%),radial-gradient(ellipse at 27% 78%,rgba(226,164,124,.25),transparent 38%);
+  mix-blend-mode:screen;
+  transition:transform 1.8s cubic-bezier(.2,.7,.2,1),opacity 1.8s ease;
+}
+.studio-page-shell.is-details .studio-backdrop__light {
+  opacity:.72;
+  transform:translate(5%,5%);
+}
+.studio-page-shell > .snap-panel {
+  position:relative;
+  z-index:1;
+  background:transparent;
+}
+.studio-page--hero { position:relative; }
+.studio-page--hero .studio-page__copy { position:relative; z-index:1; }
+
 @keyframes studio-hero-cinematic-reveal {
   from { opacity:0; transform:scale(1.1); }
   to { opacity:1; transform:scale(1); }
 }
 @media(prefers-reduced-motion:reduce) {
-  .studio-page--hero .studio-page__image { animation:none; }
+  .studio-backdrop__image { animation:none; }
 }
 
 /* Keep studio hero copy legible over the photo using the site theme colors. */
@@ -1798,8 +1823,9 @@ body .offering-panel--series>.site-footer{width:auto}
 .studio-details .info-row:nth-child(2) a { color:var(--muted); }
 
 /* Studio visit panel: calm paired cards with a restrained reveal. */
-.studio-details {
-  background:color-mix(in srgb,var(--accent) 5%,var(--bg));
+.studio-page-shell .studio-details { background:transparent; }
+.studio-page-shell .studio-details .info-row {
+  background:color-mix(in srgb,var(--bg) 90%,transparent);
 }
 .studio-details__content {
   width:100%;
