@@ -1768,7 +1768,7 @@ body .offering-panel--series>.site-footer{width:auto}
 
 .studio-page--hero .studio-page__image {
   transform-origin:center center;
-  animation:studio-hero-cinematic-reveal 2.4s cubic-bezier(.2,.7,.2,1) both;
+  animation:studio-hero-cinematic-reveal 6s cubic-bezier(.2,.7,.2,1) both;
 }
 @keyframes studio-hero-cinematic-reveal {
   from { opacity:0; transform:scale(1.1); }
