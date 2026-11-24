@@ -1780,7 +1780,7 @@ body .offering-panel--series>.site-footer{width:auto}
 }
 .studio-backdrop__image--night {
   opacity:0;
-  filter:brightness(.5) saturate(.82) contrast(1.08) hue-rotate(-8deg);
+  filter:brightness(.35) saturate(.72) contrast(1.12) hue-rotate(-14deg);
 }
 .studio-backdrop__night-tint {
   position:absolute;

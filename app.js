@@ -984,8 +984,8 @@
       const transitionLength = Math.max(1, detailsTop - heroTop);
       const progress = Math.max(0, Math.min(1, (window.scrollY - transitionStart) / transitionLength));
       studioNight.style.opacity = progress.toFixed(3);
-      studioNightTint.style.opacity = (progress * .46).toFixed(3);
-      studioLight.style.opacity = (.58 + progress * .14).toFixed(3);
+      studioNightTint.style.opacity = (progress * .8).toFixed(3);
+      studioLight.style.opacity = (.4 + progress * .5).toFixed(3);
       studioLight.style.transform = `translate(${(-5 + progress * 10).toFixed(2)}%,${(-4 + progress * 9).toFixed(2)}%)`;
     };
     const requestStudioSceneUpdate = () => {
