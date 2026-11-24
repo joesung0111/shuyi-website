@@ -1796,3 +1796,87 @@ body .offering-panel--series>.site-footer{width:auto}
 .studio-details > .site-footer { margin-top:0; }
 
 .studio-details .info-row:nth-child(2) a { color:var(--muted); }
+
+/* Studio visit panel: calm paired cards with a restrained reveal. */
+.studio-details {
+  background:color-mix(in srgb,var(--accent) 5%,var(--bg));
+}
+.studio-details__content {
+  width:100%;
+  max-width:1100px;
+  align-self:center;
+  margin-block:auto;
+  padding:clamp(28px,5vh,60px) clamp(22px,8vw,128px);
+  display:grid;
+  gap:clamp(22px,4vh,38px);
+}
+.studio-details__heading .eyebrow { color:var(--accent); }
+.studio-details__heading h2 {
+  margin:10px 0 0;
+  font-size:clamp(30px,4vw,46px);
+  line-height:1.2;
+  letter-spacing:-.055em;
+}
+.studio-details .info-rows {
+  width:100%;
+  max-width:none;
+  margin-block:0;
+  padding:0;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+.studio-details .info-row {
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:28px;
+  min-width:0;
+  min-height:clamp(180px,23vh,230px);
+  padding:clamp(22px,3vw,34px);
+  border:1px solid var(--line);
+  background:var(--bg);
+  transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease;
+}
+.studio-details .info-row::before {
+  content:"";
+  position:absolute;
+  inset:0 auto auto 0;
+  width:42px;
+  height:2px;
+  background:var(--accent);
+}
+.studio-details .info-row > span {
+  color:var(--muted);
+  font:11px var(--mono);
+  letter-spacing:.1em;
+}
+.studio-details .info-row > div {
+  color:var(--ink);
+  font-size:clamp(16px,1.8vw,20px);
+  line-height:1.8;
+  overflow-wrap:anywhere;
+}
+.studio-details .info-row:nth-child(2) a {
+  color:var(--muted);
+  text-decoration:underline;
+  text-decoration-color:color-mix(in srgb,var(--accent) 42%,transparent);
+  text-underline-offset:4px;
+}
+.studio-details .info-row:nth-child(2) a:hover { color:var(--accent); }
+@media(hover:hover) and (prefers-reduced-motion:no-preference) {
+  .studio-details .info-row:hover {
+    transform:translateY(-4px);
+    border-color:color-mix(in srgb,var(--accent) 48%,var(--line));
+    box-shadow:0 14px 34px color-mix(in srgb,var(--ink) 8%,transparent);
+  }
+}
+@media(max-width:720px) {
+  .studio-details__content { gap:22px; padding:28px 22px; }
+  .studio-details .info-rows { grid-template-columns:1fr; gap:12px; }
+  .studio-details .info-row { min-height:145px; padding:22px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .studio-details .info-row { transition:none; }
+}
