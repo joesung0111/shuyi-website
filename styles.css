@@ -1782,3 +1782,10 @@ body .offering-panel--series>.site-footer{width:auto}
   text-shadow:0 1px 0 color-mix(in srgb,var(--bg) 90%,transparent),
               0 0 12px color-mix(in srgb,var(--bg) 78%,transparent);
 }
+
+.studio-page--hero .studio-page__copy > .eyebrow,
+.studio-page--hero .studio-page__copy > p:not(.eyebrow) {
+  color:var(--ink);
+  -webkit-text-stroke:.35px var(--bg);
+  paint-order:stroke fill;
+}
