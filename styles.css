@@ -1790,3 +1790,7 @@ body .offering-panel--series>.site-footer{width:auto}
   -webkit-text-stroke:.35px var(--bg);
   paint-order:stroke fill;
 }
+
+.studio-details { padding-top:0; }
+.studio-details .info-rows { margin-block:auto; }
+.studio-details > .site-footer { margin-top:0; }
