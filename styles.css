@@ -1799,6 +1799,17 @@ body .offering-panel--series>.site-footer{width:auto}
   mix-blend-mode:screen;
   pointer-events:none;
 }
+.studio-page-shell > .snap-panel {
+  position:relative;
+  z-index:1;
+  background:transparent;
+}
+.studio-page--hero { position:relative; }
+.studio-page--hero .studio-page__copy { position:relative; z-index:1; }
+@keyframes studio-hero-cinematic-reveal {
+  from { opacity:0; transform:scale(1.1); }
+  to { opacity:1; transform:scale(1); }
+}
 @media(prefers-reduced-motion:reduce) {
   .studio-backdrop__scene { animation:none; }
 }
